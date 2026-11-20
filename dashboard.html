@@ -55,7 +55,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex h-screen overflow-hidden transition-colors duration-200">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex h-dvh overflow-hidden transition-colors duration-200">
 
     <!-- MOBILE BACKDROP -->
     <div id="mobileSidebarBackdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-20 hidden lg:hidden"></div>
@@ -93,7 +93,7 @@
         </div>
     </aside>
 
-    <div class="flex-1 flex flex-col h-screen overflow-y-auto overflow-x-hidden min-w-0">
+    <div class="flex-1 flex flex-col h-dvh overflow-y-auto overflow-x-hidden min-w-0">
         <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex justify-between items-center z-10 sticky top-0 shadow-sm transition-colors duration-200">
             <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <button type="button" onclick="toggleMobileSidebar(true)" aria-label="Buka menu navigasi" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-uitmpurple dark:text-uitmgold cursor-pointer shrink-0">
@@ -232,22 +232,22 @@
     <div class="fixed bottom-4 sm:bottom-5 right-4 sm:right-5 z-40 flex flex-col items-end gap-2">
         <div
             id="geminiChatWindow"
-            class="hidden w-[calc(100vw-2rem)] max-w-sm sm:w-96 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-xs transition-all duration-200"
+            class="hidden w-[calc(100vw-2rem)] max-w-sm sm:w-96 max-h-[78dvh] flex flex-col rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-xs transition-all duration-200"
         >
             <!-- Top Bar ala Gemini Assistant -->
-            <div class="bg-uitmpurple dark:bg-purple-950 px-4 py-3 text-white flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-7 h-7 rounded-full bg-white/15 text-uitmgold flex items-center justify-center text-sm font-extrabold">&#10022;</span>
-                    <div>
-                        <p class="font-extrabold text-xs tracking-wide leading-tight">MyPelajar AI</p>
-                        <p id="geminiConnectionStatus" class="text-[10px] text-purple-200/80">Gemini Connected &bull; Portal + General</p>
+            <div class="bg-uitmpurple dark:bg-purple-950 px-4 py-3 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <span class="w-7 h-7 rounded-full bg-white/15 text-uitmgold flex items-center justify-center text-sm font-extrabold shrink-0">&#10022;</span>
+                    <div class="min-w-0">
+                        <p class="font-extrabold text-xs tracking-wide leading-tight truncate">MyPelajar AI</p>
+                        <p id="geminiConnectionStatus" class="text-[10px] text-purple-200/80 truncate">Private Key &bull; Peranti Semasa</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center gap-1.5 shrink-0">
                     <button
                         type="button"
                         onclick="toggleGeminiApiKeyBar()"
-                        title="Tetapan Gemini API Key"
+                        title="Tetapan Gemini API Key (Private)"
                         class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-bold text-uitmgold cursor-pointer"
                     >
                         API
@@ -271,23 +271,24 @@
                 </div>
             </div>
 
-            <!-- Bar Tetapan Gemini API Key (Disimpan lokal pada browser) -->
-            <div id="geminiApiKeyBar" class="hidden px-3 py-2.5 bg-purple-50 dark:bg-purple-950/60 border-b border-purple-200/70 dark:border-purple-800/60 space-y-1.5">
-                <div class="flex items-center justify-between">
-                    <label for="geminiApiKeyInput" class="text-[10px] font-extrabold text-uitmpurple dark:text-uitmgold uppercase">Gemini API Key (Browser Local)</label>
+            <!-- Bar Tetapan Gemini API Key (Disimpan secara private pada localStorage peranti ini sahaja) -->
+            <div id="geminiApiKeyBar" class="hidden px-3 py-2.5 bg-purple-50 dark:bg-purple-950/60 border-b border-purple-200/70 dark:border-purple-800/60 space-y-1.5 shrink-0">
+                <div class="flex items-center justify-between gap-2">
+                    <label for="geminiApiKeyInput" class="text-[10px] font-extrabold text-uitmpurple dark:text-uitmgold uppercase">Private API Key (Peranti Ini Sahaja)</label>
                     <span id="geminiKeyStateLabel" class="text-[10px] font-bold text-slate-500 dark:text-slate-300">Belum diset</span>
                 </div>
                 <div class="flex gap-1.5">
                     <input
                         type="password"
                         id="geminiApiKeyInput"
-                        placeholder="Masukkan AIza... API key"
-                        class="flex-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-800 dark:text-slate-100 focus:outline-none focus:border-uitmpurple dark:focus:border-uitmgold"
+                        autocomplete="off"
+                        placeholder="Masukkan API key secara private..."
+                        class="flex-1 min-w-0 px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-800 dark:text-slate-100 focus:outline-none focus:border-uitmpurple dark:focus:border-uitmgold"
                     >
                     <button
                         type="button"
                         onclick="saveGeminiApiKey()"
-                        class="px-2.5 py-1.5 rounded-xl bg-uitmpurple dark:bg-purple-800 text-uitmgold font-extrabold text-[10px] cursor-pointer"
+                        class="px-2.5 py-1.5 rounded-xl bg-uitmpurple dark:bg-purple-800 text-uitmgold font-extrabold text-[10px] cursor-pointer shrink-0"
                     >
                         Simpan
                     </button>
@@ -295,7 +296,7 @@
             </div>
 
             <!-- Tabs: Chat AI | FAQ -->
-            <div class="px-3 pt-2 pb-2 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200/80 dark:border-slate-800 flex gap-2">
+            <div class="px-3 pt-2 pb-2 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200/80 dark:border-slate-800 flex gap-2 shrink-0">
                 <button
                     type="button"
                     id="tabBtnChat"
@@ -315,9 +316,9 @@
             </div>
 
             <!-- PANEL TAB 1: CHAT AI -->
-            <div id="assistantTabChat">
+            <div id="assistantTabChat" class="flex flex-col min-h-0 flex-1">
                 <!-- Quick Prompts -->
-                <div class="px-3 pt-2 pb-2 border-b border-slate-100 dark:border-slate-800 flex gap-1.5 overflow-x-auto">
+                <div class="px-3 pt-2 pb-2 border-b border-slate-100 dark:border-slate-800 flex gap-1.5 overflow-x-auto shrink-0">
                     <button
                         type="button"
                         onclick="sendQuickAiPrompt('Siapa penasihat akademik & profil aku?')"
@@ -349,16 +350,16 @@
                 </div>
 
                 <!-- Ruang Perbualan -->
-                <div id="geminiChatMessages" class="p-3.5 h-56 overflow-y-auto space-y-3 bg-slate-50/70 dark:bg-slate-950/60"></div>
+                <div id="geminiChatMessages" class="p-3.5 h-52 sm:h-56 overflow-y-auto space-y-3 bg-slate-50/70 dark:bg-slate-950/60"></div>
 
                 <!-- Input Taip Mesej ala Gemini -->
-                <form id="geminiChatForm" onsubmit="handleGeminiChatSubmit(event)" class="p-2.5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
+                <form id="geminiChatForm" onsubmit="handleGeminiChatSubmit(event)" class="p-2.5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 shrink-0">
                     <input
                         type="text"
                         id="geminiChatInput"
                         placeholder="Tanya apa-apa (portal, Mandarin, idea, umum)..."
                         autocomplete="off"
-                        class="flex-1 px-3.5 py-2 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs border border-transparent focus:border-uitmpurple dark:focus:border-uitmgold focus:outline-none"
+                        class="flex-1 min-w-0 px-3.5 py-2 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs border border-transparent focus:border-uitmpurple dark:focus:border-uitmgold focus:outline-none"
                     >
                     <button
                         type="submit"
@@ -372,7 +373,7 @@
             </div>
 
             <!-- PANEL TAB 2: FAQ (SOALAN LAZIM) -->
-            <div id="assistantTabFaq" class="hidden bg-slate-50/70 dark:bg-slate-950/60">
+            <div id="assistantTabFaq" class="hidden bg-slate-50/70 dark:bg-slate-950/60 overflow-y-auto">
                 <div class="p-3 space-y-1.5 max-h-44 overflow-y-auto" id="faqQuestionList">
                     <button
                         type="button"
@@ -554,7 +555,11 @@
         }
 
         function getSavedGeminiApiKey() {
-            return (localStorage.getItem(GEMINI_API_STORAGE_KEY) || '').trim();
+            try {
+                return (localStorage.getItem(GEMINI_API_STORAGE_KEY) || '').trim();
+            } catch (e) {
+                return '';
+            }
         }
 
         function refreshGeminiKeyUI() {
@@ -566,10 +571,13 @@
                 input.value = key;
             }
             if (label) {
-                label.textContent = key ? 'Aktif' : 'Belum diset';
+                label.textContent = key ? 'Tersimpan (Private)' : 'Belum diset';
+                label.className = key
+                    ? 'text-[10px] font-bold text-emerald-600 dark:text-emerald-400'
+                    : 'text-[10px] font-bold text-slate-500 dark:text-slate-300';
             }
             if (status) {
-                status.textContent = key ? 'Gemini API Aktif • Portal + Umum' : 'Set API Key untuk soalan luar portal';
+                status.textContent = key ? 'Private Key Aktif • Peranti Ini' : 'Set Private API Key via butang API';
             }
         }
 
@@ -594,8 +602,8 @@
             appendChatMessage(
                 'ai',
                 cleaned
-                    ? 'Gemini API Key dah disimpan pada pelayar ini. Kau boleh tanya soalan di luar portal sekarang.'
-                    : 'Gemini API Key dah dikosongkan.'
+                    ? 'Private API Key dah disimpan pada peranti ini sahaja dan tidak dipaparkan dalam kod.'
+                    : 'Private API Key dah dikosongkan pada peranti ini.'
             );
         }
 
@@ -717,7 +725,7 @@
         async function fetchGeminiGeneralReply(userText) {
             const apiKey = getSavedGeminiApiKey();
             if (!apiKey) {
-                return "Untuk menjawab soalan umum di luar portal MyPelajar secara terus melalui Gemini API, klik butang 'API' di bahagian atas chat box dan masukkan Gemini API Key kau.";
+                return "API Key belum diset pada peranti ini. Klik butang 'API' di atas untuk masukkan API key secara private.";
             }
 
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_NAME}:generateContent?key=${encodeURIComponent(apiKey)}`;
