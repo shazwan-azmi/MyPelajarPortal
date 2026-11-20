@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Summary & Slip | UiTM</title>
+    <link rel="icon" type="image/png" href="uitm.png">
+    <link rel="apple-touch-icon" href="uitm.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        uitmpurple: '#4b1d52',
+                        uitmgold: '#ffc627',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Plus Jakarta Sans', sans-serif; } 
+
+        /* Clean dark glass sidebar when Dark Mode is active */
+        html.dark #mainSidebar,
+        body.theme-dark #mainSidebar {
+            background-color: rgba(15, 23, 42, 0.85);
+            background-image: none;
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+        }
+
+        @media (min-width: 1024px) {
+            html.dark #mainSidebar,
+            body.theme-dark #mainSidebar {
+                background-color: rgba(15, 23, 42, 0.68);
+            }
+        }
+
+        /* Glow effect on sidebar sections/items when clicked or selected */
+        .sidebar-glow-item {
+            transition: transform 0.18s ease,
+                        background-color 0.2s ease,
+                        box-shadow 0.22s ease,
+                        color 0.2s ease,
+                        border-color 0.2s ease;
+        }
+
+        .sidebar-glow-item.is-glowing {
+            transform: scale(0.985);
+            background-color: rgba(255, 198, 39, 0.16) !important;
+            color: #ffc627 !important;
+            box-shadow:
+                0 0 18px rgba(255, 198, 39, 0.35),
+                0 0 28px rgba(168, 85, 247, 0.22),
+                inset 0 0 10px rgba(255, 198, 39, 0.14);
+        }
+
+        .sidebar-glow-item.is-active-glow {
+            box-shadow:
+                0 0 14px rgba(255, 198, 39, 0.22),
+                inset 0 0 8px rgba(255, 198, 39, 0.08);
+        }
+
+        .logout-glow-item.is-glowing {
+            background-color: rgba(239, 68, 68, 0.28) !important;
+            color: #ffffff !important;
+            box-shadow:
+                0 0 20px rgba(248, 113, 113, 0.45),
+                inset 0 0 10px rgba(254, 202, 202, 0.2);
+        }
+
+        @media print {
+            body { background: white !important; }
+            aside, header, .no-print, #mobileSidebarBackdrop { display: none !important; }
+            #courseSummarySection { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; margin: 0 !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex h-screen overflow-hidden transition-colors duration-200">
+
+    <!-- MOBILE BACKDROP -->
+    <div id="mobileSidebarBackdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-20 hidden lg:hidden no-print"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="mainSidebar" class="w-72 bg-gradient-to-b from-uitmpurple via-purple-950 to-slate-900 text-white fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static flex flex-col shadow-2xl z-30 no-print transition-transform duration-200 shrink-0">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg bg-white flex items-center justify-center shrink-0">
+                    <img src="uitm.png" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <div class="min-w-0">
+                    <h2 class="text-sm font-bold tracking-wide truncate">Course Summary</h2>
+                    <p class="text-[10px] text-purple-300/80 font-medium uppercase tracking-widest truncate">Registration Slip</p>
+                </div>
+            </div>
+            <button type="button" onclick="toggleMobileSidebar(false)" aria-label="Close menu" class="lg:hidden text-purple-200 hover:text-white p-1.5 rounded-lg cursor-pointer shrink-0">
+                ✕
+            </button>
+        </div>
+        
+        <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto text-xs font-medium">
+            <a href="dashboard.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>🏠</span> Home</a>
+            <a href="pelajar.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>👥</span> Student List</a>
+            <a href="course_outline.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📖</span> Course Outline</a>
+            <a href="e_academic.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📚</span> e-Academic Register</a>
+            <a href="course_summary.html" class="sidebar-glow-item is-active-glow flex items-center gap-3 px-4 py-3 bg-white/15 border-l-4 border-uitmgold rounded-r-xl text-uitmgold font-bold shadow-inner"><span>📄</span> Course Summary Slip</a>
+            <a href="analytics.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📊</span> Analytics</a>
+            <a href="https://library.uitm.edu.my/" target="_blank" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>💻</span> Digital Library</a>
+            <a href="student_card.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>🆔</span> Student Card</a>
+        </nav>
+
+        <div class="p-4 border-t border-white/10">
+            <a href="index.html" class="sidebar-glow-item logout-glow-item flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold border border-red-500/20">🚪 Log Out</a>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto overflow-x-hidden min-w-0">
+        <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex justify-between items-center z-10 sticky top-0 shadow-sm no-print transition-colors duration-200">
+            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <button type="button" onclick="toggleMobileSidebar(true)" aria-label="Open navigation menu" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-uitmpurple dark:text-uitmgold cursor-pointer shrink-0">
+                    ☰
+                </button>
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="text-uitmpurple dark:text-uitmgold font-black tracking-tighter text-lg shrink-0">MyPelajarPortal</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-widest hidden sm:inline truncate">UNIVERSITI TEKNOLOGI MARA</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2.5 sm:space-x-4 shrink-0">
+                <div class="text-right hidden md:block">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">WELCOME</p>
+                    <p class="text-xs font-extrabold text-slate-800 dark:text-slate-100" id="headerWelcome">2026112309 &bull; MUHAMMAD SHAZWAN</p>
+                </div>
+
+                <!-- Small Theme Toggle Icon (Light / Dark Mode) -->
+                <button
+                    type="button"
+                    id="themeIconBtn"
+                    onclick="toggleMyPelajarTheme()"
+                    aria-label="Toggle Light or Dark Mode theme"
+                    title="Toggle Theme (Light / Dark)"
+                    class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0"
+                >
+                    <svg id="iconMoon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
+                    </svg>
+                    <svg id="iconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" />
+                    </svg>
+                </button>
+
+                <div class="w-9 h-9 rounded-full overflow-hidden shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
+                    <img id="headerProfilePhoto" src="wan profile.jpg" alt="Profile" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full">
+
+            <div class="mb-5 flex flex-col sm:flex-row sm:flex-wrap justify-between items-start sm:items-center gap-3 no-print">
+                <div class="min-w-0">
+                    <h2 class="text-lg font-extrabold text-slate-800 dark:text-white">Course Summary &amp; Slip</h2>
+                    <p id="summarySyncBanner" class="text-xs text-slate-500 dark:text-slate-400 break-words">Information synced with Dashboard and e-Academic registration.</p>
+                </div>
+                <a href="e_academic.html" class="w-full sm:w-auto text-center px-4 py-2 rounded-xl text-xs font-extrabold bg-purple-100 dark:bg-purple-950/80 text-uitmpurple dark:text-uitmgold border border-purple-200 dark:border-purple-800/60 hover:opacity-90 transition-all shrink-0">
+                    ← Update Registration
+                </a>
+            </div>
+            
+            <!-- Official UiTM Slip -->
+            <div id="courseSummarySection" class="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 p-4 sm:p-8 mb-8 text-black font-sans">
+                
+                <div class="text-center pb-4 mb-2">
+                    <div class="flex justify-between items-start text-[10px] font-semibold text-right mb-2">
+                        <div></div>
+                        <div>HEA/PP-2003-1</div>
+                    </div>
+                    <div class="flex justify-center mb-2">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden mx-auto">
+                            <img src="uitm.png" alt="UiTM" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    <h2 class="text-sm font-extrabold tracking-wider uppercase">UNIVERSITI TEKNOLOGI MARA</h2>
+                    <p class="text-[11px] font-bold text-slate-700 mt-0.5">BAHAGIAN HAL EHWAL AKADEMIK</p>
+                    <p class="text-[10px] text-slate-600">40450 SHAH ALAM, SELANGOR DARUL EHSAN</p>
+                </div>
+
+                <div class="border border-slate-400 text-center py-1.5 font-bold text-xs uppercase bg-slate-50 mb-3 tracking-wide">
+                    Course Registration Slip - 20264
+                </div>
+
+                <div class="overflow-x-auto mb-4">
+                    <table class="w-full min-w-[520px] border-collapse border border-slate-400 text-[11px]">
+                        <tbody>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold w-1/4 bg-slate-50">Student ID</td>
+                                <td class="border border-slate-400 px-3 py-1 font-bold text-uitmpurple" colspan="3" id="slipStudentId">2026112309</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Name</td>
+                                <td class="border border-slate-400 px-3 py-1 font-extrabold uppercase" colspan="3" id="slipName">MUHAMMAD SHAZWAN BIN AZMI</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">IC/Passport No</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" colspan="3" id="slipIcNo">050803020829</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Contact No</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" colspan="3" id="slipContact">0168268004 / 0168268004</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Campus</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" colspan="3" id="slipCampus">B9 - UiTM Kampus Puncak Perdana</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Faculty</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" colspan="3" id="slipFaculty">FACULTY OF INFORMATION SCIENCE</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Programme</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" colspan="3" id="slipProgramme">SI261 - BACHELOR OF INFORMATION SCIENCE (HONOURS) RECORDS MANAGEMENT</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50 w-1/4">Program Level</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold w-1/4" id="slipProgramLevel">I - BACHELOR DEGREE</td>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50 w-1/4">Plan ID</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold w-1/4" id="slipPlanId">9310</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Study Mode</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" id="slipStudyMode">S - Full Time</td>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Part</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" id="slipPart">04</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Process Status</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" id="slipProcessStatus">4B</td>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Academic Fees</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" id="slipAcademicFees">Y1</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Semester Intake</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold" colspan="3" id="slipSemesterIntake">20262 - Session 2 2025/2026</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 px-3 py-1 font-bold bg-slate-50">Lecturer Name</td>
+                                <td class="border border-slate-400 px-3 py-1 font-semibold uppercase" colspan="3" id="slipLecturerName">DR. MUHAMMAD ASYRAF BIN WAHI ANUAR</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="overflow-x-auto mb-4">
+                    <table class="w-full min-w-[520px] border-collapse border border-slate-400 text-[11px]">
+                        <thead>
+                            <tr class="bg-slate-100 font-bold text-slate-800">
+                                <th class="border border-slate-400 py-1.5 px-2 text-center w-12">NO</th>
+                                <th class="border border-slate-400 py-1.5 px-3 text-left">COURSES</th>
+                                <th class="border border-slate-400 py-1.5 px-2 text-center w-24">CREDIT UNIT</th>
+                                <th class="border border-slate-400 py-1.5 px-2 text-center w-24">NO. TAKEN</th>
+                                <th class="border border-slate-400 py-1.5 px-2 text-center w-28">GROUP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryTableBody" class="font-medium text-slate-800">
+                            <!-- Populated dynamically from e-Academic registration -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-slate-50 font-bold text-slate-800">
+                                <td colspan="2" class="border border-slate-400 py-1.5 px-3">Total Credit Unit : <span id="summaryTotalCredit" class="text-uitmpurple font-extrabold">0.0</span></td>
+                                <td colspan="3" class="border border-slate-400 py-1.5 px-3 text-right">Date Printed : <span id="printDate">-</span></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="text-center no-print mt-6">
+                    <button onclick="window.print()" class="w-full sm:w-auto bg-uitmpurple hover:bg-purple-900 text-white font-bold px-8 py-3 rounded-2xl shadow-lg transition-all text-xs cursor-pointer">
+                        Print Official Slip (Print) &rarr;
+                    </button>
+                </div>
+            </div>
+
+        </main>
+        
+        <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center py-4 px-4 mt-auto text-xs text-slate-500 dark:text-slate-400 no-print transition-colors duration-200">&copy; 2026 Universiti Teknologi MARA (UiTM) &bull; Course Summary.</footer>
+    </div>
+
+    <script>
+        const PROGRAMME_TITLES = {
+            SI261: 'BACHELOR OF INFORMATION SCIENCE (HONOURS) RECORDS MANAGEMENT',
+            SI262: 'BACHELOR OF INFORMATION SCIENCE (HONOURS) INFORMATION SYSTEMS MANAGEMENT',
+            SI263: 'BACHELOR OF INFORMATION SCIENCE (HONOURS) INFORMATION CONTENT MANAGEMENT',
+            AM238: 'BACHELOR OF ADMINISTRATIVE SCIENCE (HONOURS)',
+            BA273: 'BACHELOR OF BUSINESS ADMINISTRATION (HONOURS) HUMAN RESOURCE MANAGEMENT'
+        };
+
+        const PROGRAMME_FACULTY_NAMES = {
+            BA273: 'Business and Management',
+            AM238: 'Administrative Science and Policy Studies',
+            SI261: 'FACULTY OF INFORMATION SCIENCE',
+            SI262: 'FACULTY OF INFORMATION SCIENCE',
+            SI263: 'FACULTY OF INFORMATION SCIENCE'
+        };
+
+        function toggleMobileSidebar(open) {
+            const sidebar = document.getElementById('mainSidebar');
+            const backdrop = document.getElementById('mobileSidebarBackdrop');
+            if (!sidebar || !backdrop) return;
+            sidebar.classList.toggle('-translate-x-full', !open);
+            backdrop.classList.toggle('hidden', !open);
+        }
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                toggleMobileSidebar(false);
+            }
+        });
+
+        function syncThemeIconUI(isDark) {
+            document.documentElement.classList.toggle('dark', isDark);
+            document.body.classList.toggle('theme-dark', isDark);
+            const moon = document.getElementById('iconMoon');
+            const sun = document.getElementById('iconSun');
+            if (moon && sun) {
+                moon.classList.toggle('hidden', isDark);
+                sun.classList.toggle('hidden', !isDark);
+            }
+        }
+
+        function toggleMyPelajarTheme() {
+            const nextDark = !(localStorage.getItem('uitm_theme') === 'dark');
+            localStorage.setItem('uitm_theme', nextDark ? 'dark' : 'light');
+            syncThemeIconUI(nextDark);
+        }
+
+        function safeJsonParse(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : null;
+            } catch (err) {
+                return null;
+            }
+        }
+
+        function extractProgrammeCode(rawVal) {
+            if (!rawVal) return '';
+            const match = String(rawVal).toUpperCase().trim().match(/\b(SI261|SI262|SI263|AM238|BA273)\b/);
+            return match ? match[1] : String(rawVal).toUpperCase().trim().split(/[\s-]/)[0];
+        }
+
+        function resolveProgrammeCode(slipObj, matchesSlip, userObj, dashObj) {
+            const candidates = [
+                matchesSlip && slipObj && slipObj.programCode,
+                localStorage.getItem('uitm_selected_program'),
+                userObj && userObj.programCode,
+                userObj && userObj.programmeCode,
+                userObj && userObj.programme,
+                userObj && userObj.program,
+                dashObj && dashObj.programCode,
+                dashObj && dashObj.programmeCode,
+                dashObj && dashObj.programme,
+                dashObj && dashObj.program
+            ];
+
+            for (let i = 0; i < candidates.length; i++) {
+                const code = extractProgrammeCode(candidates[i]);
+                if (code) return code;
+            }
+
+            return 'SI261';
+        }
+
+        function resolveLecturerName(userObj, dashObj, slipObj) {
+            const candidates = [
+                userObj && userObj.lecturerName,
+                userObj && userObj.lecturer,
+                userObj && userObj.lecturer_name,
+                userObj && userObj.namaLecturer,
+                userObj && userObj.advisor,
+                dashObj && dashObj.lecturerName,
+                dashObj && dashObj.lecturer,
+                dashObj && dashObj.lecturer_name,
+                dashObj && dashObj.advisor,
+                slipObj && slipObj.lecturerName,
+                slipObj && slipObj.lecturer,
+                slipObj && slipObj.advisor
+            ];
+
+            for (let i = 0; i < candidates.length; i++) {
+                const val = String(candidates[i] || '').trim();
+                if (val) return val.toUpperCase();
+            }
+
+            return 'DR. MUHAMMAD ASYRAF BIN WAHI ANUAR';
+        }
+
+        function resolveFacultyNameByProgramme(progCode) {
+            const code = String(progCode || 'SI261').toUpperCase().trim();
+            if (PROGRAMME_FACULTY_NAMES[code]) {
+                return PROGRAMME_FACULTY_NAMES[code];
+            }
+            if (code.startsWith('BA')) return 'Business and Management';
+            if (code.startsWith('AM')) return 'Administrative Science and Policy Studies';
+            return 'FACULTY OF INFORMATION SCIENCE';
+        }
+
+        function buildProgrammeDisplay(progCode, rawProgramme) {
+            const code = String(progCode || '').toUpperCase().trim();
+            const raw = String(rawProgramme || '').trim();
+            if (raw && code && !raw.toUpperCase().startsWith(code)) {
+                return `${code} - ${raw.toUpperCase()}`;
+            }
+            if (raw) {
+                return raw.toUpperCase();
+            }
+            if (code && PROGRAMME_TITLES[code]) {
+                return `${code} - ${PROGRAMME_TITLES[code]}`;
+            }
+            return `SI261 - ${PROGRAMME_TITLES.SI261}`;
+        }
+
+        syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
+
+        document.querySelectorAll('#mainSidebar .sidebar-glow-item').forEach(item => {
+            item.addEventListener('pointerdown', function() {
+                item.classList.add('is-glowing');
+            });
+
+            const removeGlow = () => {
+                setTimeout(() => item.classList.remove('is-glowing'), 180);
+            };
+
+            item.addEventListener('pointerup', removeGlow);
+            item.addEventListener('pointerleave', () => item.classList.remove('is-glowing'));
+            item.addEventListener('pointercancel', () => item.classList.remove('is-glowing'));
+
+            item.addEventListener('click', function() {
+                document.querySelectorAll('#mainSidebar nav .sidebar-glow-item').forEach(navLink => {
+                    navLink.classList.remove('is-active-glow');
+                });
+                if (item.closest('nav')) {
+                    item.classList.add('is-active-glow');
+                }
+                toggleMobileSidebar(false);
+            });
+        });
+
+        window.onload = function() {
+            syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
+
+            const activeId = localStorage.getItem('uitm_active_user') || '2026112309';
+            const savedUser = safeJsonParse('uitm_user_' + activeId) || {};
+            const dashState = safeJsonParse('uitm_dashboard_state') || safeJsonParse('uitm_dashboard_' + activeId) || {};
+            const slipData = safeJsonParse('uitm_registered_courses_slip');
+            const matchesActiveSlip = slipData && (!slipData.studentId || String(slipData.studentId).trim() === String(activeId).trim());
+
+            const studentId = String(savedUser.studentId || savedUser.id || dashState.studentId || activeId).trim();
+            const fullName = String(savedUser.name || dashState.name || 'MUHAMMAD SHAZWAN BIN AZMI').toUpperCase().trim();
+            const icNo = String(savedUser.icNo || savedUser.ic || dashState.icNo || dashState.ic || '050803020829').trim();
+            const mobileRaw = savedUser.mobile || savedUser.contact || dashState.contactNo || dashState.contact || '0168268004';
+            const contactText = String(mobileRaw).includes('/') ? String(mobileRaw) : `${mobileRaw} / ${mobileRaw}`;
+            const campus = String(savedUser.campus || dashState.campus || 'B9 - UiTM Kampus Puncak Perdana').trim();
+
+            const chosenProgramCode = resolveProgrammeCode(slipData, matchesActiveSlip, savedUser, dashState);
+            const faculty = resolveFacultyNameByProgramme(chosenProgramCode);
+
+            const rawProgLabel = savedUser.programmeTitle || dashState.programmeTitle || '';
+            const programmeDisplay = buildProgrammeDisplay(chosenProgramCode, rawProgLabel);
+
+            const programLevel = String(savedUser.programLevel || dashState.programLevel || 'I - BACHELOR DEGREE').trim();
+            const planId = String(savedUser.planId || dashState.planId || '9310').trim();
+            const studyMode = String(savedUser.studyMode || dashState.studyMode || 'S - Full Time').trim();
+            const partValue = String(
+                (matchesActiveSlip && slipData.part) ||
+                savedUser.part ||
+                dashState.part ||
+                '04'
+            ).trim();
+            const processStatus = String(savedUser.processStatus || dashState.processStatus || '4B').trim();
+            const academicFees = String(savedUser.academicFees || dashState.academicFees || 'Y1').trim();
+            const semesterIntake = String(savedUser.semesterIntake || dashState.semesterIntake || '20262 - Session 2 2025/2026').trim();
+            const lecturerName = resolveLecturerName(savedUser, dashState, matchesActiveSlip ? slipData : null);
+            const userPhoto = String(savedUser.photo || localStorage.getItem('uitm_photo_' + activeId) || dashState.photo || 'wan profile.jpg').trim();
+
+            document.getElementById('headerWelcome').innerHTML = `${studentId} &bull; ${fullName}`;
+            document.getElementById('headerProfilePhoto').src = userPhoto;
+
+            document.getElementById('slipStudentId').innerText = studentId;
+            document.getElementById('slipName').innerText = fullName;
+            document.getElementById('slipIcNo').innerText = icNo;
+            document.getElementById('slipContact').innerText = contactText;
+            document.getElementById('slipCampus').innerText = campus;
+            document.getElementById('slipFaculty').innerText = faculty;
+            document.getElementById('slipProgramme').innerText = programmeDisplay;
+            document.getElementById('slipProgramLevel').innerText = programLevel;
+            document.getElementById('slipPlanId').innerText = planId;
+            document.getElementById('slipStudyMode').innerText = studyMode;
+            document.getElementById('slipPart').innerText = partValue;
+            document.getElementById('slipProcessStatus').innerText = processStatus;
+            document.getElementById('slipAcademicFees').innerText = academicFees;
+            document.getElementById('slipSemesterIntake').innerText = semesterIntake;
+            document.getElementById('slipLecturerName').innerText = lecturerName;
+
+            const tbody = document.getElementById('summaryTableBody');
+            const totalCreditEl = document.getElementById('summaryTotalCredit');
+            const printDateEl = document.getElementById('printDate');
+            const bannerEl = document.getElementById('summarySyncBanner');
+
+            const courses = (matchesActiveSlip && Array.isArray(slipData.courses)) ? slipData.courses : [];
+
+            if (courses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="border border-slate-400 py-6 px-3 text-center text-slate-500">
+                            No courses confirmed from <a href="e_academic.html" class="underline font-bold text-uitmpurple">e-Academic (Register)</a> yet.
+                        </td>
+                    </tr>
+                `;
+                totalCreditEl.innerText = '0.0';
+                printDateEl.innerText = '-';
+                if (bannerEl) {
+                    bannerEl.innerText = `Active programme: ${chosenProgramCode} (${faculty}) • Lecturer: ${lecturerName} • No courses confirmed in e-Academic yet.`;
+                }
+                return;
+            }
+
+            let sumCredits = 0;
+            tbody.innerHTML = courses.map((course, idx) => {
+                const creditNum = parseFloat(course.credit) || 0;
+                sumCredits += creditNum;
+                return `
+                    <tr>
+                        <td class="border border-slate-400 py-1.5 px-2 text-center font-bold">${idx + 1}</td>
+                        <td class="border border-slate-400 py-1.5 px-3 font-semibold">${course.code} - ${course.title}</td>
+                        <td class="border border-slate-400 py-1.5 px-2 text-center font-semibold">${creditNum.toFixed(1)}</td>
+                        <td class="border border-slate-400 py-1.5 px-2 text-center font-semibold">${course.notaken || 1}</td>
+                        <td class="border border-slate-400 py-1.5 px-2 text-center font-bold">${course.group || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            const finalCredit = typeof slipData.totalCredit === 'number' ? slipData.totalCredit : sumCredits;
+            totalCreditEl.innerText = Number(finalCredit).toFixed(1);
+            printDateEl.innerText = slipData.datePrinted || '-';
+
+            if (bannerEl) {
+                bannerEl.innerText = `Selected programme: ${chosenProgramCode} (${faculty}) • ${courses.length} courses registered (${Number(finalCredit).toFixed(1)} Credits).`;
+            }
+        };
+    </script>
+</body>
+</html>

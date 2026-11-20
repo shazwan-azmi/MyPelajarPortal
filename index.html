@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | UiTM</title>
+    <link rel="icon" type="image/png" href="uitm.png">
+    <link rel="apple-touch-icon" href="uitm.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        uitmpurple: '#4b1d52',
+                        uitmgold: '#ffc627',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #ff1e8a 0%, #6824d8 52%, #1d1ee0 100%);
+            overflow-x: hidden;
+        }
+
+        /* Striped Circles Pattern */
+        .striped-circle {
+            background-image: repeating-linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.16) 0px,
+                rgba(255, 255, 255, 0.16) 3px,
+                transparent 3px,
+                transparent 9px
+            );
+            border-radius: 9999px;
+        }
+
+        /* Floating 3D Sphere */
+        .sphere-3d {
+            border-radius: 9999px;
+            background: radial-gradient(circle at 30% 25%, #38bdf8 0%, #3b38c9 58%, #db2777 100%);
+            box-shadow: 0 18px 35px rgba(15, 10, 45, 0.45), inset -6px -8px 18px rgba(255, 30, 138, 0.45);
+        }
+
+        .sphere-cyan {
+            border-radius: 9999px;
+            background: radial-gradient(circle at 35% 30%, #38bdf8 0%, #0284c7 65%, #1e3a8a 100%);
+            box-shadow: 0 20px 45px rgba(2, 132, 199, 0.35);
+        }
+
+        /* Dark Organic Shape Behind Card */
+        .liquid-blob {
+            background: linear-gradient(160deg, #1294f2 0%, #311b92 50%, #4a0e4e 100%);
+            border-radius: 42% 58% 65% 35% / 45% 40% 60% 55%;
+            box-shadow: 0 25px 50px rgba(15, 8, 45, 0.5);
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.13);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 25px 50px -12px rgba(12, 7, 38, 0.55);
+        }
+
+        /* Translucent Glass Input */
+        .glass-input {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+        }
+        .glass-input::placeholder {
+            color: rgba(255, 255, 255, 0.65);
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.28);
+            border-color: #ffc627;
+            outline: none;
+        }
+        .glass-input option {
+            background-color: #3b1763;
+            color: #ffffff;
+        }
+
+        /* Custom Scrollbar for Registration Form */
+        .glass-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .glass-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+        }
+        .glass-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 198, 39, 0.6);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-dvh flex items-center justify-center p-4 sm:p-6 relative overflow-x-hidden">
+
+    <!-- ================= 3D & ABSTRACT BACKGROUND ELEMENTS ================= -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="striped-circle w-48 h-48 absolute top-8 left-[10%]"></div>
+        <div class="striped-circle w-56 h-56 absolute top-[45%] left-[4%]"></div>
+        <div class="striped-circle w-44 h-44 absolute top-14 right-[10%]"></div>
+        <div class="striped-circle w-36 h-36 absolute bottom-6 right-[25%]"></div>
+
+        <div class="sphere-cyan w-64 h-64 absolute top-[14%] left-[12%] md:left-[22%]"></div>
+
+        <div class="liquid-blob w-[420px] h-[420px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="sphere-cyan w-44 h-44 rounded-full absolute bottom-[8%] left-[14%] md:left-[24%] opacity-90"></div>
+
+        <div class="sphere-3d w-20 h-20 absolute top-[10%] left-[38%]"></div>
+        <div class="sphere-3d w-11 h-11 absolute top-[7%] left-[52%]"></div>
+        <div class="sphere-3d w-16 h-16 absolute top-[24%] right-[25%]"></div>
+        <div class="sphere-3d w-32 h-32 absolute top-[38%] right-[14%] md:right-[20%]"></div>
+        <div class="sphere-3d w-16 h-16 absolute top-[50%] left-[18%] md:left-[26%]"></div>
+        <div class="sphere-3d w-20 h-20 absolute bottom-[8%] right-[33%]"></div>
+        <div class="sphere-3d w-9 h-9 absolute bottom-[12%] left-[38%]"></div>
+    </div>
+
+    <!-- ================= MAIN GLASSMORPHISM CARD ================= -->
+    <div class="glass-card rounded-[24px] sm:rounded-[28px] max-w-md w-full p-6 sm:p-8 md:p-10 relative z-10 my-4 sm:my-6 text-white">
+
+        <!-- Logo & Title -->
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-white p-1.5 shadow-lg ring-2 ring-uitmgold/70 flex items-center justify-center overflow-hidden">
+                <img src="uitm.png" alt="UiTM Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='logo.png';">
+            </div>
+            <h1 id="mainCardTitle" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow">Welcome To My Portal Student</h1>
+        </div>
+
+        <!-- ================= EXISTING USER LOGIN FORM ================= -->
+        <div id="loginCard">
+            <form action="#" method="POST" onsubmit="handleLogin(event)" class="space-y-4 text-xs">
+
+                <!-- SELECT SAVED ACCOUNT -->
+                <div id="savedAccountSection" class="hidden">
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <label class="block font-medium text-white/90">Saved Accounts</label>
+                        <button type="button" onclick="clearSavedAccountsExceptDefault()" class="text-uitmgold font-semibold hover:underline bg-transparent border-none cursor-pointer p-0 text-[11px] shrink-0">Reset Saved Accounts</button>
+                    </div>
+                    <select id="savedAccountsDropdown" onchange="selectSavedAccount(this.value)" class="glass-input w-full px-4 py-3 rounded-xl font-semibold transition-all cursor-pointer">
+                        <option value="">-- Select a saved account --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-white/90 mb-1.5">Student ID</label>
+                    <input type="text" id="studentId" name="username" autocomplete="username" oninput="autofillSavedPassword(this.value)" required placeholder="E.g.: 2026112309" class="glass-input w-full px-4 py-3 rounded-xl font-semibold transition-all">
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <label class="block font-medium text-white/90">Password</label>
+                        <button type="button" onclick="openForgotModal()" class="text-uitmgold font-semibold hover:underline bg-transparent border-none cursor-pointer p-0 text-[11px] shrink-0">Forgot Password?</button>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="••••••••" class="glass-input w-full pl-4 pr-11 py-3 rounded-xl font-semibold transition-all">
+                        <button type="button" onclick="togglePasswordVisibility('password', this)" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-white/80 hover:text-white cursor-pointer" title="Show Password">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-white/90 pt-0.5">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="rememberMe" class="w-4 h-4 accent-uitmgold rounded cursor-pointer" checked>
+                        <span class="font-medium">Auto-Save Password on Login</span>
+                    </label>
+                </div>
+
+                <p id="loginFeedback" class="hidden text-[11px] font-semibold rounded-xl px-3.5 py-2.5 bg-red-500/25 border border-red-300/40 text-red-100"></p>
+
+                <button type="submit" class="w-full py-3.5 bg-[#ffc107] hover:bg-[#ffca2c] text-white font-extrabold rounded-xl shadow-lg shadow-amber-500/30 transition-all text-sm tracking-wide mt-2 cursor-pointer">
+                    Login
+                </button>
+            </form>
+
+            <div class="text-center mt-6 pt-4 border-t border-white/15 text-xs text-white/85">
+                New student? <button type="button" onclick="toggleView('register')" class="text-white font-extrabold hover:text-uitmgold underline bg-transparent border-none cursor-pointer p-0 ml-1">Create Account here</button>
+            </div>
+        </div>
+
+        <!-- ================= NEW USER REGISTRATION FORM ================= -->
+        <div id="registerCard" class="hidden">
+            <p class="text-xs font-medium text-white/85 mb-3 text-center">New Student Registration — Fill All Details to Create Account</p>
+
+            <form onsubmit="handleRegister(event)" class="glass-scroll space-y-3 text-xs max-h-[58dvh] sm:max-h-[62vh] overflow-y-auto pr-1.5">
+                <!-- Upload New User Profile Picture -->
+                <div class="p-3 rounded-xl bg-white/10 border border-white/20 flex items-center gap-3">
+                    <img id="regPhotoPreview" src="uitm.png" alt="Preview" class="w-12 h-12 rounded-xl object-cover border border-uitmgold/60 shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <label class="block font-medium text-white/90 mb-1">Profile Picture *</label>
+                        <input type="file" id="regPhoto" accept="image/*" required onchange="handleRegPhotoChange(event)" class="block w-full text-[11px] text-white/80 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-uitmgold file:text-uitmpurple cursor-pointer">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-white/90 mb-1">Student ID *</label>
+                    <input type="text" id="regId" value="" required placeholder="Enter Student ID" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-white/90 mb-1">Full Name (As in IC) *</label>
+                    <input type="text" id="regName" value="" required placeholder="Enter Full Name" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold uppercase">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">IC Number *</label>
+                        <input type="text" id="regIcNumber" value="" required placeholder="12-digit IC Number" maxlength="14" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">Date of Birth (DOB) *</label>
+                        <input type="text" id="regDob" value="" required placeholder="DD/MM/YYYY" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">Programme Code *</label>
+                        <input type="text" id="regProgramme" value="" required placeholder="Programme Code" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold uppercase">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">Campus *</label>
+                        <input type="text" id="regCampus" value="" required placeholder="Campus Name" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">Mobile Phone No. *</label>
+                        <input type="text" id="regMobile" value="" required placeholder="Mobile Phone No." class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">MUET Status *</label>
+                        <input type="text" id="regMuet" value="" required placeholder="MUET Status" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">Part / Semester *</label>
+                        <input type="text" id="regPart" value="" required placeholder="Part / Semester" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">Lecturer Name *</label>
+                        <input type="text" id="regLecturer" value="" required placeholder="Lecturer Name" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-white/90 mb-1">Official Email *</label>
+                    <input type="email" id="regEmail" value="" required placeholder="Official Email" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">New Password *</label>
+                        <input type="password" id="regPass" value="" required placeholder="••••••••" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-white/90 mb-1">Confirm Password *</label>
+                        <input type="password" id="regConfirmPass" value="" required placeholder="••••••••" class="glass-input w-full px-3.5 py-2.5 rounded-xl font-semibold">
+                    </div>
+                </div>
+
+                <p id="registerFeedback" class="hidden text-[11px] font-semibold rounded-xl px-3.5 py-2.5 bg-red-500/25 border border-red-300/40 text-red-100"></p>
+
+                <button type="submit" class="w-full py-3.5 bg-[#ffc107] hover:bg-[#ffca2c] text-white font-extrabold rounded-xl shadow-lg shadow-amber-500/30 transition-all text-sm tracking-wide mt-2 cursor-pointer">
+                    Create New Account &rarr;
+                </button>
+            </form>
+
+            <div class="text-center mt-4 pt-3 border-t border-white/15 text-xs text-white/85">
+                Already registered? <button type="button" onclick="toggleView('login')" class="text-white font-extrabold hover:text-uitmgold underline bg-transparent border-none cursor-pointer p-0 ml-1">Login here</button>
+            </div>
+        </div>
+
+        <!-- Small Footer -->
+        <div class="text-center mt-5 pt-3 border-t border-white/10 text-[11px] text-white/60">
+            &copy; 2026 Universiti Teknologi MARA (UiTM) &bull; Student Portal
+        </div>
+    </div>
+
+    <!-- ================= FORGOT PASSWORD MODAL (AUTO-UPDATE PASSWORD) ================= -->
+    <div id="forgotModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="glass-card rounded-3xl p-5 sm:p-6 md:p-8 max-w-md w-full max-h-[90dvh] overflow-y-auto text-white">
+            <h3 class="text-base font-extrabold text-white mb-1">Forgot Password — Auto Update</h3>
+            <p class="text-xs text-white/80 mb-4">Enter your Student ID and new password to automatically update your account password.</p>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-medium text-white/90 mb-1">Student ID *</label>
+                    <input type="text" id="resetStudentId" placeholder="E.g.: 2026112309" class="glass-input w-full px-4 py-2.5 rounded-xl font-semibold">
+                </div>
+                <div>
+                    <label class="block font-medium text-white/90 mb-1">New Password *</label>
+                    <input type="password" id="resetNewPass" placeholder="••••••••" class="glass-input w-full px-4 py-2.5 rounded-xl font-semibold">
+                </div>
+                <div>
+                    <label class="block font-medium text-white/90 mb-1">Confirm New Password *</label>
+                    <input type="password" id="resetConfirmPass" placeholder="••••••••" class="glass-input w-full px-4 py-2.5 rounded-xl font-semibold">
+                </div>
+                <p id="resetFeedback" class="hidden text-[11px] font-semibold rounded-xl px-3.5 py-2.5 bg-red-500/25 border border-red-300/40 text-red-100"></p>
+            </div>
+
+            <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-6">
+                <button type="button" onclick="closeForgotModal()" class="w-full sm:w-auto px-4 py-2.5 bg-white/15 hover:bg-white/25 text-white font-bold rounded-xl text-xs cursor-pointer">Cancel</button>
+                <button type="button" onclick="submitResetPassword()" class="w-full sm:w-auto px-5 py-2.5 bg-[#ffc107] hover:bg-[#ffca2c] text-white font-extrabold rounded-xl text-xs shadow-lg cursor-pointer">Auto-Update Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        let regPhotoBase64 = '';
+        const DEFAULT_STUDENT_ID = '2026112309';
+        const DEFAULT_EXISTING_PASS = '123456';
+        const ONE_TIME_RESET_KEY = 'uitm_reset_saved_accounts_v1';
+
+        window.onload = function() {
+            if (!localStorage.getItem(ONE_TIME_RESET_KEY)) {
+                clearSavedAccountsExceptDefault();
+                localStorage.setItem(ONE_TIME_RESET_KEY, 'done');
+            } else {
+                seedDefaultExistingAccount();
+            }
+            loadSavedAccountsDropdown();
+        };
+
+        function clearRegisterFormFields() {
+            regPhotoBase64 = '';
+            const preview = document.getElementById('regPhotoPreview');
+            if (preview) preview.src = 'uitm.png';
+
+            ['regPhoto', 'regId', 'regName', 'regIcNumber', 'regDob', 'regProgramme', 'regCampus', 'regMobile', 'regMuet', 'regPart', 'regLecturer', 'regEmail', 'regPass', 'regConfirmPass'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+        }
+
+        function clearSavedAccountsExceptDefault() {
+            const existingAccounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
+            existingAccounts.forEach(id => {
+                if (String(id).trim() !== DEFAULT_STUDENT_ID) {
+                    localStorage.removeItem('uitm_user_' + id);
+                    localStorage.removeItem('uitm_pass_' + id);
+                    localStorage.removeItem('uitm_photo_' + id);
+                    localStorage.removeItem('uitm_dashboard_' + id);
+                }
+            });
+
+            Object.keys(localStorage).forEach(key => {
+                if (
+                    (key.startsWith('uitm_user_') && key !== 'uitm_user_' + DEFAULT_STUDENT_ID) ||
+                    (key.startsWith('uitm_pass_') && key !== 'uitm_pass_' + DEFAULT_STUDENT_ID) ||
+                    (key.startsWith('uitm_photo_') && key !== 'uitm_photo_' + DEFAULT_STUDENT_ID) ||
+                    (key.startsWith('uitm_dashboard_') && key !== 'uitm_dashboard_' + DEFAULT_STUDENT_ID)
+                ) {
+                    localStorage.removeItem(key);
+                }
+            });
+
+            localStorage.setItem('uitm_saved_accounts', JSON.stringify([DEFAULT_STUDENT_ID]));
+            localStorage.setItem('uitm_student_id', DEFAULT_STUDENT_ID);
+            localStorage.setItem('uitm_active_user', DEFAULT_STUDENT_ID);
+            seedDefaultExistingAccount();
+            loadSavedAccountsDropdown();
+            document.getElementById('studentId').value = DEFAULT_STUDENT_ID;
+            autofillSavedPassword(DEFAULT_STUDENT_ID);
+        }
+
+        function seedDefaultExistingAccount() {
+            let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
+            if (!accounts.includes(DEFAULT_STUDENT_ID)) {
+                accounts.push(DEFAULT_STUDENT_ID);
+                localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
+            }
+            if (!localStorage.getItem('uitm_user_' + DEFAULT_STUDENT_ID)) {
+                localStorage.setItem('uitm_user_' + DEFAULT_STUDENT_ID, JSON.stringify({
+                    id: DEFAULT_STUDENT_ID,
+                    studentId: DEFAULT_STUDENT_ID,
+                    name: 'MUHAMMAD SHAZWAN BIN AZMI',
+                    icNumber: '050803020829',
+                    icNo: '050803020829',
+                    dob: '03/08/2005',
+                    programme: 'SI262',
+                    program: 'SI262',
+                    campus: 'Kampus Uitm Puncak Perdana',
+                    part: '4',
+                    photo: 'wan profile.jpg'
+                }));
+            }
+            if (!localStorage.getItem('uitm_pass_' + DEFAULT_STUDENT_ID)) {
+                localStorage.setItem('uitm_pass_' + DEFAULT_STUDENT_ID, DEFAULT_EXISTING_PASS);
+            }
+        }
+
+        function setFeedback(elId, message) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            if (!message) {
+                el.textContent = '';
+                el.classList.add('hidden');
+                return;
+            }
+            el.textContent = message;
+            el.classList.remove('hidden');
+        }
+
+        function handleRegPhotoChange(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) {
+                regPhotoBase64 = '';
+                document.getElementById('regPhotoPreview').src = 'uitm.png';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                regPhotoBase64 = e.target.result;
+                document.getElementById('regPhotoPreview').src = regPhotoBase64;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.classList.add('text-uitmgold');
+            } else {
+                input.type = 'password';
+                btn.classList.remove('text-uitmgold');
+            }
+        }
+
+        function loadSavedAccountsDropdown() {
+            const accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
+            const dropdown = document.getElementById('savedAccountsDropdown');
+            const section = document.getElementById('savedAccountSection');
+
+            if (accounts.length > 0) {
+                section.classList.remove('hidden');
+                dropdown.innerHTML = '<option value="">-- Select a saved account --</option>';
+
+                accounts.forEach(id => {
+                    const userObj = JSON.parse(localStorage.getItem('uitm_user_' + id)) || {};
+                    const opt = document.createElement('option');
+                    opt.value = id;
+                    opt.textContent = userObj.name ? `${id} • ${userObj.name}` : `Student ID: ${id}`;
+                    dropdown.appendChild(opt);
+                });
+
+                const lastActive = localStorage.getItem('uitm_student_id');
+                if (lastActive && accounts.includes(lastActive)) {
+                    dropdown.value = lastActive;
+                    selectSavedAccount(lastActive);
+                }
+            } else {
+                section.classList.add('hidden');
+            }
+        }
+
+        function autofillSavedPassword(id) {
+            const cleanId = String(id || '').trim();
+            if (!cleanId) return;
+            const savedPass = localStorage.getItem('uitm_pass_' + cleanId);
+            if (savedPass) {
+                document.getElementById('password').value = savedPass;
+            }
+        }
+
+        function selectSavedAccount(id) {
+            setFeedback('loginFeedback', '');
+            if (!id) return;
+            document.getElementById('studentId').value = id;
+            autofillSavedPassword(id);
+            document.getElementById('rememberMe').checked = true;
+        }
+
+        function toggleView(view) {
+            const loginCard = document.getElementById('loginCard');
+            const registerCard = document.getElementById('registerCard');
+            const title = document.getElementById('mainCardTitle');
+
+            setFeedback('loginFeedback', '');
+            setFeedback('registerFeedback', '');
+
+            if (view === 'register') {
+                clearRegisterFormFields();
+                loginCard.classList.add('hidden');
+                registerCard.classList.remove('hidden');
+                title.innerText = 'Create New Account';
+            } else {
+                registerCard.classList.add('hidden');
+                loginCard.classList.remove('hidden');
+                title.innerText = 'Welcome To My Portal Student';
+                loadSavedAccountsDropdown();
+            }
+        }
+
+        function getAccountPassword(studentId) {
+            const explicitPass = localStorage.getItem('uitm_pass_' + studentId);
+            if (explicitPass !== null) return explicitPass;
+            if (studentId === DEFAULT_STUDENT_ID) return DEFAULT_EXISTING_PASS;
+            return null;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            setFeedback('loginFeedback', '');
+
+            const studentId = document.getElementById('studentId').value.trim();
+            const password = document.getElementById('password').value;
+            const autoSaveEnabled = document.getElementById('rememberMe').checked;
+
+            const existingUser = JSON.parse(localStorage.getItem('uitm_user_' + studentId));
+            const storedPass = getAccountPassword(studentId);
+
+            if (!existingUser && studentId !== DEFAULT_STUDENT_ID) {
+                setFeedback('loginFeedback', 'Account not found. Please register a new account first.');
+                return;
+            }
+
+            if (storedPass === null || password !== storedPass) {
+                setFeedback('loginFeedback', 'Incorrect Student ID or password.');
+                return;
+            }
+
+            localStorage.setItem('uitm_active_user', studentId);
+
+            if (autoSaveEnabled) {
+                localStorage.setItem('uitm_student_id', studentId);
+                localStorage.setItem('uitm_pass_' + studentId, password);
+
+                let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
+                if (!accounts.includes(studentId)) {
+                    accounts.push(studentId);
+                    localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
+                }
+            }
+
+            window.location.href = 'dashboard.html';
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            setFeedback('registerFeedback', '');
+
+            const studentId = document.getElementById('regId').value.trim();
+            const name = document.getElementById('regName').value.trim().toUpperCase();
+            const icNumber = document.getElementById('regIcNumber').value.replace(/[^0-9]/g, '').trim();
+            const dob = document.getElementById('regDob').value.trim();
+            const programme = document.getElementById('regProgramme').value.trim().toUpperCase();
+            const campus = document.getElementById('regCampus').value.trim();
+            const mobile = document.getElementById('regMobile').value.trim();
+            const muet = document.getElementById('regMuet').value.trim();
+            const part = document.getElementById('regPart').value.trim();
+            const lecturerName = document.getElementById('regLecturer').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPass').value;
+            const confirmPass = document.getElementById('regConfirmPass').value;
+
+            if (!studentId || !name || !icNumber || !dob || !programme || !campus || !mobile || !muet || !part || !lecturerName || !email || !pass || !confirmPass) {
+                setFeedback('registerFeedback', 'Please fill in all required account details.');
+                return;
+            }
+
+            if (icNumber.length < 12) {
+                setFeedback('registerFeedback', 'Please enter a valid 12-digit IC Number.');
+                return;
+            }
+
+            if (!regPhotoBase64) {
+                setFeedback('registerFeedback', 'Please upload a profile picture for your new account.');
+                return;
+            }
+
+            if (pass !== confirmPass) {
+                setFeedback('registerFeedback', 'Password and Confirm Password do not match.');
+                return;
+            }
+
+            const userData = {
+                id: studentId,
+                studentId: studentId,
+                name: name,
+                icNumber: icNumber,
+                icNo: icNumber,
+                ic: icNumber,
+                dob: dob,
+                programme: programme,
+                program: programme,
+                campus: campus,
+                mobile: mobile,
+                muet: muet,
+                part: part,
+                lecturerName: lecturerName,
+                advisor: lecturerName,
+                email: email,
+                photo: regPhotoBase64
+            };
+
+            localStorage.removeItem('uitm_dashboard_state');
+            localStorage.removeItem('uitm_registered_courses_slip');
+            localStorage.setItem('uitm_selected_program', programme);
+
+            localStorage.setItem('uitm_user_' + studentId, JSON.stringify(userData));
+            localStorage.setItem('uitm_photo_' + studentId, regPhotoBase64);
+            localStorage.setItem('uitm_pass_' + studentId, pass);
+            localStorage.setItem('uitm_student_id', studentId);
+            localStorage.setItem('uitm_active_user', studentId);
+
+            let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
+            if (!accounts.includes(studentId)) {
+                accounts.push(studentId);
+                localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
+            }
+
+            window.location.href = 'dashboard.html';
+        }
+
+        function openForgotModal() {
+            setFeedback('resetFeedback', '');
+            const currentId = document.getElementById('studentId').value.trim();
+            if (currentId) {
+                document.getElementById('resetStudentId').value = currentId;
+            }
+            document.getElementById('resetNewPass').value = '';
+            document.getElementById('resetConfirmPass').value = '';
+            document.getElementById('forgotModal').classList.remove('hidden');
+            document.getElementById('forgotModal').classList.add('flex');
+        }
+
+        function closeForgotModal() {
+            setFeedback('resetFeedback', '');
+            document.getElementById('forgotModal').classList.remove('flex');
+            document.getElementById('forgotModal').classList.add('hidden');
+        }
+
+        function submitResetPassword() {
+            setFeedback('resetFeedback', '');
+
+            const studentId = document.getElementById('resetStudentId').value.trim();
+            const newPass = document.getElementById('resetNewPass').value;
+            const confirmPass = document.getElementById('resetConfirmPass').value;
+
+            if (!studentId || !newPass || !confirmPass) {
+                setFeedback('resetFeedback', 'Please fill in Student ID and both password fields.');
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                setFeedback('resetFeedback', 'New passwords do not match.');
+                return;
+            }
+
+            localStorage.setItem('uitm_pass_' + studentId, newPass);
+            localStorage.setItem('uitm_student_id', studentId);
+
+            let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
+            if (!accounts.includes(studentId)) {
+                accounts.push(studentId);
+                localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
+            }
+
+            document.getElementById('studentId').value = studentId;
+            document.getElementById('password').value = newPass;
+            document.getElementById('rememberMe').checked = true;
+
+            closeForgotModal();
+            loadSavedAccountsDropdown();
+            setFeedback('loginFeedback', '');
+        }
+    </script>
+</body>
+</html>

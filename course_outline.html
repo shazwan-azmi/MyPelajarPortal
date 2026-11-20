@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Outline | UiTM Student Portal</title>
+    <link rel="icon" type="image/png" href="uitm.png">
+    <link rel="apple-touch-icon" href="uitm.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        uitmpurple: '#4b1d52',
+                        uitmgold: '#ffc627',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* Clean dark glass sidebar when Dark Mode is active */
+        html.dark #mainSidebar,
+        body.theme-dark #mainSidebar {
+            background-color: rgba(15, 23, 42, 0.85);
+            background-image: none;
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+        }
+
+        @media (min-width: 1024px) {
+            html.dark #mainSidebar,
+            body.theme-dark #mainSidebar {
+                background-color: rgba(15, 23, 42, 0.68);
+            }
+        }
+
+        /* Glow effect on sidebar sections/items when clicked or selected */
+        .sidebar-glow-item {
+            transition: transform 0.18s ease,
+                        background-color 0.2s ease,
+                        box-shadow 0.22s ease,
+                        color 0.2s ease,
+                        border-color 0.2s ease;
+        }
+
+        .sidebar-glow-item.is-glowing {
+            transform: scale(0.985);
+            background-color: rgba(255, 198, 39, 0.16) !important;
+            color: #ffc627 !important;
+            box-shadow:
+                0 0 18px rgba(255, 198, 39, 0.35),
+                0 0 28px rgba(168, 85, 247, 0.22),
+                inset 0 0 10px rgba(255, 198, 39, 0.14);
+        }
+
+        .sidebar-glow-item.is-active-glow {
+            box-shadow:
+                0 0 14px rgba(255, 198, 39, 0.22),
+                inset 0 0 8px rgba(255, 198, 39, 0.08);
+        }
+
+        .logout-glow-item.is-glowing {
+            background-color: rgba(239, 68, 68, 0.28) !important;
+            color: #ffffff !important;
+            box-shadow:
+                0 0 20px rgba(248, 113, 113, 0.45),
+                inset 0 0 10px rgba(254, 202, 202, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex h-screen overflow-hidden transition-colors duration-200">
+
+    <!-- MOBILE BACKDROP -->
+    <div id="sidebarBackdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-20 hidden lg:hidden"></div>
+
+    <!-- CONSISTENT SIDEBAR -->
+    <aside id="mainSidebar" class="w-72 bg-gradient-to-b from-uitmpurple via-purple-950 to-slate-900 text-white fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static flex flex-col shadow-2xl z-30 transition-transform duration-200 shrink-0">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg bg-white flex items-center justify-center shrink-0">
+                    <img id="sidebarLogoImg" src="uitm.png" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <div class="min-w-0">
+                    <h2 class="text-sm font-bold tracking-wide truncate">Course Outline</h2>
+                    <p class="text-[10px] text-purple-300/80 font-medium uppercase tracking-widest truncate">Course Outline</p>
+                </div>
+            </div>
+            <button type="button" onclick="toggleMobileSidebar(false)" aria-label="Close menu" class="lg:hidden text-purple-200 hover:text-white p-1.5 rounded-lg cursor-pointer shrink-0">
+                ✕
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto text-xs font-medium">
+            <a href="dashboard.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>🏠</span> Home
+            </a>
+            <a href="pelajar.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>👥</span> Student Directory
+            </a>
+            <a href="course_outline.html" class="sidebar-glow-item is-active-glow flex items-center gap-3 px-4 py-3 bg-white/15 border-l-4 border-uitmgold rounded-r-xl text-uitmgold font-bold shadow-inner">
+                <span>📖</span> Course Outline
+            </a>
+            <a href="e_academic.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>📚</span> e-Academic Register
+            </a>
+            <a href="course_summary.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>📄</span> Course Summary
+            </a>
+            <a href="analytics.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>📊</span> Analytics
+            </a>
+            <a href="https://library.uitm.edu.my/" target="_blank" rel="noopener noreferrer" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>💻</span> Digital Library
+            </a>
+            <a href="student_card.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>🆔</span> Student Card
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-white/10">
+            <a href="index.html" class="sidebar-glow-item logout-glow-item flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold border border-red-500/20">
+                🚪 Log Out
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto overflow-x-hidden min-w-0">
+
+        <!-- TOP HEADER -->
+        <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex justify-between items-center z-10 sticky top-0 shadow-sm transition-colors duration-200">
+            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <button type="button" onclick="toggleMobileSidebar(true)" aria-label="Open navigation menu" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-uitmpurple dark:text-uitmgold cursor-pointer shrink-0">
+                    ☰
+                </button>
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="text-uitmpurple dark:text-uitmgold font-black tracking-tighter text-lg shrink-0">MyPelajarPortal</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-widest hidden sm:inline truncate">Universiti Teknologi MARA</span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2.5 sm:space-x-4 shrink-0">
+                <div class="text-right hidden md:block">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">WELCOME</p>
+                    <p class="text-xs font-extrabold text-slate-800 dark:text-slate-100" id="headerWelcome">2026112309 • MUHAMMAD SHAZWAN</p>
+                </div>
+
+                <!-- Small Theme Toggle Icon (Light / Dark Mode) -->
+                <button
+                    type="button"
+                    id="themeIconBtn"
+                    onclick="toggleMyPelajarTheme()"
+                    aria-label="Toggle Light or Dark Mode theme"
+                    title="Toggle Theme (Light / Dark)"
+                    class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0"
+                >
+                    <svg id="iconMoon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
+                    </svg>
+                    <svg id="iconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" />
+                    </svg>
+                </button>
+
+                <div class="w-9 h-9 rounded-full overflow-hidden shadow-md border-2 border-uitmgold/50 flex items-center justify-center shrink-0">
+                    <img id="headerProfilePhoto" src="wan profile.jpg" alt="Profile" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN SYLLABUS TABLE CONTENT -->
+        <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full">
+
+            <div class="mb-5 flex flex-col sm:flex-row sm:flex-wrap justify-between items-start sm:items-end gap-4">
+                <div class="min-w-0">
+                    <h2 id="pageHeading" class="text-lg sm:text-xl font-extrabold text-slate-800 dark:text-white">Course Outline / Programme Syllabus</h2>
+                    <p id="pageSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Filter by programme, part, status, or course keywords so you do not have to scroll endlessly.</p>
+                </div>
+
+                <!-- PROGRAM CODE SELECTOR BOX ONLY -->
+                <div class="relative inline-flex items-center bg-purple-100 dark:bg-purple-950/80 text-uitmpurple dark:text-uitmgold text-xs font-extrabold rounded-xl border border-purple-200 dark:border-purple-800/60 shadow-xs hover:border-uitmpurple/50 dark:hover:border-uitmgold/60 transition-all shrink-0">
+                    <span class="pl-3.5 pr-1 py-1.5 select-none pointer-events-none">
+                        Programme:
+                    </span>
+                    <select
+                        id="programCodeSelector"
+                        onchange="onProgramChange()"
+                        aria-label="Select programme code"
+                        class="appearance-none bg-transparent text-uitmpurple dark:text-uitmgold font-extrabold pr-8 pl-1 py-1.5 rounded-r-xl focus:outline-none cursor-pointer"
+                    >
+                        <option value="SI261" class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-bold">SI261</option>
+                        <option value="SI262" class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-bold">SI262</option>
+                        <option value="SI263" class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-bold">SI263</option>
+                        <option value="AM238" class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-bold">AM238</option>
+                        <option value="BA273" class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-bold">BA273</option>
+                    </select>
+                    <svg class="w-3.5 h-3.5 absolute right-2.5 pointer-events-none text-uitmpurple dark:text-uitmgold" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- SEARCH & FILTER PANEL -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mb-4 shadow-xs transition-colors duration-200">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 items-center">
+                    <!-- Course Code / Name Search Box -->
+                    <div class="sm:col-span-2 md:col-span-6 relative">
+                        <span class="absolute inset-y-0 left-3.5 flex items-center text-slate-400 pointer-events-none text-sm">🔍</span>
+                        <input
+                            type="text"
+                            id="courseSearchInput"
+                            oninput="onFilterChange()"
+                            placeholder="Search course code or title (e.g. IMR461, ARCHIVAL, MANDARIN)..."
+                            class="w-full pl-9 pr-4 py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-uitmpurple/30 dark:focus:ring-uitmgold/40 transition-all"
+                        >
+                    </div>
+
+                    <!-- Filter by Part -->
+                    <div class="md:col-span-3">
+                        <select
+                            id="partFilterSelect"
+                            onchange="onFilterChange()"
+                            aria-label="Filter by Part"
+                            class="w-full px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-uitmpurple/30 dark:focus:ring-uitmgold/40 cursor-pointer transition-all"
+                        >
+                            <option value="ALL">All Parts</option>
+                            <option value="01">Part 01</option>
+                            <option value="02">Part 02</option>
+                            <option value="03">Part 03</option>
+                            <option value="04">Part 04</option>
+                            <option value="05">Part 05</option>
+                            <option value="06">Part 06</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter by Status -->
+                    <div class="md:col-span-3">
+                        <select
+                            id="statusFilterSelect"
+                            onchange="onFilterChange()"
+                            aria-label="Filter by Status"
+                            class="w-full px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-uitmpurple/30 dark:focus:ring-uitmgold/40 cursor-pointer transition-all"
+                        >
+                            <option value="ALL">All Statuses</option>
+                            <option value="Elective">Elective</option>
+                            <option value="Core">Core / Required (-)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- "SHOW PER PAGE" BAR & RECORD SUMMARY -->
+            <div class="mb-3 flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-2.5 sm:gap-3 px-1">
+                <div class="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+                    <span>Show per page:</span>
+                    <select
+                        id="pageSizeSelect"
+                        onchange="onFilterChange()"
+                        aria-label="Number of records per page"
+                        class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-bold text-xs focus:outline-none focus:ring-2 focus:ring-uitmpurple/30 cursor-pointer"
+                    >
+                        <option value="10" selected>10 Records</option>
+                        <option value="15">15 Records</option>
+                        <option value="20">20 Records</option>
+                        <option value="ALL">All Records</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <span id="courseCountBadge" class="bg-purple-100 dark:bg-purple-950/80 text-uitmpurple dark:text-uitmgold text-xs font-extrabold px-3 py-1 rounded-xl">
+                        0 Courses • 0.0 Credits
+                    </span>
+                    <span id="recordRangeInfo" class="text-xs font-medium text-slate-500 dark:text-slate-400">
+                        Showing 0 to 0 of 0 records
+                    </span>
+                </div>
+            </div>
+
+            <!-- Official Reference Table -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-xl shadow-purple-950/5 border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors duration-200">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-purple-900 dark:bg-purple-950 text-white text-xs uppercase tracking-wider font-bold">
+                                <th class="py-3.5 sm:py-4 px-3 sm:px-6 text-center w-14 sm:w-16">No.</th>
+                                <th class="py-3.5 sm:py-4 px-3 sm:px-6 w-28 sm:w-32">Course Code</th>
+                                <th class="py-3.5 sm:py-4 px-3 sm:px-6">Course Title</th>
+                                <th class="py-3.5 sm:py-4 px-3 sm:px-6 text-center w-24 sm:w-28">Credit</th>
+                                <th class="py-3.5 sm:py-4 px-3 sm:px-6 text-center w-24 sm:w-28">Part</th>
+                                <th class="py-3.5 sm:py-4 px-3 sm:px-6 text-center w-28 sm:w-32">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courseTableBody" class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BOTTOM PAGINATION -->
+            <div id="paginationBar" class="mt-5 flex flex-col sm:flex-row sm:flex-wrap items-center justify-between gap-3 px-1">
+                <p id="pageSummaryText" class="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    Page 1 of 1
+                </p>
+                <div id="paginationButtons" class="flex flex-wrap items-center justify-center gap-1.5">
+                    <!-- Page buttons generated dynamically -->
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center py-4 px-4 mt-auto text-xs text-slate-500 dark:text-slate-400 transition-colors duration-200">
+            &copy; 2026 Universiti Teknologi MARA (UiTM) &bull; MyPelajarPortal.
+        </footer>
+    </div>
+
+    <script>
+        /* =====================================================================
+           COURSE OUTLINE DATA BY PROGRAMME CODE (SI261 FIRST & IN SEQUENCE)
+           ===================================================================== */
+        const PROGRAM_OUTLINES = {
+            SI261: [
+                { no: '1.', code: 'CTU552', title: 'PHILOSOPHY AND CURRENT ISSUES', credit: '2.0', part: '01', status: '' },
+                { no: '2.', code: 'HBU111', title: 'NATIONAL KESATRIA I', credit: '1.0', part: '01', status: 'Elective' },
+                { no: '3.', code: 'IMC401', title: 'FOUNDATION OF INFORMATION AND COMMUNICATIONS TECHNOLOGY', credit: '3.0', part: '01', status: '' },
+                { no: '4.', code: 'IMC411', title: 'DATABASE MANAGEMENT SYSTEM', credit: '3.0', part: '01', status: '' },
+                { no: '5.', code: 'IMC412', title: 'FUNDAMENTALS OF INFORMATION SCIENCE', credit: '3.0', part: '01', status: '' },
+                { no: '6.', code: 'IMC413', title: 'INFORMATION STORAGE & RETRIEVAL SYSTEMS', credit: '3.0', part: '01', status: '' },
+                { no: '7.', code: 'IMC414', title: 'DIGITAL CITIZENSHIP AND SOCIAL MEDIA', credit: '2.0', part: '01', status: '' },
+                { no: '8.', code: 'IMC451', title: 'ORGANIZATION OF INFORMATION', credit: '3.0', part: '01', status: '' },
+                { no: '9.', code: 'CTU554', title: 'VALUES AND CIVILIZATION II', credit: '2.0', part: '02', status: '' },
+                { no: '10.', code: 'HBU121', title: 'NATIONAL KESATRIA II', credit: '1.0', part: '02', status: 'Elective' },
+                { no: '11.', code: 'IMC452', title: 'INTRODUCTION TO METADATA', credit: '3.0', part: '02', status: '' },
+                { no: '12.', code: 'IMR461', title: 'MODERN RECORD MANAGEMENT AND SERVICES', credit: '3.0', part: '02', status: '' },
+                { no: '13.', code: 'IMR462', title: 'ARCHIVAL REPOSITORY AND DISASTER MANAGEMENT', credit: '3.0', part: '02', status: '' },
+                { no: '14.', code: 'IMR463', title: 'MEDIA ARCHIVING', credit: '3.0', part: '02', status: '' },
+                { no: '15.', code: 'MGT400', title: 'INTRODUCTION TO MANAGEMENT', credit: '3.0', part: '02', status: '' },
+                { no: '16.', code: 'TMC401', title: 'INTRODUCTORY MANDARIN (LEVEL I)', credit: '2.0', part: '02', status: 'Elective' },
+                { no: '17.', code: 'ENT530', title: 'PRINCIPLES OF ENTREPRENEURSHIP', credit: '3.0', part: '03', status: '' },
+                { no: '18.', code: 'HBU131', title: 'NATIONAL KESATRIA III', credit: '1.0', part: '03', status: 'Elective' },
+                { no: '19.', code: 'IMC501', title: 'INFORMATION ANALYTICS', credit: '3.0', part: '03', status: '' },
+                { no: '20.', code: 'IMR511', title: 'THEOLOGICAL INFORMATION MANAGEMENT', credit: '3.0', part: '03', status: '' },
+                { no: '21.', code: 'IMR512', title: 'FILE PLAN DEVELOPMENT AND APPRAISAL', credit: '3.0', part: '03', status: '' },
+                { no: '22.', code: 'IMR533', title: 'INFORMATION ETHICS AND LAW', credit: '3.0', part: '03', status: 'Elective' },
+                { no: '23.', code: 'LCC402', title: 'ENGLISH FOR ORAL REPORTING', credit: '2.0', part: '03', status: '' },
+                { no: '24.', code: 'TMC451', title: 'INTRODUCTORY MANDARIN (LEVEL II)', credit: '2.0', part: '03', status: 'Elective' },
+                { no: '25.', code: 'IMR541', title: 'HEALTH INFORMATION MANAGEMENT', credit: '3.0', part: '04', status: '' },
+                { no: '26.', code: 'IMR542', title: 'RECORDS AND INFORMATION GOVERNANCE', credit: '3.0', part: '04', status: '' },
+                { no: '27.', code: 'IMR543', title: 'DIGITAL INFORMATION FORENSICS', credit: '3.0', part: '04', status: '' },
+                { no: '28.', code: 'IMR544', title: 'ARCHIVAL PRESERVATION AND TECHNIQUES', credit: '4.0', part: '04', status: '' },
+                { no: '29.', code: 'IMS561', title: 'WEB PUBLISHING', credit: '3.0', part: '04', status: 'Elective' },
+                { no: '30.', code: 'LCC501', title: 'ENGLISH FOR PROFESSIONAL CORRESPONDENCE', credit: '2.0', part: '04', status: '' },
+                { no: '31.', code: 'TMC501', title: 'INTRODUCTORY MANDARIN (LEVEL III)', credit: '2.0', part: '04', status: 'Elective' },
+                { no: '32.', code: 'EET699', title: 'ENGLISH EXIT TEST', credit: '0.0', part: '05', status: '' },
+                { no: '33.', code: 'ICM573', title: 'CORPORATE COMMUNICATION FOR INFORMATION PROFESSIONAL', credit: '3.0', part: '05', status: 'Elective' },
+                { no: '34.', code: 'IML511', title: 'OUTREACH AND COMMUNITY SERVICES FOR INFORMATION PROFESSIONALS', credit: '3.0', part: '05', status: 'Elective' },
+                { no: '35.', code: 'IMR605', title: 'ARCHIVAL ARRANGEMENT AND DESCRIPTION', credit: '3.0', part: '05', status: '' },
+                { no: '36.', code: 'IMR621', title: 'ORAL HISTORY AND DOCUMENTATION OF CULTURAL HERITAGE', credit: '4.0', part: '05', status: '' },
+                { no: '37.', code: 'IMR623', title: 'ELECTRONIC RECORDS MANAGEMENT', credit: '3.0', part: '05', status: '' },
+                { no: '38.', code: 'IMR624', title: 'RESEARCH AND DEVELOPMENT IN RECORDS MANAGEMENT AND ARCHIVES ADMINISTRATION', credit: '4.0', part: '05', status: '' },
+                { no: '39.', code: 'IMC690', title: 'INDUSTRIAL TRAINING', credit: '12.0', part: '06', status: '' },
+                { no: '40.', code: 'IMR680', title: 'RECORDS MANAGEMENT PROJECT', credit: '8.0', part: '06', status: '' }
+            ],
+            SI262: [
+                { no: '1.', code: 'CTU552', title: 'PHILOSOPHY AND CURRENT ISSUES', credit: '2.0', part: '01', status: '' },
+                { no: '2.', code: 'HBU111', title: 'NATIONAL KESATRIA I', credit: '1.0', part: '01', status: 'Elective' },
+                { no: '3.', code: 'IMC401', title: 'FOUNDATION OF INFORMATION AND COMMUNICATIONS TECHNOLOGY', credit: '3.0', part: '01', status: '' },
+                { no: '4.', code: 'IMC411', title: 'DATABASE MANAGEMENT SYSTEM', credit: '3.0', part: '01', status: '' },
+                { no: '5.', code: 'IMC412', title: 'FUNDAMENTALS OF INFORMATION SCIENCE', credit: '3.0', part: '01', status: '' },
+                { no: '6.', code: 'IMC413', title: 'INFORMATION STORAGE & RETRIEVAL SYSTEMS', credit: '3.0', part: '01', status: '' },
+                { no: '7.', code: 'IMC414', title: 'DIGITAL CITIZENSHIP AND SOCIAL MEDIA', credit: '2.0', part: '01', status: '' },
+                { no: '8.', code: 'IMC451', title: 'ORGANIZATION OF INFORMATION', credit: '3.0', part: '01', status: '' },
+                { no: '9.', code: 'CTU554', title: 'VALUES AND CIVILIZATION II', credit: '2.0', part: '02', status: '' },
+                { no: '10.', code: 'HBU121', title: 'NATIONAL KESATRIA II', credit: '1.0', part: '02', status: 'Elective' },
+                { no: '11.', code: 'IMC452', title: 'INTRODUCTION TO METADATA', credit: '3.0', part: '02', status: '' },
+                { no: '12.', code: 'IMS450', title: 'PROBLEM SOLVING AND PROGRAM DESIGN 1', credit: '3.0', part: '02', status: '' },
+                { no: '13.', code: 'IMS457', title: 'MULTIMEDIA FOR INFORMATION PROFESSIONALS', credit: '3.0', part: '02', status: '' },
+                { no: '14.', code: 'IMS458', title: 'WEB DESIGN AND DEVELOPMENT', credit: '3.0', part: '02', status: '' },
+                { no: '15.', code: 'MGT400', title: 'INTRODUCTION TO MANAGEMENT', credit: '3.0', part: '02', status: '' },
+                { no: '16.', code: 'TMC401', title: 'INTRODUCTORY MANDARIN (LEVEL I)', credit: '2.0', part: '02', status: 'Elective' },
+                { no: '17.', code: 'ENT530', title: 'PRINCIPLES OF ENTREPRENEURSHIP', credit: '3.0', part: '03', status: '' },
+                { no: '18.', code: 'HBU131', title: 'NATIONAL KESATRIA III', credit: '1.0', part: '03', status: 'Elective' },
+                { no: '19.', code: 'IMC501', title: 'INFORMATION ANALYTICS', credit: '3.0', part: '03', status: '' },
+                { no: '20.', code: 'IMR533', title: 'INFORMATION ETHICS AND LAW', credit: '3.0', part: '03', status: 'Elective' },
+                { no: '21.', code: 'IMS511', title: 'PROBLEM SOLVING AND PROGRAM DESIGN 2', credit: '3.0', part: '03', status: '' },
+                { no: '22.', code: 'IMS555', title: 'DECISION THEORY', credit: '3.0', part: '03', status: '' },
+                { no: '23.', code: 'LCC402', title: 'ENGLISH FOR ORAL REPORTING', credit: '2.0', part: '03', status: '' },
+                { no: '24.', code: 'TMC451', title: 'INTRODUCTORY MANDARIN (LEVEL II)', credit: '2.0', part: '03', status: 'Elective' },
+                { no: '25.', code: 'IMS560', title: 'ADVANCED DATABASE MANAGEMENT SYSTEM', credit: '3.0', part: '04', status: '' },
+                { no: '26.', code: 'IMS561', title: 'WEB PUBLISHING', credit: '3.0', part: '04', status: 'Elective' },
+                { no: '27.', code: 'IMS564', title: 'USER EXPERIENCE DESIGN', credit: '3.0', part: '04', status: '' },
+                { no: '28.', code: 'IMS565', title: 'INFORMATION SYSTEM PROJECT MANAGEMENT', credit: '3.0', part: '04', status: '' },
+                { no: '29.', code: 'IMS566', title: 'ADVANCED WEB DESIGN DEVELOPMENT AND CONTENT MANAGEMENT', credit: '4.0', part: '04', status: '' },
+                { no: '30.', code: 'LCC501', title: 'ENGLISH FOR PROFESSIONAL CORRESPONDENCE', credit: '2.0', part: '04', status: '' },
+                { no: '31.', code: 'TMC501', title: 'INTRODUCTORY MANDARIN (LEVEL III)', credit: '2.0', part: '04', status: 'Elective' },
+                { no: '32.', code: 'EET699', title: 'ENGLISH EXIT TEST', credit: '0.0', part: '05', status: '' },
+                { no: '33.', code: 'ICM573', title: 'CORPORATE COMMUNICATION FOR INFORMATION PROFESSIONAL', credit: '3.0', part: '05', status: 'Elective' },
+                { no: '34.', code: 'IML511', title: 'OUTREACH AND COMMUNITY SERVICES FOR INFORMATION PROFESSIONALS', credit: '3.0', part: '05', status: 'Elective' },
+                { no: '35.', code: 'IMS552', title: 'INFORMATION SYSTEMS MANAGEMENT', credit: '3.0', part: '05', status: '' },
+                { no: '36.', code: 'IMS610', title: 'DESIGN SCIENCE RESEARCH FOR INFORMATION SYSTEMS', credit: '4.0', part: '05', status: '' },
+                { no: '37.', code: 'IMS611', title: 'SYSTEMS ANALYSIS AND DESIGN IN INFORMATION MANAGEMENT', credit: '4.0', part: '05', status: '' },
+                { no: '38.', code: 'IMS613', title: 'DATA CENTER OPERATIONS AND INFRASTRUCTURE', credit: '3.0', part: '05', status: '' },
+                { no: '39.', code: 'IMC690', title: 'INDUSTRIAL TRAINING', credit: '12.0', part: '06', status: '' },
+                { no: '40.', code: 'IMS568', title: 'INFORMATION MANAGEMENT SYSTEM PROJECT (CAPSTONE)', credit: '8.0', part: '06', status: '' }
+            ],
+            SI263: [
+                { no: '1.', code: 'CTU552', title: 'PHILOSOPHY AND CURRENT ISSUES', credit: '2.0', part: '01', status: '' },
+                { no: '2.', code: 'HBU111', title: 'NATIONAL KESATRIA I', credit: '1.0', part: '01', status: 'Elective' },
+                { no: '3.', code: 'IMC401', title: 'FOUNDATION OF INFORMATION AND COMMUNICATIONS TECHNOLOGY', credit: '3.0', part: '01', status: '' },
+                { no: '4.', code: 'IMC411', title: 'DATABASE MANAGEMENT SYSTEM', credit: '3.0', part: '01', status: '' },
+                { no: '5.', code: 'IMC412', title: 'FUNDAMENTALS OF INFORMATION SCIENCE', credit: '3.0', part: '01', status: '' },
+                { no: '6.', code: 'IMC413', title: 'INFORMATION STORAGE & RETRIEVAL SYSTEMS', credit: '3.0', part: '01', status: '' },
+                { no: '7.', code: 'IMC414', title: 'DIGITAL CITIZENSHIP AND SOCIAL MEDIA', credit: '2.0', part: '01', status: '' },
+                { no: '8.', code: 'IMC451', title: 'ORGANIZATION OF INFORMATION', credit: '3.0', part: '01', status: '' },
+                { no: '9.', code: 'CTU554', title: 'VALUES AND CIVILIZATION II', credit: '2.0', part: '02', status: '' },
+                { no: '10.', code: 'HBU121', title: 'NATIONAL KESATRIA II', credit: '1.0', part: '02', status: 'Elective' },
+                { no: '11.', code: 'ICM455', title: 'DIGITAL CONTENT PUBLISHING', credit: '3.0', part: '02', status: '' },
+                { no: '12.', code: 'IMC452', title: 'INTRODUCTION TO METADATA', credit: '3.0', part: '02', status: '' },
+                { no: '13.', code: 'IMS457', title: 'MULTIMEDIA FOR INFORMATION PROFESSIONALS', credit: '3.0', part: '02', status: '' },
+                { no: '14.', code: 'IMS458', title: 'WEB DESIGN AND DEVELOPMENT', credit: '3.0', part: '02', status: '' },
+                { no: '15.', code: 'MGT400', title: 'INTRODUCTION TO MANAGEMENT', credit: '3.0', part: '02', status: '' },
+                { no: '16.', code: 'TMC401', title: 'INTRODUCTORY MANDARIN (LEVEL I)', credit: '2.0', part: '02', status: 'Elective' },
+                { no: '17.', code: 'ENT530', title: 'PRINCIPLES OF ENTREPRENEURSHIP', credit: '3.0', part: '03', status: '' },
+                { no: '18.', code: 'HBU131', title: 'NATIONAL KESATRIA III', credit: '1.0', part: '03', status: 'Elective' },
+                { no: '19.', code: 'ICM451', title: 'INFORMATION ARCHITECTURE', credit: '3.0', part: '03', status: '' },
+                { no: '20.', code: 'ICM454', title: 'OBJECT ORIENTED PROGRAMMING APPROACH', credit: '3.0', part: '03', status: '' },
+                { no: '21.', code: 'IMC501', title: 'INFORMATION ANALYTICS', credit: '3.0', part: '03', status: '' },
+                { no: '22.', code: 'IMR533', title: 'INFORMATION ETHICS AND LAW', credit: '3.0', part: '03', status: 'Elective' },
+                { no: '23.', code: 'LCC402', title: 'ENGLISH FOR ORAL REPORTING', credit: '2.0', part: '03', status: '' },
+                { no: '24.', code: 'TMC451', title: 'INTRODUCTORY MANDARIN (LEVEL II)', credit: '2.0', part: '03', status: 'Elective' },
+                { no: '25.', code: 'ICM549', title: 'DIGITAL ENTREPRENEURSHIP', credit: '3.0', part: '04', status: '' },
+                { no: '26.', code: 'ICM550', title: 'INTRODUCTION TO CONTENT MANAGEMENT SYSTEMS', credit: '4.0', part: '04', status: '' },
+                { no: '27.', code: 'ICM561', title: 'WEB ARCHIVING', credit: '3.0', part: '04', status: '' },
+                { no: '28.', code: 'IMS560', title: 'ADVANCED DATABASE MANAGEMENT SYSTEM', credit: '3.0', part: '04', status: '' },
+                { no: '29.', code: 'IMS561', title: 'WEB PUBLISHING', credit: '3.0', part: '04', status: 'Elective' },
+                { no: '30.', code: 'LCC501', title: 'ENGLISH FOR PROFESSIONAL CORRESPONDENCE', credit: '2.0', part: '04', status: '' },
+                { no: '31.', code: 'TMC501', title: 'INTRODUCTORY MANDARIN (LEVEL III)', credit: '2.0', part: '04', status: 'Elective' },
+                { no: '32.', code: 'EET699', title: 'ENGLISH EXIT TEST', credit: '0.0', part: '05', status: '' },
+                { no: '33.', code: 'ICM573', title: 'CORPORATE COMMUNICATION FOR INFORMATION PROFESSIONAL', credit: '3.0', part: '05', status: 'Elective' },
+                { no: '34.', code: 'ICM661', title: 'MOBILE APPLICATION AND CONTENT DEVELOPMENT', credit: '4.0', part: '05', status: '' },
+                { no: '35.', code: 'ICM663', title: 'WEB CONTENT SEARCH AND RETRIEVAL', credit: '3.0', part: '05', status: '' },
+                { no: '36.', code: 'ICM666', title: 'BLOCKCHAIN FOR CONTENT MANAGEMENT', credit: '3.0', part: '05', status: '' },
+                { no: '37.', code: 'ICM667', title: 'DIGITAL ASSET MANAGEMENT', credit: '4.0', part: '05', status: '' },
+                { no: '38.', code: 'IML511', title: 'OUTREACH AND COMMUNITY SERVICES FOR INFORMATION PROFESSIONALS', credit: '3.0', part: '05', status: 'Elective' },
+                { no: '39.', code: 'ICM658', title: 'DIGITAL INFORMATION CONTENT MANAGEMENT PROJECT', credit: '8.0', part: '06', status: '' },
+                { no: '40.', code: 'IMC690', title: 'INDUSTRIAL TRAINING', credit: '12.0', part: '06', status: '' }
+            ],
+            AM238: [
+                { no: '1.', code: 'ACC407', title: 'FUNDAMENTAL FINANCIAL ACCOUNTING AND REPORTING', credit: '3.0', part: '01', status: '' },
+                { no: '2.', code: 'ADS404', title: 'INTRODUCTION TO PUBLIC ADMINISTRATION', credit: '3.0', part: '01', status: '' },
+                { no: '3.', code: 'ADS408', title: 'INTRODUCTION TO MALAYSIAN PREMIERSHIP STUDIES', credit: '2.0', part: '01', status: '' },
+                { no: '4.', code: 'ADS460', title: 'MANAGEMENT PRINCIPLES AND PRACTICES', credit: '3.0', part: '01', status: '' },
+                { no: '5.', code: 'CTU552', title: 'PHILOSOPHY AND CURRENT ISSUES', credit: '2.0', part: '01', status: '' },
+                { no: '6.', code: 'HBU111', title: 'NATIONAL KESATRIA I', credit: '1.0', part: '01', status: 'Elective' },
+                { no: '7.', code: 'LAW445', title: 'MALAYSIAN LEGAL PRINCIPLES', credit: '3.0', part: '01', status: '' },
+                { no: '8.', code: 'MAT402', title: 'BUSINESS MATHEMATICS', credit: '3.0', part: '01', status: '' },
+                { no: '9.', code: 'ACC416', title: 'COST AND MANAGEMENT ACCOUNTING', credit: '3.0', part: '02', status: '' },
+                { no: '10.', code: 'ADM550', title: 'FUNDAMENTAL OF HUMAN RESOURCE MANAGEMENT', credit: '3.0', part: '02', status: '' },
+                { no: '11.', code: 'ADS409', title: 'PRINCIPLES OF QUALITY MANANGEMENT', credit: '2.0', part: '02', status: '' },
+                { no: '12.', code: 'ADS465', title: 'INDUSTRIAL RELATIONS', credit: '3.0', part: '02', status: '' },
+                { no: '13.', code: 'CTU554', title: 'VALUES AND CIVILIZATION II', credit: '2.0', part: '02', status: '' },
+                { no: '14.', code: 'ECO415', title: 'ECONOMICS', credit: '3.0', part: '02', status: '' },
+                { no: '15.', code: 'HBU121', title: 'NATIONAL KESATRIA II', credit: '1.0', part: '02', status: 'Elective' },
+                { no: '16.', code: 'LAW439', title: 'COMMERCIAL LAW', credit: '3.0', part: '02', status: '' },
+                { no: '17.', code: 'ADM501', title: 'ORGANIZATIONAL BEHAVIOR', credit: '3.0', part: '03', status: '' },
+                { no: '18.', code: 'ADM511', title: 'QUALITY MANAGEMENT IN ORGANIZATION', credit: '3.0', part: '03', status: 'Elective' },
+                { no: '19.', code: 'ENT530', title: 'PRINCIPLES OF ENTREPRENEURSHIP', credit: '3.0', part: '03', status: '' },
+                { no: '20.', code: 'HBU131', title: 'NATIONAL KESATRIA III', credit: '1.0', part: '03', status: 'Elective' },
+                { no: '21.', code: 'LAW507', title: 'ADMINISTRATIVE LAW FOR PUBLIC AUTHORITIES', credit: '3.0', part: '03', status: '' },
+                { no: '22.', code: 'LCC401', title: 'ENGLISH FOR MEDIATING TEXTS', credit: '2.0', part: '03', status: '' },
+                { no: '23.', code: 'STA404', title: 'STATISTICS FOR BUSINESS AND SOCIAL SCIENCES', credit: '3.0', part: '03', status: '' },
+                { no: '24.', code: 'TJC401', title: 'INTRODUCTORY JAPANESE (LEVEL I)', credit: '2.0', part: '03', status: 'Elective' },
+                { no: '25.', code: 'ADS452', title: 'ETHICS IN ADMINISTRATION', credit: '4.0', part: '04', status: '' },
+                { no: '26.', code: 'ADS510', title: 'INTERNATIONAL RELATIONS', credit: '3.0', part: '04', status: '' },
+                { no: '27.', code: 'ADS514', title: 'INTRODUCTION TO PUBLIC POLICY', credit: '3.0', part: '04', status: '' },
+                { no: '28.', code: 'CSC408', title: 'MANAGEMENT INFORMATION SYSTEM', credit: '3.0', part: '04', status: '' },
+                { no: '29.', code: 'LCC402', title: 'ENGLISH FOR ORAL REPORTING', credit: '2.0', part: '04', status: '' },
+                { no: '30.', code: 'PRO458', title: 'PUBLIC RELATIONS', credit: '3.0', part: '04', status: 'Elective' },
+                { no: '31.', code: 'TJC451', title: 'INTRODUCTORY JAPANESE (LEVEL II)', credit: '2.0', part: '04', status: 'Elective' },
+                { no: '32.', code: 'ADS504', title: 'MALAYSIAN ECONOMY', credit: '3.0', part: '05', status: '' },
+                { no: '33.', code: 'ADS512', title: 'PROJECT MANAGEMENT', credit: '4.0', part: '05', status: '' },
+                { no: '34.', code: 'ADS544', title: 'PRINCIPLES OF RESEARCH METHODOLOGY & DATA ANALYSIS', credit: '3.0', part: '05', status: '' },
+                { no: '35.', code: 'ADS607', title: 'MANAGING CHANGE', credit: '3.0', part: '05', status: 'Elective' },
+                { no: '36.', code: 'ADS653', title: 'PRINCIPLES OF PUBLIC FINANCE', credit: '3.0', part: '05', status: '' },
+                { no: '37.', code: 'LCC502', title: 'ENGLISH FOR JOB INTERVIEWS', credit: '2.0', part: '05', status: '' },
+                { no: '38.', code: 'TJC501', title: 'INTRODUCTORY JAPANESE (LEVEL III)', credit: '2.0', part: '05', status: 'Elective' },
+                { no: '39.', code: 'ADS553', title: 'STRATEGIC MANAGEMENT FOR PUBLIC SECTOR', credit: '4.0', part: '06', status: '' },
+                { no: '40.', code: 'ADS555', title: 'APPLIED RESEARCH PROJECT', credit: '4.0', part: '06', status: '' },
+                { no: '41.', code: 'ADS656', title: 'SEMINAR IN PUBLIC MANAGEMENT', credit: '3.0', part: '06', status: '' },
+                { no: '42.', code: 'ADS660', title: 'SEMINAR IN GLOBAL AFFAIRS', credit: '3.0', part: '06', status: 'Elective' },
+                { no: '43.', code: 'ADS667', title: 'PRACTICAL TRAINING', credit: '6.0', part: '06', status: '' },
+                { no: '44.', code: 'EET699', title: 'ENGLISH EXIT TEST', credit: '0.0', part: '06', status: '' }
+            ],
+            BA273: [
+                { no: '1.', code: 'ACC407', title: 'FUNDAMENTAL FINANCIAL ACCOUNTING AND REPORTING', credit: '3.0', part: '01', status: '' },
+                { no: '2.', code: 'ECO415', title: 'ECONOMICS', credit: '3.0', part: '01', status: '' },
+                { no: '3.', code: 'FIN420', title: 'FINANCIAL MANAGEMENT', credit: '3.0', part: '01', status: '' },
+                { no: '4.', code: 'HBU111', title: 'NATIONAL KESATRIA I', credit: '1.0', part: '01', status: 'Elective' },
+                { no: '5.', code: 'LAW416', title: 'BUSINESS LAW', credit: '3.0', part: '01', status: '' },
+                { no: '6.', code: 'MGT420', title: 'PRINCIPLES AND PRACTICE OF MANAGEMENT', credit: '3.0', part: '01', status: '' },
+                { no: '7.', code: 'MKT420', title: 'PRINCIPLES AND PRACTICE OF MARKETING', credit: '3.0', part: '01', status: '' },
+                { no: '8.', code: 'BTM452', title: 'BUSINESS APPLICATION ESSENTIALS', credit: '3.0', part: '02', status: '' },
+                { no: '9.', code: 'CTU556', title: 'PHILOSOPHY AND CURRENT CHALLENGES', credit: '2.0', part: '02', status: '' },
+                { no: '10.', code: 'ECO654', title: 'DEVELOPMENT ECONOMICS', credit: '3.0', part: '02', status: '' },
+                { no: '11.', code: 'HBU121', title: 'NATIONAL KESATRIA II', credit: '1.0', part: '02', status: 'Elective' },
+                { no: '12.', code: 'HRM453', title: 'WORKFORCE MANAGEMENT', credit: '3.0', part: '02', status: '' },
+                { no: '13.', code: 'LCC503', title: 'ENGLISH FOR BUSINESS COMMUNICATION', credit: '3.0', part: '02', status: '' },
+                { no: '14.', code: 'MGT548', title: 'MANAGING ORGANISATIONAL BEHAVIOUR', credit: '4.0', part: '02', status: '' },
+                { no: '15.', code: 'OPM537', title: 'BUSINESS OPERATIONS MANAGEMENT', credit: '3.0', part: '02', status: '' },
+                { no: '16.', code: 'TAC402', title: 'ARABIC FOR BUSINESS COMMUNICATION I', credit: '2.0', part: '02', status: 'Elective' },
+                { no: '17.', code: 'UCS422', title: 'INTRODUCTION TO CYBER SECURITY FOR NON-COMPUTING SCIENCE', credit: '3.0', part: '02', status: '' },
+                { no: '18.', code: 'CTU557', title: 'MALAYSIAN NATION - STATE INSPIRATION', credit: '2.0', part: '03', status: '' },
+                { no: '19.', code: 'HGD345', title: 'INTEGRITY AND ANTI-CORRUPTION', credit: '2.0', part: '03', status: 'Elective' },
+                { no: '20.', code: 'HRM549', title: 'HUMAN RESOURCE DEVELOPMENT', credit: '4.0', part: '03', status: '' },
+                { no: '21.', code: 'HRM552', title: 'TALENT ACQUISITION', credit: '4.0', part: '03', status: '' },
+                { no: '22.', code: 'HRM582', title: 'EMPLOYMENT LAW', credit: '4.0', part: '03', status: '' },
+                { no: '23.', code: 'TAC452', title: 'ARABIC FOR BUSINESS COMMUNICATION II', credit: '2.0', part: '03', status: 'Elective' },
+                { no: '24.', code: 'EET699', title: 'ENGLISH EXIT TEST', credit: '0.0', part: '04', status: '' },
+                { no: '25.', code: 'ENT511', title: 'INTRODUCTION TO ENTREPRENEURSHIP', credit: '2.0', part: '04', status: '' },
+                { no: '26.', code: 'FIN533', title: 'PERSONAL FINANCIAL PLANNING', credit: '3.0', part: '04', status: '' },
+                { no: '27.', code: 'HRM643', title: 'PERFORMANCE MANAGEMENT AND APPRAISAL', credit: '4.0', part: '04', status: '' },
+                { no: '28.', code: 'HRM645', title: 'CHANGE AND ORGANIZATION DEVELOPMENT', credit: '4.0', part: '04', status: '' },
+                { no: '29.', code: 'HRM648', title: 'COMPENSATION AND BENEFITS', credit: '4.0', part: '04', status: '' },
+                { no: '30.', code: 'HRM659', title: 'INDUSTRIAL RELATIONS', credit: '4.0', part: '04', status: '' },
+                { no: '31.', code: 'OPM538', title: 'OCCUPATIONAL SAFETY, HEALTH AND ENVIRONMENTAL MANAGEMENT', credit: '3.0', part: '04', status: '' },
+                { no: '32.', code: 'HRM664', title: 'HUMAN RESOURCE INFORMATION SYSTEMS', credit: '4.0', part: '05', status: '' },
+                { no: '33.', code: 'HRM668', title: 'CONFLICT MANAGEMENT AND NEGOTIATION', credit: '3.0', part: '05', status: '' },
+                { no: '34.', code: 'HRM678', title: 'GLOBAL ISSUES IN HUMAN RESOURCE MANAGEMENT', credit: '4.0', part: '05', status: '' },
+                { no: '35.', code: 'MGT555', title: 'BUSINESS ANALYTICS', credit: '3.0', part: '05', status: '' },
+                { no: '36.', code: 'MGT651', title: 'RESEARCH METHODOLOGY', credit: '3.0', part: '05', status: '' },
+                { no: '37.', code: 'MGT659', title: 'CONCEPTS AND APPLICATIONS OF STRATEGIC MANAGEMENT', credit: '3.0', part: '05', status: '' },
+                { no: '38.', code: 'HRM666', title: 'HR INTERNSHIP', credit: '12.0', part: '06', status: '' }
+            ]
+        };
+
+        function extractProgramCode(rawVal) {
+            if (!rawVal) return '';
+            const upper = String(rawVal).toUpperCase().trim();
+            if (upper === 'BA237') return 'BA273';
+            const match = upper.match(/\b(SI261|SI262|SI263|AM238|BA273)\b/);
+            if (match) return match[1];
+            const firstToken = upper.split(/[\s-]/)[0];
+            return PROGRAM_OUTLINES[firstToken] ? firstToken : '';
+        }
+
+        function syncProgramOutlinesToStorage() {
+            const flattened = [];
+            Object.keys(PROGRAM_OUTLINES).forEach(prog => {
+                (PROGRAM_OUTLINES[prog] || []).forEach(item => {
+                    flattened.push({
+                        prog,
+                        part: parseInt(String(item.part || '1'), 10) || 1,
+                        code: item.code,
+                        title: item.title,
+                        credit: parseFloat(item.credit) || 0,
+                        notaken: 1,
+                        status: item.status || ''
+                    });
+                });
+            });
+            try {
+                localStorage.setItem('uitm_course_outline_catalog', JSON.stringify(flattened));
+            } catch (err) {
+                console.warn('Failed to save course outline catalog:', err);
+            }
+        }
+
+        function persistSelectedProgram(progCode) {
+            const cleanProg = extractProgramCode(progCode) || String(progCode || 'SI261').toUpperCase().trim();
+            if (!PROGRAM_OUTLINES[cleanProg]) return;
+            try {
+                localStorage.setItem('uitm_selected_program', cleanProg);
+                const activeId = String(
+                    localStorage.getItem('uitm_active_user') ||
+                    localStorage.getItem('uitm_current_user') ||
+                    localStorage.getItem('uitm_logged_in_user') ||
+                    ''
+                ).trim();
+
+                if (activeId) {
+                    const userKey = 'uitm_user_' + activeId;
+                    const savedUser = safeParseJson(userKey);
+                    if (savedUser && typeof savedUser === 'object') {
+                        savedUser.programCode = cleanProg;
+                        savedUser.programme = cleanProg;
+                        localStorage.setItem(userKey, JSON.stringify(savedUser));
+                    }
+
+                    const dashByIdKey = 'uitm_dashboard_' + activeId;
+                    const dashById = safeParseJson(dashByIdKey);
+                    if (dashById && typeof dashById === 'object') {
+                        dashById.programCode = cleanProg;
+                        dashById.programme = cleanProg;
+                        localStorage.setItem(dashByIdKey, JSON.stringify(dashById));
+                    }
+                }
+
+                const rawDash = safeParseJson('uitm_dashboard_state');
+                if (rawDash && typeof rawDash === 'object') {
+                    const dashOwnerId = String(rawDash.studentId || rawDash.id || '').trim();
+                    if (!activeId || !dashOwnerId || dashOwnerId === activeId) {
+                        rawDash.programCode = cleanProg;
+                        rawDash.programme = cleanProg;
+                        localStorage.setItem('uitm_dashboard_state', JSON.stringify(rawDash));
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to update selected programme:', err);
+            }
+        }
+
+        let currentPage = 1;
+
+        function onProgramChange() {
+            const selector = document.getElementById('programCodeSelector');
+            if (selector) {
+                persistSelectedProgram(selector.value);
+            }
+            currentPage = 1;
+            renderCourseOutline();
+        }
+
+        function onFilterChange() {
+            currentPage = 1;
+            renderCourseOutline();
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderCourseOutline();
+            const mainEl = document.querySelector('main');
+            if (mainEl) mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderStatusCell(status) {
+            if (status === 'Elective') {
+                return `<span class="bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 font-bold px-2.5 sm:px-3 py-1 rounded-full text-xs border border-purple-200 dark:border-purple-700/60 inline-block">Elective</span>`;
+            }
+            return `<span class="text-xs text-slate-400 font-normal">-</span>`;
+        }
+
+        function getFilteredCourses() {
+            const selector = document.getElementById('programCodeSelector');
+            const selectedProgram = selector ? selector.value : 'SI261';
+            const searchQuery = (document.getElementById('courseSearchInput')?.value || '').trim().toLowerCase();
+            const selectedPart = document.getElementById('partFilterSelect')?.value || 'ALL';
+            const selectedStatus = document.getElementById('statusFilterSelect')?.value || 'ALL';
+
+            const allCourses = (PROGRAM_OUTLINES[selectedProgram] || PROGRAM_OUTLINES.SI261)
+                .slice()
+                .sort((a, b) => parseInt(a.no, 10) - parseInt(b.no, 10));
+
+            return allCourses.filter(course => {
+                const matchesPart = selectedPart === 'ALL' || course.part === selectedPart;
+                const matchesStatus =
+                    selectedStatus === 'ALL' ||
+                    (selectedStatus === 'Elective' && course.status === 'Elective') ||
+                    (selectedStatus === 'Core' && course.status !== 'Elective');
+                const matchesSearch =
+                    !searchQuery ||
+                    course.code.toLowerCase().includes(searchQuery) ||
+                    course.title.toLowerCase().includes(searchQuery) ||
+                    course.part.toLowerCase().includes(searchQuery);
+
+                return matchesPart && matchesStatus && matchesSearch;
+            });
+        }
+
+        function renderPagination(totalItems, pageSize) {
+            const summaryEl = document.getElementById('pageSummaryText');
+            const buttonsEl = document.getElementById('paginationButtons');
+            if (!summaryEl || !buttonsEl) return;
+
+            if (totalItems === 0 || pageSize === 'ALL') {
+                summaryEl.textContent = `Page 1 of 1`;
+                buttonsEl.innerHTML = totalItems === 0
+                    ? ''
+                    : `<button type="button" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-uitmpurple text-white dark:bg-uitmgold dark:text-slate-950">1</button>`;
+                return;
+            }
+
+            const size = parseInt(pageSize, 10) || 10;
+            const totalPages = Math.max(1, Math.ceil(totalItems / size));
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            summaryEl.textContent = `Page ${currentPage} of ${totalPages}`;
+
+            let html = `
+                <button
+                    type="button"
+                    onclick="goToPage(${currentPage - 1})"
+                    ${currentPage === 1 ? 'disabled' : ''}
+                    class="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-purple-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none cursor-pointer transition-all"
+                >
+                    ← Previous
+                </button>
+            `;
+
+            for (let p = 1; p <= totalPages; p++) {
+                const isActive = p === currentPage;
+                html += `
+                    <button
+                        type="button"
+                        onclick="goToPage(${p})"
+                        class="w-8 h-8 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                            isActive
+                                ? 'bg-uitmpurple text-white dark:bg-uitmgold dark:text-slate-950 shadow-xs'
+                                : 'border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-slate-800'
+                        }"
+                    >
+                        ${p}
+                    </button>
+                `;
+            }
+
+            html += `
+                <button
+                    type="button"
+                    onclick="goToPage(${currentPage + 1})"
+                    ${currentPage === totalPages ? 'disabled' : ''}
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-uitmpurple text-white dark:bg-uitmgold dark:text-slate-950 hover:opacity-90 disabled:opacity-40 disabled:pointer-events-none cursor-pointer transition-all"
+                >
+                    Next →
+                </button>
+            `;
+
+            buttonsEl.innerHTML = html;
+        }
+
+        function renderCourseOutline() {
+            const tbody = document.getElementById('courseTableBody');
+            const pageHeading = document.getElementById('pageHeading');
+            const countBadge = document.getElementById('courseCountBadge');
+            const rangeInfo = document.getElementById('recordRangeInfo');
+            const pageSize = document.getElementById('pageSizeSelect')?.value || '10';
+
+            const filtered = getFilteredCourses();
+            const totalItems = filtered.length;
+            const totalCredits = filtered.reduce((sum, item) => sum + (parseFloat(item.credit) || 0), 0);
+
+            if (pageHeading) {
+                pageHeading.textContent = 'Course Outline / Programme Syllabus';
+            }
+
+            if (countBadge) {
+                countBadge.textContent = `${totalItems} Courses • ${totalCredits.toFixed(1)} Credits`;
+            }
+
+            let visibleCourses = filtered;
+            let startIdx = 0;
+            let endIdx = totalItems;
+
+            if (totalItems === 0) {
+                startIdx = 0;
+                endIdx = 0;
+            } else if (pageSize !== 'ALL') {
+                const size = parseInt(pageSize, 10) || 10;
+                const totalPages = Math.max(1, Math.ceil(totalItems / size));
+                if (currentPage > totalPages) currentPage = totalPages;
+                startIdx = (currentPage - 1) * size;
+                endIdx = Math.min(startIdx + size, totalItems);
+                visibleCourses = filtered.slice(startIdx, endIdx);
+            }
+
+            if (rangeInfo) {
+                rangeInfo.textContent = totalItems === 0
+                    ? 'Showing 0 to 0 of 0 records'
+                    : `Showing ${startIdx + 1} to ${endIdx} of ${totalItems} records`;
+            }
+
+            if (!tbody) return;
+
+            if (visibleCourses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-10 px-6 text-center text-xs font-bold text-slate-400">
+                            No courses match the selected search or filter.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = visibleCourses.map(course => `
+                    <tr class="hover:bg-purple-50/50 dark:hover:bg-slate-800/60 transition-colors">
+                        <td class="py-3.5 sm:py-4 px-3 sm:px-6 text-center text-slate-400 font-bold">${course.no}</td>
+                        <td class="py-3.5 sm:py-4 px-3 sm:px-6 font-extrabold text-uitmpurple dark:text-uitmgold">${course.code}</td>
+                        <td class="py-3.5 sm:py-4 px-3 sm:px-6 font-bold text-slate-800 dark:text-white">${course.title}</td>
+                        <td class="py-3.5 sm:py-4 px-3 sm:px-6 text-center font-semibold">${course.credit}</td>
+                        <td class="py-3.5 sm:py-4 px-3 sm:px-6 text-center text-slate-600 dark:text-slate-300 font-mono">${course.part}</td>
+                        <td class="py-3.5 sm:py-4 px-3 sm:px-6 text-center">${renderStatusCell(course.status)}</td>
+                    </tr>
+                `).join('');
+            }
+
+            renderPagination(totalItems, pageSize);
+        }
+
+        /* =====================================================================
+           THEME, SIDEBAR & USER DATA
+           ===================================================================== */
+        function syncThemeIconUI(isDark) {
+            document.documentElement.classList.toggle('dark', isDark);
+            document.body.classList.toggle('theme-dark', isDark);
+            const moon = document.getElementById('iconMoon');
+            const sun = document.getElementById('iconSun');
+            if (moon && sun) {
+                moon.classList.toggle('hidden', isDark);
+                sun.classList.toggle('hidden', !isDark);
+            }
+        }
+
+        function toggleMyPelajarTheme() {
+            const nextDark = localStorage.getItem('uitm_theme') !== 'dark';
+            localStorage.setItem('uitm_theme', nextDark ? 'dark' : 'light');
+            syncThemeIconUI(nextDark);
+        }
+
+        function toggleMobileSidebar(open) {
+            const sidebar = document.getElementById('mainSidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (!sidebar || !backdrop) return;
+            sidebar.classList.toggle('-translate-x-full', !open);
+            backdrop.classList.toggle('hidden', !open);
+        }
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                toggleMobileSidebar(false);
+            }
+        });
+
+        function safeParseJson(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : null;
+            } catch (err) {
+                return null;
+            }
+        }
+
+        syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
+
+        document.querySelectorAll('#mainSidebar .sidebar-glow-item').forEach(item => {
+            item.addEventListener('pointerdown', function() {
+                item.classList.add('is-glowing');
+            });
+
+            const removeGlow = () => {
+                setTimeout(() => item.classList.remove('is-glowing'), 180);
+            };
+
+            item.addEventListener('pointerup', removeGlow);
+            item.addEventListener('pointerleave', () => item.classList.remove('is-glowing'));
+            item.addEventListener('pointercancel', () => item.classList.remove('is-glowing'));
+
+            item.addEventListener('click', function() {
+                document.querySelectorAll('#mainSidebar nav .sidebar-glow-item').forEach(navLink => {
+                    navLink.classList.remove('is-active-glow');
+                });
+                if (item.closest('nav')) {
+                    item.classList.add('is-active-glow');
+                }
+                toggleMobileSidebar(false);
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', function() {
+            syncProgramOutlinesToStorage();
+            syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
+
+            const activeId = String(
+                localStorage.getItem('uitm_active_user') ||
+                localStorage.getItem('uitm_current_user') ||
+                localStorage.getItem('uitm_logged_in_user') ||
+                '2026112309'
+            ).trim();
+
+            const savedUser = safeParseJson('uitm_user_' + activeId) || {};
+            const dashById = safeParseJson('uitm_dashboard_' + activeId) || {};
+            const dashGlobalRaw = safeParseJson('uitm_dashboard_state') || {};
+            const dashGlobalId = String(dashGlobalRaw.studentId || dashGlobalRaw.id || '').trim();
+            const dashState = (!dashGlobalId || dashGlobalId === activeId) ? dashGlobalRaw : dashById;
+
+            const slipRaw = safeParseJson('uitm_registered_courses_slip') || {};
+            const slipOwnerId = String(slipRaw.studentId || slipRaw.userId || '').trim();
+            const slipData = (slipOwnerId && slipOwnerId === activeId) ? slipRaw : {};
+
+            const studentId = String(savedUser.studentId || savedUser.id || dashState.studentId || activeId).trim();
+            const fullName = String(savedUser.name || dashState.name || 'MUHAMMAD SHAZWAN').toUpperCase().trim();
+            const userPhoto = String(
+                dashState.photo ||
+                savedUser.photo ||
+                localStorage.getItem('uitm_photo_' + activeId) ||
+                localStorage.getItem('uitm_profile_photo') ||
+                'wan profile.jpg'
+            ).trim();
+
+            const headerWelcome = document.getElementById('headerWelcome');
+            const headerProfilePhoto = document.getElementById('headerProfilePhoto');
+            const selector = document.getElementById('programCodeSelector');
+
+            if (headerWelcome) headerWelcome.textContent = `${studentId} • ${fullName}`;
+            if (headerProfilePhoto && userPhoto) headerProfilePhoto.src = userPhoto;
+
+            const params = new URLSearchParams(window.location.search);
+            const qProg = extractProgramCode(params.get('prog') || '');
+            const qPart = (params.get('part') || '').trim();
+            const qCode = (params.get('code') || '').trim();
+
+            const progCandidates = [
+                savedUser.programCode,
+                savedUser.programmeCode,
+                savedUser.programme,
+                savedUser.program,
+                savedUser.courseCode,
+                dashState.programCode,
+                dashState.programmeCode,
+                dashState.programme,
+                dashState.program,
+                dashState.courseCode,
+                slipData.programCode,
+                localStorage.getItem('uitm_selected_program')
+            ];
+
+            let storedProg = 'SI261';
+            for (let i = 0; i < progCandidates.length; i++) {
+                const extracted = extractProgramCode(progCandidates[i]);
+                if (extracted && PROGRAM_OUTLINES[extracted]) {
+                    storedProg = extracted;
+                    break;
+                }
+            }
+
+            const resolvedProg = qProg && PROGRAM_OUTLINES[qProg]
+                ? qProg
+                : (PROGRAM_OUTLINES[storedProg] ? storedProg : 'SI261');
+
+            if (selector) {
+                selector.value = resolvedProg;
+            }
+
+            const partFilterSelect = document.getElementById('partFilterSelect');
+            if (partFilterSelect && qPart) {
+                const padded = String(qPart).padStart(2, '0');
+                if (Array.from(partFilterSelect.options).some(o => o.value === padded)) {
+                    partFilterSelect.value = padded;
+                }
+            }
+
+            const searchInput = document.getElementById('courseSearchInput');
+            if (searchInput && qCode) {
+                searchInput.value = qCode;
+            }
+
+            renderCourseOutline();
+        });
+    </script>
+</body>
+</html>

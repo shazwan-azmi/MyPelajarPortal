@@ -1,0 +1,2146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Directory | MyPelajar Portal UiTM</title>
+    <link rel="icon" type="image/png" href="uitm.png">
+    <link rel="apple-touch-icon" href="uitm.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        uitmpurple: '#4b1d52',
+                        uitmgold: '#ffc627',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Dark Mode Sidebar */
+        html.dark #mainSidebar,
+        body.theme-dark #mainSidebar {
+            background-color: rgba(15, 23, 42, 0.85);
+            background-image: none;
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+        }
+
+        @media (min-width: 1024px) {
+            html.dark #mainSidebar,
+            body.theme-dark #mainSidebar {
+                background-color: rgba(15, 23, 42, 0.68);
+            }
+        }
+
+        /* Sidebar Glow */
+        .sidebar-glow-item {
+            transition:
+                transform 0.18s ease,
+                background-color 0.2s ease,
+                box-shadow 0.22s ease,
+                color 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .sidebar-glow-item.is-glowing {
+            transform: scale(0.985);
+            background-color: rgba(255, 198, 39, 0.16) !important;
+            color: #ffc627 !important;
+
+            box-shadow:
+                0 0 18px rgba(255, 198, 39, 0.35),
+                0 0 28px rgba(168, 85, 247, 0.22),
+                inset 0 0 10px rgba(255, 198, 39, 0.14);
+        }
+
+        .sidebar-glow-item.is-active-glow {
+            box-shadow:
+                0 0 14px rgba(255, 198, 39, 0.22),
+                inset 0 0 8px rgba(255, 198, 39, 0.08);
+        }
+
+        .logout-glow-item.is-glowing {
+            background-color: rgba(239, 68, 68, 0.28) !important;
+            color: #ffffff !important;
+
+            box-shadow:
+                0 0 20px rgba(248, 113, 113, 0.45),
+                inset 0 0 10px rgba(254, 202, 202, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex overflow-x-hidden transition-colors duration-200">
+
+    <!-- MOBILE BACKDROP -->
+    <div
+        id="mobileSidebarBackdrop"
+        onclick="toggleMobileSidebar(false)"
+        class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-20 hidden lg:hidden">
+    </div>
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside
+        id="mainSidebar"
+        class="w-72 bg-gradient-to-b from-uitmpurple via-purple-950 to-slate-900 text-white fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static flex flex-col shrink-0 shadow-2xl z-30 transition-transform duration-200">
+
+        <!-- Logo -->
+        <div class="p-6 border-b border-white/10 flex items-center justify-between gap-3">
+
+            <div class="flex items-center gap-3 min-w-0">
+
+                <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg bg-white flex items-center justify-center shrink-0">
+                    <img
+                        src="uitm.png"
+                        alt="UiTM Logo"
+                        class="w-full h-full object-cover">
+                </div>
+
+                <div class="min-w-0">
+                    <h2 class="text-sm font-bold tracking-wide truncate">
+                        MyPelajar Portal
+                    </h2>
+
+                    <p class="text-[10px] text-purple-300/80 font-medium uppercase tracking-widest truncate">
+                        Student Directory
+                    </p>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                onclick="toggleMobileSidebar(false)"
+                aria-label="Close menu"
+                class="lg:hidden text-purple-200 hover:text-white p-1.5 rounded-lg cursor-pointer shrink-0">
+                ✕
+            </button>
+
+        </div>
+
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto text-xs font-medium">
+
+            <a
+                href="dashboard.html"
+                onclick="toggleMobileSidebar(false)"
+                class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>🏠</span>
+                Home
+            </a>
+
+            <a
+                href="pelajar.html"
+                onclick="toggleMobileSidebar(false)"
+                class="sidebar-glow-item is-active-glow flex items-center gap-3 px-4 py-3 bg-white/15 border-l-4 border-uitmgold rounded-r-xl text-uitmgold font-bold shadow-inner">
+                <span>👥</span>
+                Student Directory
+            </a>
+
+            <a
+                href="course_outline.html"
+                onclick="toggleMobileSidebar(false)"
+                class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>📖</span>
+                Course Outline
+            </a>
+
+            <a
+                href="e_academic.html"
+                onclick="toggleMobileSidebar(false)"
+                class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>📚</span>
+                e-Academic (Register)
+            </a>
+
+            <a
+                href="course_summary.html"
+                onclick="toggleMobileSidebar(false)"
+                class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>📄</span>
+                Course Summary
+            </a>
+
+            <a
+                href="analytics.html"
+                onclick="toggleMobileSidebar(false)"
+                class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>📊</span>
+                Analytics
+            </a>
+
+            <a
+                href="https://library.uitm.edu.my/"
+                target="_blank"
+                onclick="toggleMobileSidebar(false)"
+                class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>💻</span>
+                Digital Library
+            </a>
+
+            <a
+                href="student_card.html"
+                onclick="toggleMobileSidebar(false)"
+                class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+                <span>🆔</span>
+                Student Card
+            </a>
+
+        </nav>
+
+
+        <!-- Logout -->
+        <div class="p-4 border-t border-white/10">
+
+            <a
+                href="index.html"
+                class="sidebar-glow-item logout-glow-item flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold border border-red-500/20">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN CONTAINER ================= -->
+
+    <div class="flex-1 flex flex-col min-w-0">
+
+
+        <!-- ================= HEADER ================= -->
+
+        <header
+            class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex justify-between items-center z-10 sticky top-0 shadow-sm transition-colors duration-200">
+
+            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+
+                <!-- Mobile Menu -->
+                <button
+                    type="button"
+                    onclick="toggleMobileSidebar(true)"
+                    aria-label="Open navigation menu"
+                    class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-uitmpurple dark:text-uitmgold cursor-pointer shrink-0">
+                    ☰
+                </button>
+
+
+                <div class="flex items-center gap-2 min-w-0">
+
+                    <span class="text-uitmpurple dark:text-uitmgold font-black tracking-tight text-base shrink-0">
+                        MyPelajar Portal
+                    </span>
+
+                    <span class="text-xs text-slate-400 uppercase tracking-widest hidden sm:inline truncate">
+                        UNIVERSITI TEKNOLOGI MARA
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex items-center space-x-2.5 sm:space-x-4 shrink-0">
+
+
+                <!-- Welcome -->
+                <div class="text-right hidden md:block">
+
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">
+                        WELCOME
+                    </p>
+
+                    <p
+                        class="text-xs font-extrabold text-slate-800 dark:text-slate-100"
+                        id="headerWelcome">
+                        2026112309 • MUHAMMAD SHAZWAN
+                    </p>
+
+                </div>
+
+
+                <!-- Dark Mode Toggle -->
+                <button
+                    type="button"
+                    id="themeIconBtn"
+                    onclick="toggleMyPelajarTheme()"
+                    aria-label="Toggle Light or Dark Mode"
+                    title="Toggle Theme (Light / Dark)"
+                    class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0">
+
+                    <!-- Moon -->
+                    <svg
+                        id="iconMoon"
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        viewBox="0 0 24 24">
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
+
+                    </svg>
+
+
+                    <!-- Sun -->
+                    <svg
+                        id="iconSun"
+                        class="w-4 h-4 hidden"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        viewBox="0 0 24 24">
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="4" />
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" />
+
+                    </svg>
+
+                </button>
+
+
+                <!-- PROFILE IMAGE -->
+                <div
+                    class="w-9 h-9 rounded-full overflow-hidden shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
+
+                    <img
+                        id="headerProfilePhoto"
+                        src="wan profile.jpg"
+                        alt="Profile"
+                        class="w-full h-full object-cover">
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full">
+
+
+            <!-- ================= SEARCH / FILTER CARD ================= -->
+
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 p-4 sm:p-6 mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 transition-colors duration-200">
+
+                <div>
+
+                    <div class="flex items-center gap-2 flex-wrap">
+
+                        <h1 class="text-lg font-extrabold text-slate-800 dark:text-white">
+                            Directory All Student Information
+                        </h1>
+
+                        <span
+                            id="totalBadge"
+                            class="bg-purple-100 dark:bg-purple-950/80 text-uitmpurple dark:text-uitmgold text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+                            200 Students
+                        </span>
+
+                    </div>
+
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Click any column header to sort the data (ascending/descending), or search by name, ID, program, or group.
+                    </p>
+
+                </div>
+
+
+                <!-- Search and Filters -->
+                <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full xl:w-auto text-xs">
+
+
+                    <!-- Search -->
+                    <div class="relative flex-1 sm:w-64">
+
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            🔍
+                        </span>
+
+                        <input
+                            type="text"
+                            id="searchInput"
+                            onkeyup="applyFiltersAndRender()"
+                            placeholder="Find Name, ID, or Program..."
+                            class="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-semibold text-slate-700 dark:text-slate-100 focus:outline-none focus:border-uitmpurple focus:bg-white dark:focus:bg-slate-800 transition-all">
+
+                    </div>
+
+
+                    <!-- Program Filter -->
+                    <select
+                        id="programmeFilter"
+                        onchange="handleProgrammeChange()"
+                        class="w-full sm:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-slate-100 focus:outline-none focus:border-uitmpurple cursor-pointer">
+
+                        <option value="ALL">
+                            All Programs
+                        </option>
+
+                    </select>
+
+
+                    <!-- Group Filter -->
+                    <select
+                        id="groupFilter"
+                        onchange="applyFiltersAndRender()"
+                        class="w-full sm:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-slate-100 focus:outline-none focus:border-uitmpurple cursor-pointer">
+
+                        <option value="ALL">
+                            All Groups
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= PAGE SIZE ================= -->
+
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 text-xs">
+
+                <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300 font-semibold">
+
+                    <span>
+                        Show Records:
+                    </span>
+
+                    <select
+                        id="pageSizeSelect"
+                        onchange="changePageSize()"
+                        class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-extrabold text-uitmpurple dark:text-uitmgold focus:outline-none focus:border-uitmpurple cursor-pointer shadow-sm">
+
+                        <option value="20" selected>
+                            20 Records
+                        </option>
+
+                        <option value="30">
+                            30 Records
+                        </option>
+
+                        <option value="40">
+                            40 Records
+                        </option>
+
+                        <option value="50">
+                            50 Records (Maximum)
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div
+                    id="paginationInfo"
+                    class="text-slate-500 dark:text-slate-400 font-semibold">
+
+                    Showing 0 to 0 of 0 records
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= STUDENT TABLE ================= -->
+
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-x-auto transition-colors duration-200">
+
+                <table class="w-full min-w-[780px] text-left border-collapse table-auto">
+
+                    <thead>
+
+                        <tr
+                            class="bg-uitmpurple dark:bg-purple-950 text-white text-[11px] uppercase tracking-wider select-none">
+
+
+                            <!-- Bil -->
+                            <th
+                                onclick="handleSort('bil')"
+                                class="py-4 px-4 font-extrabold text-center cursor-pointer hover:bg-purple-900 transition-colors">
+
+                                Bil
+
+                                <span
+                                    id="sort-bil"
+                                    class="ml-1 text-uitmgold">
+                                    ↕
+                                </span>
+
+                            </th>
+
+
+                            <!-- Student ID -->
+                            <th
+                                onclick="handleSort('id')"
+                                class="py-4 px-4 font-extrabold cursor-pointer hover:bg-purple-900 transition-colors">
+
+                                Student ID
+
+                                <span
+                                    id="sort-id"
+                                    class="ml-1 text-uitmgold">
+                                    ↕
+                                </span>
+
+                            </th>
+
+
+                            <!-- Name -->
+                            <th
+                                onclick="handleSort('name')"
+                                class="py-4 px-4 font-extrabold cursor-pointer hover:bg-purple-900 transition-colors">
+
+                                Full Name Student
+
+                                <span
+                                    id="sort-name"
+                                    class="ml-1 text-uitmgold">
+                                    ↕
+                                </span>
+
+                            </th>
+
+
+                            <!-- Program -->
+                            <th
+                                onclick="handleSort('programme')"
+                                class="py-4 px-4 font-extrabold text-center cursor-pointer hover:bg-purple-900 transition-colors">
+
+                                Program
+
+                                <span
+                                    id="sort-programme"
+                                    class="ml-1 text-uitmgold">
+                                    ↕
+                                </span>
+
+                            </th>
+
+
+                            <!-- Group -->
+                            <th
+                                onclick="handleSort('group')"
+                                class="py-4 px-4 font-extrabold text-center cursor-pointer hover:bg-purple-900 transition-colors">
+
+                                Group
+
+                                <span
+                                    id="sort-group"
+                                    class="ml-1 text-uitmgold">
+                                    ↕
+                                </span>
+
+                            </th>
+
+
+                            <!-- Part -->
+                            <th
+                                onclick="handleSort('part')"
+                                class="py-4 px-4 font-extrabold text-center cursor-pointer hover:bg-purple-900 transition-colors">
+
+                                Part
+
+                                <span
+                                    id="sort-part"
+                                    class="ml-1 text-uitmgold">
+                                    ↕
+                                </span>
+
+                            </th>
+
+
+                            <!-- Email -->
+                            <th
+                                onclick="handleSort('email')"
+                                class="py-4 px-4 font-extrabold cursor-pointer hover:bg-purple-900 transition-colors">
+
+                                Official Email
+
+                                <span
+                                    id="sort-email"
+                                    class="ml-1 text-uitmgold">
+                                    ↕
+                                </span>
+
+                            </th>
+
+
+                            <!-- Status -->
+                            <th
+                                onclick="handleSort('status')"
+                                class="py-4 px-4 font-extrabold text-center cursor-pointer hover:bg-purple-900 transition-colors">
+
+                                Status
+
+                                <span
+                                    id="sort-status"
+                                    class="ml-1 text-uitmgold">
+                                    ↕
+                                </span>
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="studentTableBody"
+                        class="divide-y divide-slate-100 dark:divide-slate-800 text-xs text-slate-700 dark:text-slate-200 break-words">
+
+                        <!-- Student data generated by JavaScript -->
+
+                    </tbody>
+
+                </table>
+
+
+                <!-- Empty State -->
+                <div
+                    id="emptyState"
+                    class="hidden py-12 px-4 text-center">
+
+                    <p class="text-sm font-bold text-slate-500 dark:text-slate-300">
+                        No student records found.
+                    </p>
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        Please try other keywords, programs, or groups.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= PAGINATION ================= -->
+
+            <div
+                class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+
+                <div
+                    id="pageIndicator"
+                    class="font-bold text-slate-600 dark:text-slate-300">
+
+                    Page 1 of 1
+
+                </div>
+
+
+                <div class="flex items-center justify-center flex-wrap gap-2">
+
+                    <!-- Previous -->
+                    <button
+                        id="prevBtn"
+                        onclick="prevPage()"
+                        class="px-4 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 dark:text-slate-200 font-extrabold rounded-xl border border-slate-300 dark:border-slate-700 shadow-sm transition-all cursor-pointer">
+
+                        &larr; Previous
+
+                    </button>
+
+
+                    <!-- Page Numbers -->
+                    <div
+                        id="pageNumbers"
+                        class="flex items-center justify-center flex-wrap gap-1">
+                    </div>
+
+
+                    <!-- Next -->
+                    <button
+                        id="nextBtn"
+                        onclick="nextPage()"
+                        class="px-4 py-2.5 bg-uitmpurple hover:bg-purple-900 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-xl shadow-md transition-all cursor-pointer">
+
+                        Next &rarr;
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </main>
+
+
+        <!-- ================= FOOTER ================= -->
+
+        <footer
+            class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center py-4 px-4 mt-auto text-xs text-slate-500 dark:text-slate-400 transition-colors duration-200">
+
+            &copy; 2026 Universiti Teknologi MARA (UiTM) &bull; MyPelajar Portal.
+
+        </footer>
+
+    </div>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        /* ================= PROGRAM / GROUP DATA ================= */
+
+        const GROUPS_BY_PROGRAMME = {
+
+            SI261: [
+                'SI261A',
+                'SI261B',
+                'SI261C'
+            ],
+
+            SI262: [
+                'SI262A',
+                'SI262B',
+                'SI262C'
+            ],
+
+            SI263: [
+                'SI263A',
+                'SI263B',
+                'SI263C'
+            ],
+
+            AM238: [
+                'AMB38A',
+                'AMB38B',
+                'AMB38C'
+            ],
+
+            BA237: [
+                'BA237A',
+                'BA237B',
+                'BA237C'
+            ]
+
+        };
+
+
+        /* ================= MOBILE SIDEBAR ================= */
+
+        function toggleMobileSidebar(open) {
+
+            const sidebar =
+                document.getElementById('mainSidebar');
+
+            const backdrop =
+                document.getElementById('mobileSidebarBackdrop');
+
+            if (!sidebar || !backdrop) return;
+
+            sidebar.classList.toggle(
+                '-translate-x-full',
+                !open
+            );
+
+            backdrop.classList.toggle(
+                'hidden',
+                !open
+            );
+        }
+
+
+        window.addEventListener(
+            'resize',
+            function () {
+
+                if (window.innerWidth >= 1024) {
+                    toggleMobileSidebar(false);
+                }
+
+            }
+        );
+
+
+        /* ================= ACTIVE USER & PROFILE PHOTO SYNC ================= */
+
+        function safeParseJson(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function resolveActiveUserData() {
+            const activeId = String(
+                localStorage.getItem('uitm_active_user') ||
+                localStorage.getItem('uitm_student_id') ||
+                '2026112309'
+            ).trim();
+
+            const savedUser = safeParseJson('uitm_user_' + activeId);
+            const dashState = safeParseJson('uitm_dashboard_state') || safeParseJson('uitm_dashboard_' + activeId);
+
+            let userObj;
+            if (savedUser && typeof savedUser === 'object') {
+                userObj = {
+                    id: String(savedUser.id || savedUser.studentId || activeId).trim(),
+                    name: String(savedUser.name || (dashState && dashState.name) || 'NEW STUDENT SI262').trim(),
+                    photo: String(
+                        savedUser.photo ||
+                        localStorage.getItem('uitm_photo_' + activeId) ||
+                        (dashState && String(dashState.studentId) === activeId && dashState.photo) ||
+                        localStorage.getItem('uitm_profile_photo') ||
+                        'wan profile.jpg'
+                    ).trim()
+                };
+            } else if (activeId === '2026112309') {
+                userObj = {
+                    id: '2026112309',
+                    name: 'MUHAMMAD SHAZWAN BIN AZMI',
+                    photo: String(
+                        localStorage.getItem('uitm_photo_2026112309') ||
+                        (dashState && String(dashState.studentId) === '2026112309' && dashState.photo) ||
+                        localStorage.getItem('uitm_profile_photo') ||
+                        'wan profile.jpg'
+                    ).trim()
+                };
+            } else {
+                userObj = {
+                    id: activeId,
+                    name: String((dashState && String(dashState.studentId) === activeId && dashState.name) || 'NEW STUDENT SI262').trim(),
+                    photo: String(
+                        localStorage.getItem('uitm_photo_' + activeId) ||
+                        (dashState && String(dashState.studentId) === activeId && dashState.photo) ||
+                        localStorage.getItem('uitm_profile_photo') ||
+                        'wan profile.jpg'
+                    ).trim()
+                };
+            }
+
+            return userObj;
+        }
+
+        function syncHeaderUserAndPhoto() {
+            const activeUser = resolveActiveUserData();
+            const welcomeEl = document.getElementById('headerWelcome');
+            if (welcomeEl) {
+                welcomeEl.innerText = activeUser.id + ' • ' + activeUser.name;
+            }
+
+            const headerPhoto = document.getElementById('headerProfilePhoto');
+            if (headerPhoto && activeUser.photo) {
+                headerPhoto.src = activeUser.photo;
+            }
+        }
+
+
+        /* ================= DARK MODE ================= */
+
+        function syncThemeIconUI(isDark) {
+
+            document.documentElement.classList.toggle(
+                'dark',
+                isDark
+            );
+
+            document.body.classList.toggle(
+                'theme-dark',
+                isDark
+            );
+
+            const moon =
+                document.getElementById('iconMoon');
+
+            const sun =
+                document.getElementById('iconSun');
+
+            if (moon && sun) {
+
+                moon.classList.toggle(
+                    'hidden',
+                    isDark
+                );
+
+                sun.classList.toggle(
+                    'hidden',
+                    !isDark
+                );
+
+            }
+        }
+
+
+        function toggleMyPelajarTheme() {
+
+            const nextDark =
+                !(localStorage.getItem('uitm_theme') === 'dark');
+
+            localStorage.setItem(
+                'uitm_theme',
+                nextDark ? 'dark' : 'light'
+            );
+
+            syncThemeIconUI(nextDark);
+        }
+
+
+        syncThemeIconUI(
+            localStorage.getItem('uitm_theme') === 'dark'
+        );
+
+
+        /* ================= SIDEBAR GLOW ================= */
+
+        document
+            .querySelectorAll(
+                '#mainSidebar .sidebar-glow-item'
+            )
+            .forEach(item => {
+
+                item.addEventListener(
+                    'pointerdown',
+                    function () {
+
+                        item.classList.add(
+                            'is-glowing'
+                        );
+
+                    }
+                );
+
+
+                const removeGlow = () => {
+
+                    setTimeout(
+                        () => {
+
+                            item.classList.remove(
+                                'is-glowing'
+                            );
+
+                        },
+                        180
+                    );
+
+                };
+
+
+                item.addEventListener(
+                    'pointerup',
+                    removeGlow
+                );
+
+                item.addEventListener(
+                    'pointerleave',
+                    () => item.classList.remove(
+                        'is-glowing'
+                    )
+                );
+
+                item.addEventListener(
+                    'pointercancel',
+                    () => item.classList.remove(
+                        'is-glowing'
+                    )
+                );
+
+
+                item.addEventListener(
+                    'click',
+                    function () {
+
+                        document
+                            .querySelectorAll(
+                                '#mainSidebar nav .sidebar-glow-item'
+                            )
+                            .forEach(navLink => {
+
+                                navLink.classList.remove(
+                                    'is-active-glow'
+                                );
+
+                            });
+
+
+                        if (item.closest('nav')) {
+
+                            item.classList.add(
+                                'is-active-glow'
+                            );
+
+                        }
+
+                        toggleMobileSidebar(false);
+
+                    }
+                );
+
+            });
+
+
+        /* ================= RANDOM FUNCTIONS ================= */
+
+        function randInt(max) {
+
+            return Math.floor(
+                Math.random() * max
+            );
+
+        }
+
+
+        function shuffleArray(arr) {
+
+            const copy =
+                arr.slice();
+
+            for (
+                let i = copy.length - 1;
+                i > 0;
+                i--
+            ) {
+
+                const j =
+                    randInt(i + 1);
+
+                [
+                    copy[i],
+                    copy[j]
+                ] = [
+                    copy[j],
+                    copy[i]
+                ];
+
+            }
+
+            return copy;
+        }
+
+
+        /* ================= GENERATE STUDENTS ================= */
+
+        function generate200RandomStudents() {
+
+            const givenNames = [
+
+                'MUHAMMAD',
+                'NURUL',
+                'AMIRUL',
+                'SITI',
+                'DANISH',
+                'FATIN',
+                'AHMAD',
+                'PUTERI',
+                'HAZIQ',
+                'WAN',
+                'FARIS',
+                'ALYA',
+                'AQIL',
+                'NURIN',
+                'LUQMAN',
+                'AINA',
+                'SYAFIQ',
+                'DAMIA',
+                'ADAM',
+                'FARAH',
+                'IMRAN',
+                'SYAHIRAH',
+                'ZHARIF',
+                'HANIS',
+                'ALIF',
+                'IZZAT',
+                'NAJWA',
+                'FAKHRUL',
+                'QAISARA',
+                'HARITH',
+                'SOFEA',
+                'NAZIRUL',
+                'BALQIS',
+                'DANIAL',
+                'MARISSA',
+                'RAZIQ',
+                'ZULAIKHA',
+                'HAKIM',
+                'NABILAH',
+                'SYAHMI',
+                'IRFAN'
+
+            ];
+
+
+            const familyNames = [
+
+                'BIN AZMI',
+                'BINTI ZULKIFLI',
+                'BIN ROSLAN',
+                'BINTI MOHD FADZIL',
+                'BIN KAMARUDIN',
+                'BINTI ABDUL RAHMAN',
+                'BIN HASSAN',
+                'BINTI SHAHRUL NIZAM',
+                'BIN OTHMAN',
+                'BINTI WAN ISMAIL',
+                'BIN YUSOF',
+                'BINTI HAMZAH',
+                'BIN ZAINAL ABIDIN',
+                'BINTI AZHAR',
+                'BIN SULAIMAN',
+                'BINTI MOHD NOR',
+                'BIN ABDULLAH',
+                'BINTI RAZAK',
+                'BIN ISKANDAR',
+                'BINTI MD ZAIN',
+                'BIN HALIM',
+                'BINTI CHE MAT',
+                'BIN KHALID',
+                'BINTI AHMAD',
+                'BIN SAIFUL',
+                'BINTI FAIZAL',
+                'BINTI HARUN',
+                'BIN SHAHAR',
+                'BINTI JAMAL',
+                'BINTI ISMAIL',
+                'BINTI RAHMAN'
+
+            ];
+
+
+            const programs =
+                Object.keys(
+                    GROUPS_BY_PROGRAMME
+                );
+
+
+            const parts = [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ];
+
+
+            const statuses = [
+                'Active',
+                'Active',
+                'Active',
+                'Active',
+                'Conditional'
+            ];
+
+
+            const list = [];
+
+            const usedIds =
+                new Set();
+
+
+            for (
+                let i = 1;
+                i <= 200;
+                i++
+            ) {
+
+                let studentId;
+
+
+                do {
+
+                    studentId =
+                        String(
+                            2026100000 +
+                            Math.floor(
+                                10000 +
+                                Math.random() * 89999
+                            )
+                        );
+
+                } while (
+                    usedIds.has(studentId)
+                );
+
+
+                usedIds.add(studentId);
+
+
+                const prog =
+                    programs[
+                        randInt(
+                            programs.length
+                        )
+                    ];
+
+
+                const grpList =
+                    GROUPS_BY_PROGRAMME[
+                        prog
+                    ];
+
+
+                const grp =
+                    grpList[
+                        randInt(
+                            grpList.length
+                        )
+                    ];
+
+
+                const pt =
+                    parts[
+                        randInt(
+                            parts.length
+                        )
+                    ];
+
+
+                const st =
+                    statuses[
+                        randInt(
+                            statuses.length
+                        )
+                    ];
+
+
+                const gName =
+                    givenNames[
+                        randInt(
+                            givenNames.length
+                        )
+                    ];
+
+
+                const midName =
+                    givenNames[
+                        randInt(
+                            givenNames.length
+                        )
+                    ];
+
+
+                const fName =
+                    familyNames[
+                        randInt(
+                            familyNames.length
+                        )
+                    ];
+
+
+                const fullName =
+                    `${gName} ${midName} ${fName}`;
+
+
+                list.push({
+
+                    bil: i,
+
+                    id: studentId,
+
+                    name: fullName,
+
+                    programme: prog,
+
+                    group: grp,
+
+                    part: pt,
+
+                    email:
+                        `${studentId}@student.uitm.edu.my`,
+
+                    status: st
+
+                });
+
+            }
+
+
+            return shuffleArray(list)
+                .map((item, idx) => ({
+
+                    ...item,
+
+                    bil: idx + 1
+
+                }));
+
+        }
+
+
+        /* ================= GLOBAL VARIABLES ================= */
+
+        let allStudents = [];
+
+        let filteredStudents = [];
+
+        let currentPage = 1;
+
+        let pageSize = 20;
+
+        let sortColumn = null;
+
+        let sortDirection = 'asc';
+
+
+        /* ================= STORAGE SYNC & PAGE LOAD ================= */
+
+        window.addEventListener('storage', function (event) {
+            if (!event.key) return;
+            if (
+                event.key === 'uitm_active_user' ||
+                event.key === 'uitm_student_id' ||
+                event.key === 'uitm_profile_photo' ||
+                event.key.startsWith('uitm_photo_') ||
+                event.key.startsWith('uitm_user_') ||
+                event.key.startsWith('uitm_dashboard')
+            ) {
+                syncHeaderUserAndPhoto();
+            }
+        });
+
+        window.onload = function () {
+
+            syncThemeIconUI(
+                localStorage.getItem('uitm_theme') === 'dark'
+            );
+
+            syncHeaderUserAndPhoto();
+
+
+            allStudents =
+                generate200RandomStudents();
+
+
+            populateProgrammeDropdown();
+
+            populateGroupDropdown('ALL');
+
+            applyFiltersAndRender();
+
+        };
+
+
+        /* ================= PROGRAM DROPDOWN ================= */
+
+        function populateProgrammeDropdown() {
+
+            const progSelect =
+                document.getElementById(
+                    'programmeFilter'
+                );
+
+
+            const programmes =
+                Object.keys(
+                    GROUPS_BY_PROGRAMME
+                );
+
+
+            progSelect.innerHTML =
+                '<option value="ALL">All Programs</option>';
+
+
+            programmes.forEach(prog => {
+
+                const opt =
+                    document.createElement(
+                        'option'
+                    );
+
+
+                opt.value =
+                    prog;
+
+
+                opt.textContent =
+                    `Program: ${prog}`;
+
+
+                progSelect.appendChild(
+                    opt
+                );
+
+            });
+
+        }
+
+
+        /* ================= GROUP DROPDOWN ================= */
+
+        function populateGroupDropdown(selectedProg) {
+
+            const groupSelect =
+                document.getElementById(
+                    'groupFilter'
+                );
+
+
+            groupSelect.innerHTML = '';
+
+
+            if (
+                selectedProg === 'ALL'
+            ) {
+
+                groupSelect.innerHTML =
+                    '<option value="ALL">All Groups</option>';
+
+
+                Object
+                    .values(
+                        GROUPS_BY_PROGRAMME
+                    )
+                    .flat()
+                    .forEach(grp => {
+
+                        const opt =
+                            document.createElement(
+                                'option'
+                            );
+
+
+                        opt.value =
+                            grp;
+
+
+                        opt.textContent =
+                            `Group: ${grp}`;
+
+
+                        groupSelect.appendChild(
+                            opt
+                        );
+
+                    });
+
+            }
+
+            else {
+
+                const progGroups =
+                    GROUPS_BY_PROGRAMME[
+                        selectedProg
+                    ] || [];
+
+
+                groupSelect.innerHTML =
+                    `<option value="ALL">All Groups (${selectedProg})</option>`;
+
+
+                progGroups.forEach(grp => {
+
+                    const opt =
+                        document.createElement(
+                            'option'
+                        );
+
+
+                    opt.value =
+                        grp;
+
+
+                    opt.textContent =
+                        grp;
+
+
+                    groupSelect.appendChild(
+                        opt
+                    );
+
+                });
+
+            }
+
+
+            groupSelect.value =
+                'ALL';
+
+        }
+
+
+        /* ================= PROGRAM CHANGE ================= */
+
+        function handleProgrammeChange() {
+
+            const selectedProg =
+                document.getElementById(
+                    'programmeFilter'
+                ).value;
+
+
+            populateGroupDropdown(
+                selectedProg
+            );
+
+
+            applyFiltersAndRender();
+
+        }
+
+
+        /* ================= SORT ================= */
+
+        function handleSort(column) {
+
+            if (
+                sortColumn === column
+            ) {
+
+                sortDirection =
+                    sortDirection === 'asc'
+                        ? 'desc'
+                        : 'asc';
+
+            }
+
+            else {
+
+                sortColumn =
+                    column;
+
+                sortDirection =
+                    'asc';
+
+            }
+
+
+            updateSortIndicators();
+
+            currentPage = 1;
+
+            applyFiltersAndRender();
+
+        }
+
+
+        function updateSortIndicators() {
+
+            const columns = [
+
+                'bil',
+                'id',
+                'name',
+                'programme',
+                'group',
+                'part',
+                'email',
+                'status'
+
+            ];
+
+
+            columns.forEach(col => {
+
+                const el =
+                    document.getElementById(
+                        'sort-' + col
+                    );
+
+
+                if (!el) return;
+
+
+                if (
+                    col === sortColumn
+                ) {
+
+                    el.innerText =
+                        sortDirection === 'asc'
+                            ? '↑'
+                            : '↓';
+
+                }
+
+                else {
+
+                    el.innerText =
+                        '↕';
+
+                }
+
+            });
+
+        }
+
+
+        /* ================= PAGE SIZE ================= */
+
+        function changePageSize() {
+
+            pageSize =
+                parseInt(
+                    document.getElementById(
+                        'pageSizeSelect'
+                    ).value,
+                    10
+                ) || 20;
+
+
+            currentPage = 1;
+
+            renderCurrentPage();
+
+        }
+
+
+        /* ================= FILTER ================= */
+
+        function applyFiltersAndRender() {
+
+            const keyword =
+                document.getElementById(
+                    'searchInput'
+                )
+                .value
+                .toLowerCase()
+                .trim();
+
+
+            const selectedProg =
+                document.getElementById(
+                    'programmeFilter'
+                ).value;
+
+
+            const selectedGroup =
+                document.getElementById(
+                    'groupFilter'
+                ).value;
+
+
+            filteredStudents =
+                allStudents.filter(
+                    s => {
+
+                        const matchKeyword =
+
+                            s.name
+                                .toLowerCase()
+                                .includes(keyword)
+
+                            ||
+
+                            s.id
+                                .toLowerCase()
+                                .includes(keyword)
+
+                            ||
+
+                            s.programme
+                                .toLowerCase()
+                                .includes(keyword)
+
+                            ||
+
+                            s.group
+                                .toLowerCase()
+                                .includes(keyword)
+
+                            ||
+
+                            s.email
+                                .toLowerCase()
+                                .includes(keyword);
+
+
+                        const matchProg =
+                            selectedProg === 'ALL' ||
+                            s.programme === selectedProg;
+
+
+                        const matchGroup =
+                            selectedGroup === 'ALL' ||
+                            s.group === selectedGroup;
+
+
+                        return (
+                            matchKeyword &&
+                            matchProg &&
+                            matchGroup
+                        );
+
+                    }
+                );
+
+
+            /* Sorting */
+
+            if (sortColumn) {
+
+                filteredStudents.sort(
+                    (a, b) => {
+
+                        let valA =
+                            a[sortColumn];
+
+                        let valB =
+                            b[sortColumn];
+
+
+                        if (
+                            sortColumn === 'bil' ||
+                            sortColumn === 'part'
+                        ) {
+
+                            valA =
+                                Number(valA);
+
+                            valB =
+                                Number(valB);
+
+
+                            return sortDirection === 'asc'
+                                ? valA - valB
+                                : valB - valA;
+
+                        }
+
+
+                        valA =
+                            String(valA)
+                                .toLowerCase();
+
+
+                        valB =
+                            String(valB)
+                                .toLowerCase();
+
+
+                        if (
+                            valA < valB
+                        ) {
+
+                            return sortDirection === 'asc'
+                                ? -1
+                                : 1;
+
+                        }
+
+
+                        if (
+                            valA > valB
+                        ) {
+
+                            return sortDirection === 'asc'
+                                ? 1
+                                : -1;
+
+                        }
+
+
+                        return 0;
+
+                    }
+                );
+
+            }
+
+
+            currentPage = 1;
+
+            renderCurrentPage();
+
+        }
+
+
+        /* ================= RENDER TABLE ================= */
+
+        function renderCurrentPage() {
+
+            const tbody =
+                document.getElementById(
+                    'studentTableBody'
+                );
+
+
+            const emptyState =
+                document.getElementById(
+                    'emptyState'
+                );
+
+
+            const totalBadge =
+                document.getElementById(
+                    'totalBadge'
+                );
+
+
+            const paginationInfo =
+                document.getElementById(
+                    'paginationInfo'
+                );
+
+
+            const pageIndicator =
+                document.getElementById(
+                    'pageIndicator'
+                );
+
+
+            const pageNumbers =
+                document.getElementById(
+                    'pageNumbers'
+                );
+
+
+            const prevBtn =
+                document.getElementById(
+                    'prevBtn'
+                );
+
+
+            const nextBtn =
+                document.getElementById(
+                    'nextBtn'
+                );
+
+
+            tbody.innerHTML = '';
+
+            pageNumbers.innerHTML = '';
+
+
+            const totalRecords =
+                filteredStudents.length;
+
+
+            totalBadge.innerText =
+                totalRecords +
+                ' Students';
+
+
+            /* No records */
+
+            if (
+                totalRecords === 0
+            ) {
+
+                emptyState
+                    .classList
+                    .remove('hidden');
+
+
+                paginationInfo.innerText =
+                    'Showing 0 to 0 of 0 records';
+
+
+                pageIndicator.innerText =
+                    'Page 0 of 0';
+
+
+                prevBtn.disabled = true;
+
+                nextBtn.disabled = true;
+
+                return;
+
+            }
+
+
+            emptyState
+                .classList
+                .add('hidden');
+
+
+            const totalPages =
+                Math.ceil(
+                    totalRecords /
+                    pageSize
+                );
+
+
+            if (
+                currentPage >
+                totalPages
+            ) {
+
+                currentPage =
+                    totalPages;
+
+            }
+
+
+            if (
+                currentPage < 1
+            ) {
+
+                currentPage = 1;
+
+            }
+
+
+            const startIdx =
+                (currentPage - 1) *
+                pageSize;
+
+
+            const endIdx =
+                Math.min(
+                    startIdx + pageSize,
+                    totalRecords
+                );
+
+
+            const pageItems =
+                filteredStudents.slice(
+                    startIdx,
+                    endIdx
+                );
+
+
+            /* Generate rows */
+
+            pageItems.forEach(
+                (student, idx) => {
+
+                    const displayBil =
+                        sortColumn
+                            ? startIdx + idx + 1
+                            : student.bil;
+
+
+                    const tr =
+                        document.createElement(
+                            'tr'
+                        );
+
+
+                    tr.className =
+                        'hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors';
+
+
+                    tr.innerHTML = `
+
+                        <td class="py-3.5 px-4 text-center font-bold text-slate-400">
+                            ${displayBil}
+                        </td>
+
+                        <td class="py-3.5 px-4 font-extrabold text-slate-800 dark:text-slate-100">
+                            ${student.id}
+                        </td>
+
+                        <td class="py-3.5 px-4 font-bold text-uitmpurple dark:text-uitmgold uppercase">
+                            ${student.name}
+                        </td>
+
+                        <td class="py-3.5 px-4 text-center">
+
+                            <span
+                                class="bg-purple-50 dark:bg-purple-900/50 text-uitmpurple dark:text-purple-200 font-bold px-2.5 py-1 rounded-lg border border-purple-100 dark:border-purple-700/50">
+
+                                ${student.programme}
+
+                            </span>
+
+                        </td>
+
+                        <td class="py-3.5 px-4 text-center font-semibold text-slate-600 dark:text-slate-300">
+                            ${student.group}
+                        </td>
+
+                        <td class="py-3.5 px-4 text-center font-extrabold text-slate-800 dark:text-slate-100">
+                            Part ${student.part}
+                        </td>
+
+                        <td class="py-3.5 px-4 text-slate-600 dark:text-slate-300">
+                            ${student.email}
+                        </td>
+
+                        <td class="py-3.5 px-4 text-center">
+
+                            <span
+                                class="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
+
+                                ${student.status}
+
+                            </span>
+
+                        </td>
+
+                    `;
+
+
+                    tbody.appendChild(
+                        tr
+                    );
+
+                }
+            );
+
+
+            /* Pagination information */
+
+            paginationInfo.innerText =
+                `Showing ${startIdx + 1} to ${endIdx} of ${totalRecords} records`;
+
+
+            pageIndicator.innerText =
+                `Page ${currentPage} of ${totalPages}`;
+
+
+            prevBtn.disabled =
+                currentPage <= 1;
+
+
+            nextBtn.disabled =
+                currentPage >= totalPages;
+
+
+            /* Page buttons */
+
+            for (
+                let p = 1;
+                p <= totalPages;
+                p++
+            ) {
+
+                const btn =
+                    document.createElement(
+                        'button'
+                    );
+
+
+                btn.innerText =
+                    p;
+
+
+                btn.onclick =
+                    () => goToPage(p);
+
+
+                btn.className =
+                    p === currentPage
+
+                        ? 'w-9 h-9 rounded-xl bg-uitmgold text-uitmpurple font-black text-xs shadow cursor-pointer'
+
+                        : 'w-9 h-9 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs border border-slate-300 dark:border-slate-700 cursor-pointer';
+
+
+                pageNumbers.appendChild(
+                    btn
+                );
+
+            }
+
+        }
+
+
+        /* ================= GO TO PAGE ================= */
+
+        function goToPage(page) {
+
+            currentPage =
+                page;
+
+
+            renderCurrentPage();
+
+
+            window.scrollTo({
+
+                top: 0,
+
+                behavior: 'smooth'
+
+            });
+
+        }
+
+
+        /* ================= PREVIOUS PAGE ================= */
+
+        function prevPage() {
+
+            if (
+                currentPage > 1
+            ) {
+
+                currentPage--;
+
+                renderCurrentPage();
+
+
+                window.scrollTo({
+
+                    top: 0,
+
+                    behavior: 'smooth'
+
+                });
+
+            }
+
+        }
+
+
+        /* ================= NEXT PAGE ================= */
+
+        function nextPage() {
+
+            const totalPages =
+                Math.ceil(
+                    filteredStudents.length /
+                    pageSize
+                );
+
+
+            if (
+                currentPage <
+                totalPages
+            ) {
+
+                currentPage++;
+
+                renderCurrentPage();
+
+
+                window.scrollTo({
+
+                    top: 0,
+
+                    behavior: 'smooth'
+
+                });
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>

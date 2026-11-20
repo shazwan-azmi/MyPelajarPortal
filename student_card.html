@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Card | MyPelajar Portal UiTM</title>
+    <link rel="icon" type="image/png" href="uitm.png">
+    <link rel="apple-touch-icon" href="uitm.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        uitmpurple: '#4b1d52',
+                        uitmgold: '#ffc627',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-mono-tech { font-family: 'JetBrains Mono', monospace; }
+
+        /* Clean dark glass sidebar when Dark Mode is active */
+        html.dark #mainSidebar,
+        body.theme-dark #mainSidebar {
+            background-color: rgba(15, 23, 42, 0.85);
+            background-image: none;
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+        }
+
+        @media (min-width: 1024px) {
+            html.dark #mainSidebar,
+            body.theme-dark #mainSidebar {
+                background-color: rgba(15, 23, 42, 0.68);
+            }
+        }
+
+        /* Glow effect on sidebar sections/items when clicked or selected */
+        .sidebar-glow-item {
+            transition: transform 0.18s ease,
+                        background-color 0.2s ease,
+                        box-shadow 0.22s ease,
+                        color 0.2s ease,
+                        border-color 0.2s ease;
+        }
+
+        .sidebar-glow-item.is-glowing {
+            transform: scale(0.985);
+            background-color: rgba(255, 198, 39, 0.16) !important;
+            color: #ffc627 !important;
+            box-shadow:
+                0 0 18px rgba(255, 198, 39, 0.35),
+                0 0 28px rgba(168, 85, 247, 0.22),
+                inset 0 0 10px rgba(255, 198, 39, 0.14);
+        }
+
+        .sidebar-glow-item.is-active-glow {
+            box-shadow:
+                0 0 14px rgba(255, 198, 39, 0.22),
+                inset 0 0 8px rgba(255, 198, 39, 0.08);
+        }
+
+        .logout-glow-item.is-glowing {
+            background-color: rgba(239, 68, 68, 0.28) !important;
+            color: #ffffff !important;
+            box-shadow:
+                0 0 20px rgba(248, 113, 113, 0.45),
+                inset 0 0 10px rgba(254, 202, 202, 0.2);
+        }
+
+        /* 3D Perspective & Flip Card */
+        .card-scene {
+            perspective: 1600px;
+        }
+        .tilt-shell {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .card-3d-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+            cursor: pointer;
+        }
+        .card-3d-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 22px;
+            overflow: hidden;
+        }
+        @media (min-width: 640px) {
+            .card-face {
+                border-radius: 26px;
+            }
+        }
+        .card-face-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Premium Gradient & Metallic Foil Sheens */
+        .front-surface {
+            background:
+                radial-gradient(circle at 86% 18%, rgba(168, 85, 247, 0.28) 0%, transparent 48%),
+                radial-gradient(circle at 12% 88%, rgba(255, 198, 39, 0.16) 0%, transparent 45%),
+                linear-gradient(135deg, #4b1d52 0%, #270e36 52%, #11061c 100%);
+            box-shadow:
+                0 28px 60px -15px rgba(24, 9, 38, 0.55),
+                0 0 0 1.5px rgba(255, 198, 39, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.22);
+        }
+        .back-surface {
+            background:
+                radial-gradient(circle at 18% 20%, rgba(139, 92, 246, 0.22) 0%, transparent 46%),
+                radial-gradient(circle at 88% 85%, rgba(255, 198, 39, 0.12) 0%, transparent 45%),
+                linear-gradient(145deg, #2b103b 0%, #190826 55%, #0c0314 100%);
+            box-shadow:
+                0 28px 60px -15px rgba(24, 9, 38, 0.55),
+                0 0 0 1.5px rgba(255, 198, 39, 0.35),
+                inset 0 1px 1px rgba(255, 255, 255, 0.16);
+        }
+
+        /* Elegant Batik Pattern (Subtle Gold Parang / Kawung / Diamond) */
+        .batik-pattern-front {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke='%23ffc627' stroke-opacity='0.11' stroke-width='1'%3E%3Cpath d='M48 4 L92 48 L48 92 L4 48 Z'/%3E%3Ccircle cx='48' cy='48' r='22'/%3E%3Ccircle cx='48' cy='48' r='9'/%3E%3Cpath d='M48 0 C62 16, 62 32, 48 48 C34 32, 34 16, 48 0 Z'/%3E%3Cpath d='M48 48 C62 64, 62 80, 48 96 C34 80, 34 64, 48 48 Z'/%3E%3Cpath d='M0 48 C16 34, 32 34, 48 48 C32 62, 16 62, 0 48 Z'/%3E%3Cpath d='M48 48 C64 34, 80 34, 96 48 C80 62, 64 62, 48 48 Z'/%3E%3C/g%3E%3Ccircle cx='0' cy='0' r='3' fill='%23ffc627' fill-opacity='0.14'/%3E%3Ccircle cx='96' cy='0' r='3' fill='%23ffc627' fill-opacity='0.14'/%3E%3Ccircle cx='0' cy='96' r='3' fill='%23ffc627' fill-opacity='0.14'/%3E%3Ccircle cx='96' cy='96' r='3' fill='%23ffc627' fill-opacity='0.14'/%3E%3C/svg%3E");
+            background-size: 96px 96px;
+            pointer-events: none;
+        }
+
+        .batik-pattern-back {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Cg fill='none' stroke='%23ffc627' stroke-opacity='0.08' stroke-width='1'%3E%3Cpath d='M44 4 L84 44 L44 84 L4 44 Z'/%3E%3Ccircle cx='44' cy='44' r='18'/%3E%3Cpath d='M0 0 L88 88 M88 0 L0 88' stroke-dasharray='3 5'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 88px 88px;
+            pointer-events: none;
+        }
+
+        /* Subtle Holographic Shimmer Overlay */
+        .holo-glare {
+            background: linear-gradient(
+                115deg,
+                transparent 20%,
+                rgba(255, 255, 255, 0.06) 38%,
+                rgba(255, 198, 39, 0.12) 46%,
+                rgba(192, 132, 252, 0.09) 54%,
+                transparent 72%
+            );
+            background-size: 220% 220%;
+            animation: holoSweep 7s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes holoSweep {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Photo Frame Box */
+        .photo-frame-box {
+            background: linear-gradient(160deg, #5d2569 0%, #2a1038 58%, #12061c 100%);
+            box-shadow:
+                0 14px 26px -8px rgba(0, 0, 0, 0.7),
+                0 0 0 1.5px rgba(255, 198, 39, 0.58),
+                inset 0 1px 1px rgba(255, 255, 255, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex overflow-x-hidden transition-colors duration-200">
+
+    <!-- MOBILE BACKDROP -->
+    <div id="mobileSidebarBackdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-20 hidden lg:hidden"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="mainSidebar" class="w-72 bg-gradient-to-b from-uitmpurple via-purple-950 to-slate-900 text-white fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static flex flex-col shrink-0 border-r border-purple-950/60 z-30 transition-transform duration-200">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg bg-white flex items-center justify-center shrink-0">
+                    <img src="uitm.png" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <div class="min-w-0">
+                    <h2 class="text-sm font-bold tracking-wide truncate">MyPelajar Portal</h2>
+                    <p class="text-[10px] text-purple-300/80 font-medium uppercase tracking-widest truncate">Student Card</p>
+                </div>
+            </div>
+            <button type="button" onclick="toggleMobileSidebar(false)" aria-label="Close menu" class="lg:hidden text-purple-200 hover:text-white p-1.5 rounded-lg cursor-pointer shrink-0">
+                ✕
+            </button>
+        </div>
+        
+        <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto text-xs font-medium">
+            <a href="dashboard.html" onclick="toggleMobileSidebar(false)" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>🏠</span> Home</a>
+            <a href="pelajar.html" onclick="toggleMobileSidebar(false)" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>👥</span> Student List</a>
+            <a href="course_outline.html" onclick="toggleMobileSidebar(false)" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📖</span> Course Outline</a>
+            <a href="e_academic.html" onclick="toggleMobileSidebar(false)" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📚</span> e-Academic Register</a>
+            <a href="course_summary.html" onclick="toggleMobileSidebar(false)" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📄</span> Course Summary</a>
+            <a href="analytics.html" onclick="toggleMobileSidebar(false)" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📊</span> Analytics</a>
+            <a href="https://library.uitm.edu.my/" target="_blank" onclick="toggleMobileSidebar(false)" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>💻</span> Digital Library</a>
+            <a href="student_card.html" onclick="toggleMobileSidebar(false)" class="sidebar-glow-item is-active-glow flex items-center gap-3 px-4 py-3 bg-white/15 border-l-4 border-uitmgold rounded-r-xl text-uitmgold font-bold shadow-inner"><span>🆔</span> Student Card</a>
+        </nav>
+
+        <div class="p-4 border-t border-white/10">
+            <a href="index.html" class="sidebar-glow-item logout-glow-item flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold border border-red-500/20">🚪 Log Out</a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTAINER -->
+    <div class="flex-1 flex flex-col min-w-0">
+        <!-- HEADER -->
+        <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex justify-between items-center z-10 sticky top-0 shadow-sm transition-colors duration-200">
+            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <button type="button" onclick="toggleMobileSidebar(true)" aria-label="Open navigation menu" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-uitmpurple dark:text-uitmgold cursor-pointer shrink-0">
+                    ☰
+                </button>
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="text-uitmpurple dark:text-uitmgold font-black tracking-tight text-base shrink-0">MyPelajarPortal</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-widest hidden sm:inline truncate">UNIVERSITI TEKNOLOGI MARA</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2.5 sm:space-x-4 shrink-0">
+                <div class="text-right hidden md:block">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">WELCOME</p>
+                    <p class="text-xs font-extrabold text-slate-800 dark:text-slate-100" id="headerWelcome">2026112309 • MUHAMMAD SHAZWAN</p>
+                </div>
+
+                <!-- Small Theme Toggle Icon (Light / Dark Mode) -->
+                <button
+                    type="button"
+                    id="themeIconBtn"
+                    onclick="toggleMyPelajarTheme()"
+                    aria-label="Toggle Light or Dark Mode theme"
+                    title="Toggle Theme (Light / Dark)"
+                    class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0"
+                >
+                    <svg id="iconMoon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
+                    </svg>
+                    <svg id="iconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" />
+                    </svg>
+                </button>
+
+                <div class="w-9 h-9 rounded-full overflow-hidden shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
+                    <img id="headerProfilePhoto" src="wan profile.jpg" alt="Profile" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-6xl mx-auto w-full flex flex-col items-center justify-center space-y-5 sm:space-y-6">
+            
+            <!-- Title & Quick Controls -->
+            <div class="w-full max-w-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h1 class="text-lg font-extrabold text-slate-800 dark:text-white">Student Digital Matric Card</h1>
+                        <span class="bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Verified</span>
+                    </div>
+                </div>
+
+                <button type="button" onclick="toggleStudentCardFlip()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-uitmpurple hover:bg-purple-900 text-uitmgold text-xs font-extrabold shadow-md transition-all cursor-pointer shrink-0">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    <span id="flipBtnLabel">Flip to Back of Card</span>
+                </button>
+            </div>
+
+            <!-- INTERACTIVE 3D CARD CONTAINER -->
+            <div id="tiltWrapper" class="w-full max-w-[600px] min-h-[235px] sm:min-h-0 sm:aspect-[1.64/1] card-scene select-none">
+                <div id="tiltShell" class="tilt-shell">
+                    <div id="studentCardInner" onclick="toggleStudentCardFlip()" class="card-3d-inner" role="button" tabindex="0" aria-label="UiTM Student Digital Matric Card - Click to flip">
+
+                        <!-- ==================== CARD FRONT ==================== -->
+                        <div class="card-face front-surface p-4 sm:p-8 flex flex-col justify-between text-white">
+                            <!-- Batik Pattern & Holographic Shimmer Layers -->
+                            <div class="batik-pattern-front absolute inset-0"></div>
+                            <div class="holo-glare absolute inset-0"></div>
+
+                            <!-- Decorative Rings on Top Right -->
+                            <div class="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full border border-amber-300/20"></div>
+                            <div class="pointer-events-none absolute -top-14 -right-14 w-52 h-52 rounded-full border border-purple-300/20"></div>
+
+                            <!-- TOP ROW: UiTM PNG Logo + Title + NFC Contactless Icon -->
+                            <div class="relative z-10 flex items-center justify-between gap-2.5 sm:gap-4">
+                                <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                                    <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-white p-1 flex items-center justify-center shadow-lg ring-1 ring-amber-300/60 shrink-0 overflow-hidden">
+                                        <img src="uitm.png" alt="UiTM Logo" class="w-full h-full object-contain" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+                                        <span class="hidden font-extrabold text-xs sm:text-sm text-[#270e36] tracking-tight">UiTM</span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h2 class="text-[11px] sm:text-[15px] font-extrabold tracking-wide text-uitmgold uppercase leading-tight truncate">
+                                            UNIVERSITI TEKNOLOGI MARA
+                                        </h2>
+                                        <p class="text-[9px] sm:text-xs font-semibold tracking-wider text-purple-200/90 uppercase mt-0.5 truncate">
+                                            STUDENT DIGITAL MATRIC CARD
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- NFC Wave Icon -->
+                                <div class="text-uitmgold/90 shrink-0" title="NFC Digital Enabled">
+                                    <svg class="w-5 h-5 sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                        <path d="M6 10.5a3.5 3.5 0 0 1 0 3"/>
+                                        <path d="M9.5 8.5a6.5 6.5 0 0 1 0 7"/>
+                                        <path d="M13 6.5a9.5 9.5 0 0 1 0 11"/>
+                                        <path d="M16.5 4.5a12.5 12.5 0 0 1 0 15"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- MIDDLE ROW: Student Photo Frame + Student Details -->
+                            <div class="relative z-10 flex items-center gap-3 sm:gap-6 my-auto py-1.5 sm:py-2">
+                                <div class="photo-frame-box relative w-16 h-20 sm:w-24 sm:h-28 rounded-xl sm:rounded-2xl overflow-hidden flex flex-col items-center justify-center shrink-0">
+                                    <img id="cardStudentPhoto" src="wan profile.jpg" alt="Student Photo" class="w-full h-full object-cover object-top" onerror="this.classList.add('hidden'); document.getElementById('cardMonogramFallback').classList.remove('hidden');">
+                                    <div id="cardMonogramFallback" class="hidden flex-col items-center justify-center text-center px-1">
+                                        <span id="cardMonogram" class="text-xl sm:text-3xl font-extrabold text-uitmgold tracking-wider leading-none block">MS</span>
+                                    </div>
+                                </div>
+
+                                <div class="min-w-0 flex-1 space-y-1 sm:space-y-1.5">
+                                    <h3 id="cardStudentName" class="text-xs sm:text-[21px] font-extrabold tracking-tight text-white uppercase leading-snug truncate">
+                                        MUHAMMAD SHAZWAN BIN AZMI
+                                    </h3>
+                                    <p id="cardStudentId" class="font-mono-tech text-xs sm:text-base font-bold text-uitmgold tracking-wider">
+                                        2026112309
+                                    </p>
+                                    <p id="cardProgrammeName" class="text-[10px] sm:text-sm text-purple-200/90 font-medium leading-snug line-clamp-2">
+                                        Bachelor of Science in Information (Honours) Information Systems Management
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- BOTTOM ROW: Divider + Campus + Flip Hint -->
+                            <div class="relative z-10 pt-2.5 sm:pt-3 border-t border-amber-300/20 flex items-center justify-between gap-2 text-[10px] sm:text-xs">
+                                <span id="cardCampusText" class="font-semibold text-purple-200/90 truncate">Kampus Uitm Puncak Perdana</span>
+
+                                <span class="inline-flex items-center gap-1 sm:gap-1.5 font-mono-tech font-semibold text-uitmgold shrink-0">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <ellipse cx="12" cy="12" rx="9" ry="4.5"/>
+                                        <path d="M12 3v18"/>
+                                        <path d="M9 5.5L12 3l3 2.5"/>
+                                    </svg>
+                                    <span>Click to flip card</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- ==================== CARD BACK ==================== -->
+                        <div class="card-face card-face-back back-surface p-4 sm:p-8 flex flex-col justify-between text-white">
+                            <!-- Batik Pattern & Holographic Shimmer Layers -->
+                            <div class="batik-pattern-back absolute inset-0"></div>
+                            <div class="holo-glare absolute inset-0"></div>
+
+                            <!-- TOP ROW: Digital Verification Pass + Valid Badge -->
+                            <div class="relative z-10 pb-2.5 sm:pb-3.5 border-b border-amber-300/20 flex items-center justify-between gap-2 sm:gap-3">
+                                <span class="font-mono-tech text-[10px] sm:text-sm font-bold tracking-[0.1em] sm:tracking-[0.14em] text-purple-200 uppercase truncate">
+                                    DIGITAL VERIFICATION PASS
+                                </span>
+                                <span id="cardValidBadge" class="font-mono-tech text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-400/25 tracking-wider shrink-0">
+                                    VALID 2026/2027
+                                </span>
+                            </div>
+
+                            <!-- MIDDLE ROW: IC Number, Programme Code, Campus & Official Property Note + QR Code -->
+                            <div class="relative z-10 flex items-center justify-between gap-3 sm:gap-5 my-auto py-1.5 sm:py-2">
+                                <div class="space-y-2 sm:space-y-2.5 text-xs sm:text-sm min-w-0 flex-1">
+                                    <div>
+                                        <p class="text-[10px] sm:text-xs uppercase tracking-wider text-purple-200/75 font-semibold">IC Number</p>
+                                        <p id="cardBackIcNumber" class="font-mono-tech font-bold text-white text-xs sm:text-base mt-0.5 truncate">050803020829</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] sm:text-xs uppercase tracking-wider text-purple-200/75 font-semibold">Programme Code</p>
+                                        <p id="cardBackProgrammeCode" class="font-mono-tech font-extrabold text-uitmgold text-xs sm:text-base mt-0.5 truncate">SI262</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] sm:text-xs uppercase tracking-wider text-purple-200/75 font-semibold">Campus</p>
+                                        <p id="cardBackCampus" class="font-bold text-white text-xs sm:text-base mt-0.5 truncate">Kampus Uitm Puncak Perdana</p>
+                                    </div>
+                                    <p class="text-[10px] sm:text-xs text-slate-300/90 pt-0.5 truncate">
+                                        This card is the official property of UiTM.
+                                    </p>
+                                </div>
+
+                                <!-- Crisp SVG QR Code Box -->
+                                <div class="w-16 h-16 sm:w-28 sm:h-28 rounded-xl sm:rounded-2xl bg-white p-1.5 sm:p-2.5 shadow-xl flex items-center justify-center shrink-0 ring-2 ring-amber-300/40">
+                                    <svg viewBox="0 0 29 29" class="w-full h-full fill-slate-950" shape-rendering="crispEdges">
+                                        <!-- Top-Left Finder -->
+                                        <path d="M2 2h7v7H2zM3 3v5h5V3zM4 4h3v3H4z"/>
+                                        <!-- Top-Right Finder -->
+                                        <path d="M20 2h7v7h-7zM21 3v5h5V3zM22 4h3v3h-3z"/>
+                                        <!-- Bottom-Left Finder -->
+                                        <path d="M2 20h7v7H2zM3 21v5h5v-5zM4 22h3v3H4z"/>
+                                        <!-- Data Modules -->
+                                        <rect x="11" y="2" width="2" height="2"/>
+                                        <rect x="15" y="2" width="3" height="2"/>
+                                        <rect x="12" y="5" width="2" height="3"/>
+                                        <rect x="16" y="6" width="2" height="2"/>
+                                        <rect x="2" y="11" width="3" height="2"/>
+                                        <rect x="7" y="11" width="2" height="3"/>
+                                        <rect x="11" y="10" width="4" height="2"/>
+                                        <rect x="17" y="11" width="3" height="2"/>
+                                        <rect x="22" y="11" width="2" height="3"/>
+                                        <rect x="25" y="12" width="2" height="2"/>
+                                        <rect x="4" y="15" width="3" height="2"/>
+                                        <rect x="10" y="14" width="2" height="4"/>
+                                        <rect x="14" y="15" width="3" height="2"/>
+                                        <rect x="19" y="14" width="2" height="3"/>
+                                        <rect x="23" y="16" width="4" height="2"/>
+                                        <rect x="11" y="20" width="2" height="3"/>
+                                        <rect x="15" y="19" width="3" height="2"/>
+                                        <rect x="20" y="20" width="2" height="4"/>
+                                        <rect x="24" y="20" width="3" height="3"/>
+                                        <rect x="12" y="25" width="3" height="2"/>
+                                        <rect x="17" y="24" width="2" height="3"/>
+                                        <rect x="22" y="25" width="4" height="2"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- BOTTOM ROW: Auth Code + Flip to Front Hint -->
+                            <div class="relative z-10 pt-2.5 sm:pt-3 border-t border-amber-300/20 flex items-center justify-between gap-2 text-[10px] sm:text-xs">
+                                <span id="cardAuthCode" class="font-mono-tech font-semibold text-slate-300 tracking-wider truncate">
+                                    AUTH: UITM-MYPELAJAR-2026
+                                </span>
+
+                                <span class="inline-flex items-center gap-1 sm:gap-1.5 font-mono-tech font-semibold text-uitmgold shrink-0">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+                                        <path d="M3 3v5h5"/>
+                                    </svg>
+                                    <span>Click front</span>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Small Note Below Card -->
+            <div class="text-center text-xs text-slate-500 dark:text-slate-400 px-2">
+                Tip: Click directly anywhere on the card to flip between <span class="font-bold text-uitmpurple dark:text-uitmgold">Front View</span> and <span class="font-bold text-uitmpurple dark:text-uitmgold">Digital Verification Pass</span>.
+            </div>
+
+        </main>
+        
+        <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center py-4 px-4 mt-auto text-xs text-slate-500 dark:text-slate-400 transition-colors duration-200">&copy; 2026 Universiti Teknologi MARA (UiTM) &bull; MyPelajar Portal.</footer>
+    </div>
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        const DEFAULT_STUDENT_ID = '2026112309';
+
+        const PROGRAMME_FULL_NAMES = {
+            SI261: 'Bachelor of Information Science (Honours) Records Management',
+            SI262: 'Bachelor of Science in Information (Honours) Information Systems Management',
+            SI263: 'Bachelor of Information Science (Honours) Information Content Management',
+            AM238: 'Bachelor of Administrative Science (Honours)',
+            BA273: 'Bachelor of Business Administration (Honours) Human Resource Management'
+        };
+
+        function toggleMobileSidebar(open) {
+            const sidebar = document.getElementById('mainSidebar');
+            const backdrop = document.getElementById('mobileSidebarBackdrop');
+            if (!sidebar || !backdrop) return;
+            sidebar.classList.toggle('-translate-x-full', !open);
+            backdrop.classList.toggle('hidden', !open);
+        }
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                toggleMobileSidebar(false);
+            }
+        });
+
+        function syncThemeIconUI(isDark) {
+            document.documentElement.classList.toggle('dark', isDark);
+            document.body.classList.toggle('theme-dark', isDark);
+            const moon = document.getElementById('iconMoon');
+            const sun = document.getElementById('iconSun');
+            if (moon && sun) {
+                moon.classList.toggle('hidden', isDark);
+                sun.classList.toggle('hidden', !isDark);
+            }
+        }
+
+        function toggleMyPelajarTheme() {
+            const nextDark = !(localStorage.getItem('uitm_theme') === 'dark');
+            localStorage.setItem('uitm_theme', nextDark ? 'dark' : 'light');
+            syncThemeIconUI(nextDark);
+        }
+
+        function safeJsonParse(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : null;
+            } catch (err) {
+                return null;
+            }
+        }
+
+        function resolveProgrammeLabel(progCode, userObj, dashObj, isDefaultUser) {
+            const cleanCode = String(progCode || '').toUpperCase().trim();
+            const customTitle = String(
+                (userObj && (userObj.programmeTitle || userObj.programTitle)) ||
+                (dashObj && (dashObj.programmeTitle || dashObj.programTitle)) ||
+                ''
+            ).trim();
+
+            if (customTitle) return customTitle;
+            if (PROGRAMME_FULL_NAMES[cleanCode]) return PROGRAMME_FULL_NAMES[cleanCode];
+            if (cleanCode) return `Bachelor Programme (${cleanCode})`;
+            return isDefaultUser ? PROGRAMME_FULL_NAMES.SI262 : 'Programme Not Set';
+        }
+
+        function syncStudentCardProfile() {
+            syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
+
+            const activeId = String(
+                localStorage.getItem('uitm_active_user') ||
+                localStorage.getItem('uitm_student_id') ||
+                DEFAULT_STUDENT_ID
+            ).trim();
+
+            const savedUser = safeJsonParse('uitm_user_' + activeId) || {};
+            const rawDash = safeJsonParse('uitm_dashboard_state') || safeJsonParse('uitm_dashboard_' + activeId) || {};
+            const dashState = (!rawDash.studentId || String(rawDash.studentId).trim() === activeId) ? rawDash : {};
+            const slipData = safeJsonParse('uitm_registered_courses_slip');
+            const matchesActiveSlip = slipData && (!slipData.studentId || String(slipData.studentId).trim() === activeId);
+
+            const isDefaultUser = (activeId === DEFAULT_STUDENT_ID);
+            const studentId = String(savedUser.studentId || savedUser.id || dashState.studentId || activeId).trim();
+            const fullName = String(
+                savedUser.name ||
+                dashState.name ||
+                (isDefaultUser ? 'MUHAMMAD SHAZWAN BIN AZMI' : `STUDENT ${studentId}`)
+            ).toUpperCase().trim();
+
+            const prog = String(
+                (matchesActiveSlip && slipData.programCode) ||
+                savedUser.programme ||
+                savedUser.program ||
+                dashState.programCode ||
+                dashState.programme ||
+                (isDefaultUser ? (localStorage.getItem('uitm_selected_program') || 'SI262') : 'NOT SET')
+            ).toUpperCase().trim();
+
+            const campus = String(
+                savedUser.campus ||
+                dashState.campus ||
+                (isDefaultUser ? 'Kampus Uitm Puncak Perdana' : 'Campus Not Set')
+            ).trim();
+
+            const icNumber = String(
+                savedUser.icNumber ||
+                savedUser.icNo ||
+                savedUser.ic ||
+                dashState.icNumber ||
+                dashState.icNo ||
+                dashState.ic ||
+                (isDefaultUser ? '050803020829' : 'NOT SET')
+            ).trim().toUpperCase();
+
+            const progFullName = resolveProgrammeLabel(prog, savedUser, dashState, isDefaultUser);
+            const userPhoto = String(
+                savedUser.photo ||
+                localStorage.getItem('uitm_photo_' + studentId) ||
+                dashState.photo ||
+                (isDefaultUser ? (localStorage.getItem('uitm_profile_photo') || 'wan profile.jpg') : 'uitm.png')
+            ).trim();
+
+            document.getElementById('headerWelcome').innerText = `${studentId} • ${fullName}`;
+            document.getElementById('cardMonogram').innerText = getMonogram(fullName);
+            document.getElementById('cardStudentName').innerText = fullName;
+            document.getElementById('cardStudentId').innerText = studentId;
+            document.getElementById('cardProgrammeName').innerText = progFullName;
+            document.getElementById('cardCampusText').innerText = campus;
+
+            document.getElementById('cardBackIcNumber').innerText = icNumber;
+            document.getElementById('cardBackProgrammeCode').innerText = prog;
+            document.getElementById('cardBackCampus').innerText = campus;
+            document.getElementById('cardAuthCode').innerText = `AUTH: UITM-${studentId}-2026`;
+
+            document.getElementById('cardStudentPhoto').src = userPhoto;
+            document.getElementById('headerProfilePhoto').src = userPhoto;
+        }
+
+        syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
+
+        document.querySelectorAll('#mainSidebar .sidebar-glow-item').forEach(item => {
+            item.addEventListener('pointerdown', function() {
+                item.classList.add('is-glowing');
+            });
+
+            const removeGlow = () => {
+                setTimeout(() => item.classList.remove('is-glowing'), 180);
+            };
+
+            item.addEventListener('pointerup', removeGlow);
+            item.addEventListener('pointerleave', () => item.classList.remove('is-glowing'));
+            item.addEventListener('pointercancel', () => item.classList.remove('is-glowing'));
+
+            item.addEventListener('click', function() {
+                document.querySelectorAll('#mainSidebar nav .sidebar-glow-item').forEach(navLink => {
+                    navLink.classList.remove('is-active-glow');
+                });
+                if (item.closest('nav')) {
+                    item.classList.add('is-active-glow');
+                }
+                toggleMobileSidebar(false);
+            });
+        });
+
+        let isFlipped = false;
+
+        function toggleStudentCardFlip() {
+            const cardInner = document.getElementById('studentCardInner');
+            const btnLabel = document.getElementById('flipBtnLabel');
+            isFlipped = !isFlipped;
+
+            if (isFlipped) {
+                cardInner.classList.add('is-flipped');
+                btnLabel.innerText = 'Flip to Front of Card';
+            } else {
+                cardInner.classList.remove('is-flipped');
+                btnLabel.innerText = 'Flip to Back of Card';
+            }
+        }
+
+        function getMonogram(fullName) {
+            const clean = (fullName || 'STUDENT').trim().split(/\s+/);
+            if (clean.length === 1) return clean[0].slice(0, 2).toUpperCase();
+            return (clean[0][0] + clean[1][0]).toUpperCase();
+        }
+
+        window.addEventListener('storage', function(event) {
+            if (!event.key) return;
+            if (
+                event.key === 'uitm_active_user' ||
+                event.key === 'uitm_student_id' ||
+                event.key === 'uitm_profile_photo' ||
+                event.key === 'uitm_selected_program' ||
+                event.key === 'uitm_registered_courses_slip' ||
+                event.key.startsWith('uitm_photo_') ||
+                event.key.startsWith('uitm_user_') ||
+                event.key.startsWith('uitm_dashboard')
+            ) {
+                syncStudentCardProfile();
+            }
+        });
+
+        window.onload = function() {
+            syncStudentCardProfile();
+
+            const cardInner = document.getElementById('studentCardInner');
+            const tiltShell = document.getElementById('tiltShell');
+            const tiltWrapper = document.getElementById('tiltWrapper');
+
+            cardInner.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleStudentCardFlip();
+                }
+            });
+
+            const resetTilt = () => {
+                tiltShell.style.transition = 'transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)';
+                tiltShell.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            };
+
+            tiltWrapper.addEventListener('mousemove', function(e) {
+                if (e.pointerType && e.pointerType !== 'mouse') return;
+                const rect = tiltWrapper.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                const tiltX = (-y * 7).toFixed(2);
+                const tiltY = (x * 9).toFixed(2);
+                tiltShell.style.transition = 'transform 0.1s ease-out';
+                tiltShell.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+            });
+
+            tiltWrapper.addEventListener('mouseleave', resetTilt);
+            tiltWrapper.addEventListener('touchend', resetTilt, { passive: true });
+        };
+    </script>
+</body>
+</html>
