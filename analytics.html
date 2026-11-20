@@ -1,1065 +1,1351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics | MyPelajar Portal UiTM</title>
-    <link rel="icon" type="image/png" href="uitm.png">
-    <link rel="apple-touch-icon" href="uitm.png">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        uitmpurple: '#4b1d52',
-                        uitmgold: '#ffc627',
-                    }
-                }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics | MyPelajar Portal UiTM</title>
+<link rel="icon" type="image/png" href="uitm.png">
+<link rel="apple-touch-icon" href="uitm.png">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+    darkMode: 'class',
+    theme: {
+        extend: {
+            colors: {
+                uitmpurple: '#4b1d52',
+                uitmgold: '#ffc627'
             }
         }
-    </script>
-    <!-- D3.js v7 & TopoJSON CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    }
+};
+</script>
 
-        /* Clean dark glass sidebar when Dark Mode is active */
-        html.dark #mainSidebar,
-        body.theme-dark #mainSidebar {
-            background-color: rgba(15, 23, 42, 0.68);
-            background-image: none;
-            backdrop-filter: blur(20px) saturate(150%);
-            -webkit-backdrop-filter: blur(20px) saturate(150%);
-            border-right: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-        }
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-        /* Glow effect on sidebar sections/items when clicked or selected */
-        .sidebar-glow-item {
-            transition: transform 0.18s ease,
-                        background-color 0.2s ease,
-                        box-shadow 0.22s ease,
-                        color 0.2s ease,
-                        border-color 0.2s ease;
-        }
+<style>
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
 
-        .sidebar-glow-item.is-glowing {
-            transform: scale(0.985);
-            background-color: rgba(255, 198, 39, 0.16) !important;
-            color: #ffc627 !important;
-            box-shadow:
-                0 0 18px rgba(255, 198, 39, 0.35),
-                0 0 28px rgba(168, 85, 247, 0.22),
-                inset 0 0 10px rgba(255, 198, 39, 0.14);
-        }
+html.dark #mainSidebar,
+body.theme-dark #mainSidebar {
+    background-color: rgba(15, 23, 42, 0.68);
+    background-image: none;
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border-right: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+}
 
-        .sidebar-glow-item.is-active-glow {
-            box-shadow:
-                0 0 14px rgba(255, 198, 39, 0.22),
-                inset 0 0 8px rgba(255, 198, 39, 0.08);
-        }
+.sidebar-glow-item {
+    transition: transform .18s ease,
+        background-color .2s ease,
+        box-shadow .22s ease,
+        color .2s ease,
+        border-color .2s ease;
+}
 
-        .logout-glow-item.is-glowing {
-            background-color: rgba(239, 68, 68, 0.28) !important;
-            color: #ffffff !important;
-            box-shadow:
-                0 0 20px rgba(248, 113, 113, 0.45),
-                inset 0 0 10px rgba(254, 202, 202, 0.2);
-        }
+.sidebar-glow-item.is-glowing {
+    transform: scale(.985);
+    background-color: rgba(255,198,39,.16) !important;
+    color: #ffc627 !important;
+    box-shadow: 0 0 18px rgba(255,198,39,.35),
+        0 0 28px rgba(168,85,247,.22),
+        inset 0 0 10px rgba(255,198,39,.14);
+}
 
-        /* Colored Region Map lift + glow + active state */
-        .map-region {
-            transform-box: fill-box;
-            transform-origin: center;
-            transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-                        filter 0.24s ease,
-                        fill-opacity 0.2s ease,
-                        stroke 0.2s ease,
-                        stroke-width 0.2s ease;
-            will-change: transform, filter;
-        }
+.sidebar-glow-item.is-active-glow {
+    box-shadow: 0 0 14px rgba(255,198,39,.22),
+        inset 0 0 8px rgba(255,198,39,.08);
+}
 
-        .map-region:hover,
-        .map-region.is-region-hovered,
-        .map-region.is-region-selected {
-            transform: translateY(-7px);
-            fill-opacity: 1 !important;
-            stroke: #ffffff;
-            stroke-width: 2;
-            filter: drop-shadow(0 10px 18px var(--region-glow, rgba(255, 198, 39, 0.75)));
-        }
+.logout-glow-item.is-glowing {
+    background-color: rgba(239,68,68,.28) !important;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(248,113,113,.45),
+        inset 0 0 10px rgba(254,202,202,.2);
+}
 
-        .map-legend-chip {
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        }
+/* MAP HOVER AND GLOW */
+.map-region {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform .24s cubic-bezier(.22,1,.36,1),
+        filter .24s ease,
+        fill-opacity .2s ease,
+        stroke .2s ease,
+        stroke-width .2s ease;
+    will-change: transform, filter;
+}
 
-        .map-legend-chip.is-legend-highlighted {
-            transform: translateY(-2px);
-            box-shadow: 0 0 16px var(--region-glow, rgba(255, 198, 39, 0.55));
-            border-color: rgba(255, 198, 39, 0.9) !important;
-        }
+.map-region:hover,
+.map-region.is-region-hovered,
+.map-region.is-region-selected {
+    transform: translateY(-7px);
+    fill-opacity: 1 !important;
+    stroke: #fff;
+    stroke-width: 2;
+    filter: drop-shadow(
+        0 10px 18px var(--region-glow, rgba(255,198,39,.75))
+    );
+}
 
-        #treemapClickTooltip, #mapClickTooltip {
-            position: fixed;
-            z-index: 60;
-            pointer-events: none;
-            max-width: calc(100vw - 24px);
-            transition: opacity 0.12s ease;
-        }
-    </style>
+.map-legend-chip {
+    transition: transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+.map-legend-chip.is-legend-highlighted {
+    transform: translateY(-2px);
+    box-shadow: 0 0 16px var(--region-glow, rgba(255,198,39,.55));
+    border-color: rgba(255,198,39,.9) !important;
+}
+
+#treemapClickTooltip,
+#mapClickTooltip {
+    position: fixed;
+    z-index: 60;
+    pointer-events: none;
+    max-width: calc(100vw - 24px);
+    transition: opacity .12s ease;
+}
+</style>
 </head>
+
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex overflow-x-hidden transition-colors duration-200">
 
-    <!-- Backdrop for Mobile & Tablet when Sidebar is opened -->
-    <div id="mobileSidebarBackdrop" onclick="closeMobileSidebar()" class="fixed inset-0 bg-slate-950/55 backdrop-blur-xs z-30 hidden lg:hidden"></div>
+<!-- MOBILE BACKDROP -->
+<div id="mobileSidebarBackdrop"
+     onclick="closeMobileSidebar()"
+     class="fixed inset-0 bg-slate-950/55 backdrop-blur-xs z-30 hidden lg:hidden">
+</div>
 
-    <!-- SIDEBAR -->
-    <aside id="mainSidebar" class="fixed lg:static inset-y-0 left-0 w-72 bg-gradient-to-b from-uitmpurple via-purple-950 to-slate-900 text-white -translate-x-full lg:translate-x-0 flex flex-col shrink-0 border-r border-purple-950/60 z-40 transition-transform duration-200">
-        <div class="p-6 border-b border-white/10 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-10 h-10 rounded-xl overflow-hidden shadow-md bg-white flex items-center justify-center shrink-0">
-                    <img src="uitm.png" alt="Logo" class="w-full h-full object-cover">
-                </div>
-                <div class="min-w-0">
-                    <h2 class="text-sm font-bold tracking-wide truncate">MyPelajar Portal</h2>
-                    <p class="text-[10px] text-purple-300/80 font-medium uppercase tracking-widest truncate">Analytics</p>
-                </div>
+<!-- SIDEBAR -->
+<aside id="mainSidebar"
+       class="fixed lg:static inset-y-0 left-0 w-72 bg-gradient-to-b from-uitmpurple via-purple-950 to-slate-900 text-white -translate-x-full lg:translate-x-0 flex flex-col shrink-0 border-r border-purple-950/60 z-40 transition-transform duration-200">
+
+    <div class="p-6 border-b border-white/10 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-xl overflow-hidden shadow-md bg-white flex items-center justify-center shrink-0">
+                <img src="uitm.png" alt="Logo" class="w-full h-full object-cover">
             </div>
-            <button type="button" onclick="closeMobileSidebar()" aria-label="Close menu" class="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-purple-200 hover:bg-white/10 hover:text-white cursor-pointer shrink-0">
-                ✕
-            </button>
+            <div class="min-w-0">
+                <h2 class="text-sm font-bold tracking-wide truncate">MyPelajar Portal</h2>
+                <p class="text-[10px] text-purple-300/80 font-medium uppercase tracking-widest truncate">Analytics</p>
+            </div>
         </div>
-        
-        <nav class="flex-1 px-4 py-4 space-y-1.5 text-xs font-medium overflow-y-auto">
-            <a href="dashboard.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>🏠</span> Home</a>
-            <a href="pelajar.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>👥</span> Student List</a>
-            <a href="course_outline.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📖</span> Course Outline</a>
-            <a href="e_academic.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📚</span> e-Academic Register</a>
-            <a href="course_summary.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>📄</span> Course Summary</a>
-            <a href="analytics.html" class="sidebar-glow-item is-active-glow flex items-center gap-3 px-4 py-3 bg-white/15 border-l-4 border-uitmgold rounded-r-xl text-uitmgold font-bold"><span>📊</span> Analytics</a>
-            <a href="https://library.uitm.edu.my/" target="_blank" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>💻</span> Digital Library</a>
-            <a href="student_card.html" class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white"><span>🆔</span> Student Card</a>
-        </nav>
+        <button type="button" onclick="closeMobileSidebar()"
+                aria-label="Close menu"
+                class="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-purple-200 hover:bg-white/10 hover:text-white cursor-pointer shrink-0">
+            ✕
+        </button>
+    </div>
 
-        <div class="p-4 border-t border-white/10">
-            <a href="index.html" class="sidebar-glow-item logout-glow-item flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold border border-red-500/20">🚪 Log Out</a>
-        </div>
-    </aside>
+    <nav class="flex-1 px-4 py-4 space-y-1.5 text-xs font-medium overflow-y-auto">
+        <a href="dashboard.html"
+           class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+            <span>🏠</span> Home
+        </a>
+        <a href="pelajar.html"
+           class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+            <span>👥</span> Student List
+        </a>
+        <a href="course_outline.html"
+           class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+            <span>📖</span> Course Outline
+        </a>
+        <a href="e_academic.html"
+           class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+            <span>📚</span> e-Academic Register
+        </a>
+        <a href="course_summary.html"
+           class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+            <span>📄</span> Course Summary
+        </a>
+        <a href="analytics.html"
+           class="sidebar-glow-item is-active-glow flex items-center gap-3 px-4 py-3 bg-white/15 border-l-4 border-uitmgold rounded-r-xl text-uitmgold font-bold">
+            <span>📊</span> Analytics
+        </a>
+        <a href="https://library.uitm.edu.my/" target="_blank"
+           class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+            <span>💻</span> Digital Library
+        </a>
+        <a href="student_card.html"
+           class="sidebar-glow-item flex items-center gap-3 px-4 py-3 rounded-xl text-purple-200 hover:bg-white/10 hover:text-white">
+            <span>🆔</span> Student Card
+        </a>
+    </nav>
 
-    <!-- MAIN CONTAINER (SINGLE MAIN SCROLL ONLY) -->
-    <div class="flex-1 flex flex-col min-w-0">
-        <!-- HEADER -->
-        <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex justify-between items-center z-10 sticky top-0 shadow-sm transition-colors duration-200">
-            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                <button
-                    type="button"
-                    id="mobileMenuBtn"
+    <div class="p-4 border-t border-white/10">
+        <a href="index.html"
+           class="sidebar-glow-item logout-glow-item flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold border border-red-500/20">
+            🚪 Log Out
+        </a>
+    </div>
+</aside>
+
+<!-- MAIN CONTAINER -->
+<div class="flex-1 flex flex-col min-w-0">
+
+    <!-- HEADER -->
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex justify-between items-center z-10 sticky top-0 shadow-sm transition-colors duration-200">
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <button type="button" id="mobileMenuBtn"
                     onclick="toggleMobileSidebar()"
                     aria-label="Open navigation menu"
                     title="Menu"
-                    class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-                <span class="text-uitmpurple dark:text-uitmgold font-black tracking-tight text-base truncate">MyPelajarPortal</span>
-                <span class="text-xs text-slate-400 uppercase tracking-widest hidden sm:inline truncate">UNIVERSITI TEKNOLOGI MARA</span>
-            </div>
-            <div class="flex items-center space-x-2.5 sm:space-x-4 shrink-0">
-                <div class="text-right hidden md:block">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">WELCOME</p>
-                    <p class="text-xs font-extrabold text-slate-800 dark:text-slate-100" id="headerWelcome">2026112309 &bull; MUHAMMAD SHAZWAN BIN AZMI</p>
-                </div>
+                    class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
 
-                <!-- Small Theme Toggle Icon (Light / Dark Mode) -->
-                <button
-                    type="button"
-                    id="themeIconBtn"
+            <span class="text-uitmpurple dark:text-uitmgold font-black tracking-tight text-base truncate">MyPelajarPortal</span>
+            <span class="text-xs text-slate-400 uppercase tracking-widest hidden sm:inline truncate">UNIVERSITI TEKNOLOGI MARA</span>
+        </div>
+
+        <div class="flex items-center space-x-2.5 sm:space-x-4 shrink-0">
+            <div class="text-right hidden md:block">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">WELCOME</p>
+                <p class="text-xs font-extrabold text-slate-800 dark:text-slate-100" id="headerWelcome">
+                    2026112309 &bull; MUHAMMAD SHAZWAN BIN AZMI
+                </p>
+            </div>
+
+            <button type="button" id="themeIconBtn"
                     onclick="toggleMyPelajarTheme()"
                     aria-label="Toggle Light or Dark Mode theme"
                     title="Toggle Theme (Light / Dark)"
-                    class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0"
-                >
-                    <svg id="iconMoon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
-                    </svg>
-                    <svg id="iconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="4" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" />
-                    </svg>
-                </button>
+                    class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0">
+                <svg id="iconMoon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+                </svg>
+                <svg id="iconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>
+                </svg>
+            </button>
 
-                <div class="w-9 h-9 rounded-full overflow-hidden shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
-                    <img id="headerProfilePhoto" src="wan profile.jpg" alt="Profile" class="w-full h-full object-cover">
-                </div>
+            <div class="w-9 h-9 rounded-full overflow-hidden shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
+                <img id="headerProfilePhoto" src="wan profile.jpg"
+                     alt="Profile" class="w-full h-full object-cover">
             </div>
-        </header>
-
-        <!-- MAIN CONTENT -->
-        <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6">
-            
-            <!-- Title Banner & Category Selection -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 p-4 sm:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 transition-colors duration-200">
-                <div class="min-w-0">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <h1 class="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white">Student Analytics (Treemap &amp; Choropleth Map)</h1>
-                        <a href="pelajar.html" id="totalStudentBadge" title="Open Student List" class="bg-uitmgold hover:brightness-95 text-uitmpurple text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase transition">200 STUDENTS</a>
-                    </div>
-                    <p id="dataSourceDesc" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 break-words">Directly tracks 200 Student List records &amp; synced with active login.</p>
-                </div>
-
-                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full lg:w-auto text-xs">
-                    <label for="treemapGroupBy" class="font-bold text-slate-600 dark:text-slate-300 shrink-0">Treemap Color Mode:</label>
-                    <select id="treemapGroupBy" onchange="rebuildTreemapChart()" class="w-full sm:w-auto px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-extrabold text-uitmpurple dark:text-uitmgold focus:outline-none focus:border-uitmpurple cursor-pointer">
-                        <option value="all_unique" selected>Distinct Color per Programme + Group + Part</option>
-                        <option value="programme">Color by Programme</option>
-                        <option value="group">Color by Group</option>
-                        <option value="part">Color by Part</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- D3 Treemap Chart Container -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 md:p-8 relative space-y-4 sm:space-y-5 transition-colors duration-200">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                        <h2 id="chartSubTitle" class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-wide">Student Distribution by Programme, Group &amp; Part</h2>
-                        <p class="text-xs text-slate-400">Click any box to view the student count and percentage (%) from the 200-student list.</p>
-                    </div>
-                </div>
-
-                <!-- Dynamic Color Legend -->
-                <div id="treemapColorLegend" class="flex flex-wrap gap-1.5 sm:gap-2 pt-1"></div>
-
-                <div id="d3TreemapContainer" class="w-full flex items-center justify-center min-h-[160px] overflow-hidden"></div>
-            </div>
-
-            <!-- Second Chart Container Below: Colored Region Map by Programme Code -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 md:p-8 relative space-y-4 overflow-visible transition-colors duration-200">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                        <h2 class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-wide">Colored Region Map by Programme Code</h2>
-                        <p class="text-xs text-slate-400">Hover or click any map region to lift, glow, and view programme count, percentage (%), and details.</p>
-                    </div>
-                </div>
-
-                <!-- Programme Code Color Legend -->
-                <div id="mapProgramLegend" class="flex flex-wrap gap-1.5 sm:gap-2 pt-1"></div>
-
-                <!-- Selected Region Data Inspector -->
-                <div id="selectedRegionInfoCard" class="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <span id="selectedRegionSwatch" class="w-4 h-4 rounded-md shrink-0 border border-white/60" style="background:#0284c7; box-shadow: 0 0 14px rgba(2, 132, 199, 0.75);"></span>
-                        <p id="selectedRegionSummary" class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white truncate">
-                            Hover or click a region on the map to inspect programme data
-                        </p>
-                    </div>
-                    <span id="selectedRegionProgramDesc" class="text-[11px] font-bold text-uitmpurple dark:text-uitmgold bg-purple-100/80 dark:bg-purple-950/80 px-3 py-1.5 rounded-xl shrink-0">
-                        Programme Analytics
-                    </span>
-                </div>
-
-                <div id="d3MapContainer" class="w-full flex items-center justify-center min-h-[160px] pt-2 overflow-visible"></div>
-            </div>
-
-        </main>
-        
-        <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center py-4 px-4 mt-auto text-xs text-slate-500 dark:text-slate-400 transition-colors duration-200">&copy; 2026 Universiti Teknologi MARA (UiTM) &bull; MyPelajar Portal.</footer>
-    </div>
-
-    <!-- ================= FLOATING CALLOUT TOOLTIP TREEMAP ================= -->
-    <div id="treemapClickTooltip" class="hidden bg-slate-900/95 text-white rounded-lg px-3.5 py-2.5 shadow-2xl border border-white/15 min-w-[210px]">
-        <div id="tooltipHeading" class="text-xs font-extrabold text-white mb-1">Category</div>
-        <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-200">
-            <span id="tooltipSwatch" class="w-3 h-3 rounded-xs border border-white/60 inline-block shrink-0"></span>
-            <span id="tooltipText">Total: 0 (0.0%)</span>
         </div>
-    </div>
+    </header>
 
-    <!-- ================= FLOATING CALLOUT TOOLTIP MAP ================= -->
-    <div id="mapClickTooltip" class="hidden bg-slate-900/95 text-white rounded-lg px-3.5 py-2.5 shadow-2xl border border-white/15 min-w-[220px]">
-        <div class="flex items-center gap-2 mb-1">
-            <span id="mapTooltipSwatch" class="w-3 h-3 rounded-xs border border-white/60 inline-block shrink-0"></span>
-            <span id="mapTooltipHeading" class="text-xs font-extrabold text-white">Programme Code</span>
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6">
+
+        <!-- TITLE AND CATEGORY -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 p-4 sm:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 transition-colors duration-200">
+            <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-base sm:text-lg font-extrabold text-slate-800 dark:text-white">
+                        Student Analytics (Treemap &amp; Choropleth Map)
+                    </h1>
+                    <a href="pelajar.html" id="totalStudentBadge"
+                       title="Open Student List"
+                       class="bg-uitmgold hover:brightness-95 text-uitmpurple text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase transition">
+                        200 STUDENTS
+                    </a>
+                </div>
+                <p id="dataSourceDesc" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 break-words">
+                    Directly tracks 200 Student List records &amp; synced with active login.
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full lg:w-auto text-xs">
+                <label for="treemapGroupBy" class="font-bold text-slate-600 dark:text-slate-300 shrink-0">
+                    Treemap Color Mode:
+                </label>
+                <select id="treemapGroupBy"
+                        onchange="rebuildTreemapChart()"
+                        class="w-full sm:w-auto px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-extrabold text-uitmpurple dark:text-uitmgold focus:outline-none focus:border-uitmpurple cursor-pointer">
+                    <option value="all_unique" selected>Distinct Color per Programme + Group + Part</option>
+                    <option value="programme">Color by Programme</option>
+                    <option value="group">Color by Group</option>
+                    <option value="part">Color by Part</option>
+                </select>
+            </div>
         </div>
-        <div id="mapTooltipDesc" class="text-[11px] font-semibold text-slate-200">Total: 0 (0.0%)</div>
+
+        <!-- TREEMAP -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 md:p-8 relative space-y-4 sm:space-y-5 transition-colors duration-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 id="chartSubTitle" class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-wide">
+                        Student Distribution by Programme, Group &amp; Part
+                    </h2>
+                    <p class="text-xs text-slate-400">
+                        Click any box to view the student count and percentage (%) from the 200-student list.
+                    </p>
+                </div>
+            </div>
+
+            <div id="treemapColorLegend" class="flex flex-wrap gap-1.5 sm:gap-2 pt-1"></div>
+            <div id="d3TreemapContainer" class="w-full flex items-center justify-center min-h-[160px] overflow-hidden"></div>
+        </div>
+
+        <!-- COLORED REGION MAP -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 md:p-8 relative space-y-4 overflow-visible transition-colors duration-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-wide">
+                        Colored Region Map by Programme Code
+                    </h2>
+                    <p class="text-xs text-slate-400">
+                        Hover or click any map region to lift, glow, and view programme count, percentage (%), and details.
+                    </p>
+                </div>
+            </div>
+
+            <div id="mapProgramLegend" class="flex flex-wrap gap-1.5 sm:gap-2 pt-1"></div>
+
+            <div id="selectedRegionInfoCard"
+                 class="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span id="selectedRegionSwatch"
+                          class="w-4 h-4 rounded-md shrink-0 border border-white/60"
+                          style="background:#0284c7;box-shadow:0 0 14px rgba(2,132,199,.75);"></span>
+                    <p id="selectedRegionSummary"
+                       class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white truncate">
+                        Hover or click a region on the map to inspect programme data
+                    </p>
+                </div>
+
+                <span id="selectedRegionProgramDesc"
+                      class="text-[11px] font-bold text-uitmpurple dark:text-uitmgold bg-purple-100/80 dark:bg-purple-950/80 px-3 py-1.5 rounded-xl shrink-0">
+                    Programme Analytics
+                </span>
+            </div>
+
+            <div id="d3MapContainer"
+                 class="w-full flex items-center justify-center min-h-[160px] pt-2 overflow-visible"></div>
+        </div>
+    </main>
+
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center py-4 px-4 mt-auto text-xs text-slate-500 dark:text-slate-400 transition-colors duration-200">
+        &copy; 2026 Universiti Teknologi MARA (UiTM) &bull; MyPelajar Portal.
+    </footer>
+</div>
+
+<!-- TREEMAP TOOLTIP -->
+<div id="treemapClickTooltip"
+     class="hidden bg-slate-900/95 text-white rounded-lg px-3.5 py-2.5 shadow-2xl border border-white/15 min-w-[210px]">
+    <div id="tooltipHeading" class="text-xs font-extrabold text-white mb-1">
+        Category
     </div>
+    <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-200">
+        <span id="tooltipSwatch" class="w-3 h-3 rounded-xs border border-white/60 inline-block shrink-0"></span>
+        <span id="tooltipText">Total: 0 (0.0%)</span>
+    </div>
+</div>
 
-    <!-- ================= JAVASCRIPT ================= -->
-    <script>
-        const SHARED_STUDENTS_KEY = 'uitm_pelajar_200_records';
+<!-- MAP TOOLTIP -->
+<div id="mapClickTooltip"
+     class="hidden bg-slate-900/95 text-white rounded-lg px-3.5 py-2.5 shadow-2xl border border-white/15 min-w-[220px]">
+    <div class="flex items-center gap-2 mb-1">
+        <span id="mapTooltipSwatch" class="w-3 h-3 rounded-xs border border-white/60 inline-block shrink-0"></span>
+        <span id="mapTooltipHeading" class="text-xs font-extrabold text-white">Programme Code</span>
+    </div>
+    <div id="mapTooltipDesc" class="text-[11px] font-semibold text-slate-200">
+        Total: 0 (0.0%)
+    </div>
+</div>
 
-        const GROUPS_BY_PROGRAMME = {
-            SI261: ['SI261A', 'SI261B', 'SI261C'],
-            SI262: ['SI262A', 'SI262B', 'SI262C'],
-            SI263: ['SI263A', 'SI263B', 'SI263C'],
-            AM238: ['AMB38A', 'AMB38B', 'AMB38C'],
-            BA237: ['BA237A', 'BA237B', 'BA237C']
+<script>
+/* ================= SHARED DATA ================= */
+
+const SHARED_STUDENTS_KEY = 'uitm_pelajar_200_records';
+
+const GROUPS_BY_PROGRAMME = {
+    SI261: ['SI261A', 'SI261B', 'SI261C'],
+    SI262: ['SI262A', 'SI262B', 'SI262C'],
+    SI263: ['SI263A', 'SI263B', 'SI263C'],
+    AM238: ['AMB38A', 'AMB38B', 'AMB38C'],
+    BA237: ['BA237A', 'BA237B', 'BA237C']
+};
+
+const PROGRAMME_TITLES = {
+    SI261: 'Bachelor of Information Science (Honours) Records Management',
+    SI262: 'Bachelor of Information Science (Honours) Information Systems Management',
+    SI263: 'Bachelor of Information Science (Honours) Information Content Management',
+    AM238: 'Bachelor of Administrative Science (Honours)',
+    BA237: 'Bachelor of Business Administration (Honours)',
+    BA273: 'Bachelor of Business Administration (Honours) Human Resource Management'
+};
+
+/* ================= SIDEBAR ================= */
+
+function openMobileSidebar() {
+    const sidebar = document.getElementById('mainSidebar');
+    const backdrop = document.getElementById('mobileSidebarBackdrop');
+
+    if (sidebar) sidebar.classList.remove('-translate-x-full');
+    if (backdrop) backdrop.classList.remove('hidden');
+}
+
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('mainSidebar');
+    const backdrop = document.getElementById('mobileSidebarBackdrop');
+
+    if (sidebar) sidebar.classList.add('-translate-x-full');
+    if (backdrop) backdrop.classList.add('hidden');
+}
+
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('mainSidebar');
+    if (!sidebar) return;
+
+    if (sidebar.classList.contains('-translate-x-full')) {
+        openMobileSidebar();
+    } else {
+        closeMobileSidebar();
+    }
+}
+
+window.addEventListener('resize', function() {
+    if (window.innerWidth >= 1024) {
+        const backdrop = document.getElementById('mobileSidebarBackdrop');
+        if (backdrop) backdrop.classList.add('hidden');
+    }
+});
+
+/* ================= HELPERS ================= */
+
+function stripAfterDot(text) {
+    return String(text ?? '').split(/[•.]/)[0].trim();
+}
+
+function safeJsonParse(key) {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+        return null;
+    }
+}
+
+function hexToGlowRgba(hexColor, alpha = 0.78) {
+    if (!hexColor || !hexColor.startsWith('#')) {
+        return `rgba(255,198,39,${alpha})`;
+    }
+
+    let clean = hexColor.slice(1);
+    if (clean.length === 3) {
+        clean = clean.split('').map(ch => ch + ch).join('');
+    }
+
+    const num = parseInt(clean, 16);
+    if (Number.isNaN(num)) return `rgba(255,198,39,${alpha})`;
+
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/* ================= THEME ================= */
+
+function syncThemeIconUI(isDark) {
+    document.documentElement.classList.toggle('dark', isDark);
+    document.body.classList.toggle('theme-dark', isDark);
+
+    const moon = document.getElementById('iconMoon');
+    const sun = document.getElementById('iconSun');
+
+    if (moon && sun) {
+        moon.classList.toggle('hidden', isDark);
+        sun.classList.toggle('hidden', !isDark);
+    }
+}
+
+function toggleMyPelajarTheme() {
+    const nextDark = localStorage.getItem('uitm_theme') !== 'dark';
+    localStorage.setItem('uitm_theme', nextDark ? 'dark' : 'light');
+    syncThemeIconUI(nextDark);
+}
+
+syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
+
+/* ================= SIDEBAR GLOW ================= */
+
+document.querySelectorAll('#mainSidebar .sidebar-glow-item')
+    .forEach(item => {
+        item.addEventListener('pointerdown', () => {
+            item.classList.add('is-glowing');
+        });
+
+        const removeGlow = () => {
+            setTimeout(() => item.classList.remove('is-glowing'), 180);
         };
 
-        const PROGRAMME_TITLES = {
-            SI261: 'Bachelor of Information Science (Honours) Records Management',
-            SI262: 'Bachelor of Information Science (Honours) Information Systems Management',
-            SI263: 'Bachelor of Information Science (Honours) Information Content Management',
-            AM238: 'Bachelor of Administrative Science (Honours)',
-            BA237: 'Bachelor of Business Administration (Honours)',
-            BA273: 'Bachelor of Business Administration (Honours) Human Resource Management'
+        item.addEventListener('pointerup', removeGlow);
+        item.addEventListener('pointerleave', () => {
+            item.classList.remove('is-glowing');
+        });
+        item.addEventListener('pointercancel', () => {
+            item.classList.remove('is-glowing');
+        });
+
+        item.addEventListener('click', () => {
+            document.querySelectorAll('#mainSidebar nav .sidebar-glow-item')
+                .forEach(link => link.classList.remove('is-active-glow'));
+
+            if (item.closest('nav')) {
+                item.classList.add('is-active-glow');
+            }
+
+            closeMobileSidebar();
+        });
+    });
+
+/* ================= STUDENT RECORD NORMALIZATION ================= */
+
+function normalizeStudentRecord(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+
+    const id = String(
+        raw.id ?? raw.studentId ?? raw.matric ?? raw.noPelajar ?? ''
+    ).trim();
+
+    const name = String(
+        raw.name ?? raw.fullName ?? raw.studentName ?? raw.nama ?? ''
+    ).trim().toUpperCase();
+
+    if (!id && !name) return null;
+
+    const progRaw = String(
+        raw.programme ?? raw.program ?? raw.prog ??
+        raw.courseCode ?? 'SI262'
+    ).toUpperCase().trim();
+
+    const programme = progRaw || 'SI262';
+
+    const partMatch = String(
+        raw.part ?? raw.semester ?? raw.level ?? 4
+    ).match(/\d+/);
+
+    const part = partMatch ? parseInt(partMatch[0], 10) : 4;
+
+    const fallbackGroups =
+        GROUPS_BY_PROGRAMME[programme] || [`${programme}A`];
+
+    const groupRaw = String(
+        raw.group ?? raw.classGroup ?? raw.kumpulan ??
+        raw.kelas ?? fallbackGroups[0]
+    ).toUpperCase().trim();
+
+    const group = groupRaw || fallbackGroups[0];
+    const status = String(raw.status ?? 'Active').trim() || 'Active';
+
+    return {
+        id: id || name,
+        name: name || id,
+        programme,
+        group,
+        part,
+        status
+    };
+}
+
+/* ================= LOAD SHARED 200 STUDENTS ================= */
+
+function loadPelajarDirectory200() {
+    const shared = safeJsonParse(SHARED_STUDENTS_KEY);
+
+    if (!Array.isArray(shared) || shared.length === 0) {
+        return [];
+    }
+
+    // Reject old placeholder records with fixed 40 / 20% distribution.
+    const oldAnalyticsPlaceholders =
+        shared.length === 200 &&
+        shared.every(student =>
+            /^UITM STUDENT \d+$/i.test(
+                String(student?.name || '').trim()
+            )
+        );
+
+    if (oldAnalyticsPlaceholders) return [];
+
+    return shared
+        .map(student => normalizeStudentRecord(student))
+        .filter(Boolean)
+        .slice(0, 200);
+}
+
+/* ================= COLOR PALETTE ================= */
+
+const distinctPalette = [
+    '#4b1d52', '#ffc627', '#0284c7', '#0d9488',
+    '#e11d48', '#7c3aed', '#d97706', '#2563eb',
+    '#16a34a', '#db2777', '#4f46e5', '#0891b2',
+    '#65a30d', '#ea580c', '#9333ea', '#059669',
+    '#c026d3', '#ca8a04', '#1d4ed8', '#be123c',
+    '#0f766e', '#6d28d9', '#b45309', '#15803d',
+    '#a21caf', '#0369a1', '#4338ca', '#b91c1c',
+    '#047857', '#7e22ce', '#a16207', '#1e40af',
+    '#9d174d', '#115e59', '#5b21b6', '#92400e',
+    '#166534', '#86198f', '#075985', '#3730a3',
+    '#991b1b', '#065f46', '#6b21a8', '#854d0e',
+    '#14532d', '#701a75', '#0c4a6e', '#312e81',
+    '#7f1d1d', '#064e3b', '#581c87', '#713f12',
+    '#365314', '#9a3412', '#1e3a8a', '#831843',
+    '#134e4a', '#4c1d95', '#78350f', '#14532d',
+    '#6b21a8', '#0e7490', '#3b0764', '#451a03'
+];
+
+/* ================= D3 TREEMAP FUNCTION ================= */
+
+function Treemap(data, {
+    children,
+    value,
+    label,
+    group,
+    title,
+    width = 960,
+    height = 540,
+    paddingInner = 2,
+    paddingOuter = 3,
+    colors = distinctPalette,
+    onNodeClick
+} = {}) {
+
+    const root = d3.hierarchy(data, children)
+        .sum(d => Math.max(0, Number(value(d)) || 0))
+        .sort((a, b) => d3.descending(a.value, b.value));
+
+    d3.treemap()
+        .tile(d3.treemapBinary)
+        .size([width, height])
+        .paddingInner(paddingInner)
+        .paddingOuter(paddingOuter)
+        .round(true)(root);
+
+    const leaves = root.leaves();
+
+    const groups = group
+        ? leaves.map(d => group(d.data, d))
+        : leaves.map(() => 'default');
+
+    const domainArr = Array.from(new Set(groups));
+
+    const expandedColors = domainArr.map((_, index) => {
+        if (index < colors.length) return colors[index];
+        const hue = (index * 137.508) % 360;
+        return `hsl(${hue.toFixed(1)},72%,48%)`;
+    });
+
+    const colorFn = d3.scaleOrdinal(domainArr, expandedColors);
+
+    const svg = d3.create('svg')
+        .attr('viewBox', `0 0 ${width} ${height}`)
+        .attr('width', width)
+        .attr('height', height)
+        .attr('style', 'max-width:100%;height:auto;height:intrinsic;')
+        .attr('font-family', 'sans-serif')
+        .attr('font-size', 10);
+
+    const node = svg.selectAll('a')
+        .data(leaves)
+        .join('a')
+        .attr('transform', d => `translate(${d.x0},${d.y0})`)
+        .style('cursor', onNodeClick ? 'pointer' : null);
+
+    if (onNodeClick) {
+        node.on('click', function(event, d) {
+            const index = leaves.indexOf(d);
+            const fillColor = colorFn(groups[index]);
+            onNodeClick(event, d, index, fillColor);
+        });
+    }
+
+    node.append('rect')
+        .attr('fill', (d, i) => colorFn(groups[i]))
+        .attr('fill-opacity', 0.88)
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 1.5)
+        .attr('width', d => d.x1 - d.x0)
+        .attr('height', d => d.y1 - d.y0);
+
+    node.append('title')
+        .text(d => title ? title(d.data, d) : d.data.name);
+
+    const uid = 'O-' + Math.random().toString(16).slice(2);
+
+    node.append('clipPath')
+        .attr('id', (d, i) => `${uid}-clip-${i}`)
+        .append('rect')
+        .attr('width', d => d.x1 - d.x0)
+        .attr('height', d => d.y1 - d.y0);
+
+    node.append('text')
+        .attr('fill', '#fff')
+        .attr('font-weight', 'bold')
+        .attr('clip-path', (d, i) =>
+            `url(${new URL(`#${uid}-clip-${i}`, location)})`
+        )
+        .selectAll('tspan')
+        .data(d => {
+            const text = label ? label(d.data, d) : d.data.name;
+            return String(text).split(/\n/g);
+        })
+        .join('tspan')
+        .attr('x', 5)
+        .attr('y', (d, i, nodes) =>
+            `${(i === nodes.length - 1) * .3 + 1.2 + i * 1.05}em`
+        )
+        .attr('fill-opacity', (d, i, nodes) =>
+            i === nodes.length - 1 ? .9 : 1
+        )
+        .text(d => d);
+
+    return Object.assign(svg.node(), {
+        domainArr,
+        colorFn,
+        scales: { color: colorFn }
+    });
+}
+
+/* ================= ANALYTICS SYNC ================= */
+
+let allStudents = [];
+let lastSyncSignature = '';
+
+function buildSyncSignature() {
+    const activeId =
+        localStorage.getItem('uitm_active_user') || '2026112309';
+
+    return [
+        activeId,
+        localStorage.getItem('uitm_user_' + activeId) || '',
+        localStorage.getItem('uitm_photo_' + activeId) || '',
+        localStorage.getItem('uitm_profile_photo') || '',
+        localStorage.getItem('uitm_dashboard_state') || '',
+        localStorage.getItem(SHARED_STUDENTS_KEY) || ''
+    ].join('||');
+}
+
+function syncAnalyticsWithCurrentState(force = false) {
+    const signature = buildSyncSignature();
+
+    if (!force && signature === lastSyncSignature) return;
+    lastSyncSignature = signature;
+
+    syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
+
+    const activeId =
+        localStorage.getItem('uitm_active_user') || '2026112309';
+
+    const savedUser = safeJsonParse('uitm_user_' + activeId) || {};
+
+    const dashState =
+        safeJsonParse('uitm_dashboard_state') ||
+        safeJsonParse('uitm_dashboard_' + activeId) ||
+        {};
+
+    const activeUser = {
+        id: String(
+            savedUser.studentId ||
+            savedUser.id ||
+            dashState.studentId ||
+            activeId
+        ).trim(),
+
+        name: String(
+            savedUser.name ||
+            dashState.name ||
+            (activeId === '2026112309'
+                ? 'MUHAMMAD SHAZWAN BIN AZMI'
+                : 'NEW STUDENT SI262')
+        ).toUpperCase().trim(),
+
+        photo: String(
+            savedUser.photo ||
+            localStorage.getItem('uitm_photo_' + activeId) ||
+            (dashState &&
+                String(dashState.studentId) === activeId &&
+                dashState.photo) ||
+            localStorage.getItem('uitm_profile_photo') ||
+            'wan profile.jpg'
+        ).trim()
+    };
+
+    document.getElementById('headerWelcome').innerText =
+        activeUser.id + ' • ' + activeUser.name;
+
+    const headerPhoto = document.getElementById('headerProfilePhoto');
+
+    if (headerPhoto && activeUser.photo) {
+        headerPhoto.src = activeUser.photo;
+    }
+
+    allStudents = loadPelajarDirectory200();
+
+    if (allStudents.length === 0) {
+        document.getElementById('totalStudentBadge').innerText =
+            '0 Students';
+
+        document.getElementById('dataSourceDesc').innerText =
+            'Open Student List first to initialise the 200 sample records.';
+
+        document.getElementById('treemapColorLegend').innerHTML = '';
+        document.getElementById('mapProgramLegend').innerHTML = '';
+
+        document.getElementById('d3TreemapContainer').innerHTML =
+            '<p class="text-sm text-slate-500 dark:text-slate-300 p-8 text-center">Open Student List first to load the 200 sample records.</p>';
+
+        document.getElementById('d3MapContainer').innerHTML =
+            '<p class="text-sm text-slate-500 dark:text-slate-300 p-8 text-center">No shared sample records available.</p>';
+
+        document.getElementById('selectedRegionSummary').textContent =
+            'No student data available';
+
+        document.getElementById('selectedRegionProgramDesc').textContent =
+            'Programme Analytics';
+
+        return;
+    }
+
+    document.getElementById('totalStudentBadge').innerText =
+        allStudents.length + ' Students';
+
+    document.getElementById('dataSourceDesc').innerText =
+        `Directly tracks ${allStudents.length} Student List records • Active login: ${activeUser.id} • ${activeUser.name}`;
+
+    rebuildTreemapChart();
+    renderMapChart();
+}
+
+/* ================= PAGE EVENTS ================= */
+
+window.addEventListener('DOMContentLoaded', function() {
+    syncAnalyticsWithCurrentState(true);
+
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('#d3TreemapContainer')) {
+            document.getElementById('treemapClickTooltip')
+                .classList.add('hidden');
+        }
+
+        if (!event.target.closest('.map-region')) {
+            document.getElementById('mapClickTooltip')
+                .classList.add('hidden');
+        }
+    });
+});
+
+window.addEventListener('pageshow', function() {
+    syncAnalyticsWithCurrentState(false);
+});
+
+window.addEventListener('storage', function() {
+    syncAnalyticsWithCurrentState(false);
+});
+
+/* ================= BUILD TREEMAP ================= */
+
+function rebuildTreemapChart() {
+    document.getElementById('treemapClickTooltip')
+        .classList.add('hidden');
+
+    const groupByMode =
+        document.getElementById('treemapGroupBy').value;
+
+    const totalStudents = allStudents.length || 1;
+
+    const treeData = {
+        name: 'UiTM Students',
+        children: []
+    };
+
+    const programs = [
+        ...new Set(
+            allStudents.map(s =>
+                (s.programme || 'SI262').toUpperCase()
+            )
+        )
+    ].sort();
+
+    programs.forEach(programme => {
+        const programmeStudents = allStudents.filter(s =>
+            (s.programme || 'SI262').toUpperCase() === programme
+        );
+
+        const groups = [
+            ...new Set(
+                programmeStudents.map(s =>
+                    (s.group || `${programme}A`).toUpperCase()
+                )
+            )
+        ].sort();
+
+        const progNode = {
+            name: programme,
+            children: []
         };
 
-        function openMobileSidebar() {
-            const sidebar = document.getElementById('mainSidebar');
-            const backdrop = document.getElementById('mobileSidebarBackdrop');
-            if (sidebar) sidebar.classList.remove('-translate-x-full');
-            if (backdrop) backdrop.classList.remove('hidden');
-        }
-
-        function closeMobileSidebar() {
-            const sidebar = document.getElementById('mainSidebar');
-            const backdrop = document.getElementById('mobileSidebarBackdrop');
-            if (sidebar) sidebar.classList.add('-translate-x-full');
-            if (backdrop) backdrop.classList.add('hidden');
-        }
-
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('mainSidebar');
-            if (!sidebar) return;
-            if (sidebar.classList.contains('-translate-x-full')) {
-                openMobileSidebar();
-            } else {
-                closeMobileSidebar();
-            }
-        }
-
-        window.addEventListener('resize', function() {
-            if (window.innerWidth >= 1024) {
-                const backdrop = document.getElementById('mobileSidebarBackdrop');
-                if (backdrop) backdrop.classList.add('hidden');
-            }
-        });
-
-        function stripAfterDot(text) {
-            return String(text ?? '').split(/[•.]/)[0].trim();
-        }
-
-        function safeJsonParse(key) {
-            try {
-                const raw = localStorage.getItem(key);
-                return raw ? JSON.parse(raw) : null;
-            } catch (err) {
-                return null;
-            }
-        }
-
-        function hexToGlowRgba(hexColor, alpha = 0.78) {
-            if (!hexColor || !hexColor.startsWith('#')) {
-                return `rgba(255, 198, 39, ${alpha})`;
-            }
-            let clean = hexColor.slice(1);
-            if (clean.length === 3) {
-                clean = clean.split('').map(ch => ch + ch).join('');
-            }
-            const num = parseInt(clean, 16);
-            if (Number.isNaN(num)) return `rgba(255, 198, 39, ${alpha})`;
-            const r = (num >> 16) & 255;
-            const g = (num >> 8) & 255;
-            const b = num & 255;
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        }
-
-        function syncThemeIconUI(isDark) {
-            document.documentElement.classList.toggle('dark', isDark);
-            document.body.classList.toggle('theme-dark', isDark);
-            const moon = document.getElementById('iconMoon');
-            const sun = document.getElementById('iconSun');
-            if (moon && sun) {
-                moon.classList.toggle('hidden', isDark);
-                sun.classList.toggle('hidden', !isDark);
-            }
-        }
-
-        function toggleMyPelajarTheme() {
-            const nextDark = !(localStorage.getItem('uitm_theme') === 'dark');
-            localStorage.setItem('uitm_theme', nextDark ? 'dark' : 'light');
-            syncThemeIconUI(nextDark);
-        }
-
-        syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
-
-        // Glow effect when clicking any sidebar section
-        document.querySelectorAll('#mainSidebar .sidebar-glow-item').forEach(item => {
-            item.addEventListener('pointerdown', function() {
-                item.classList.add('is-glowing');
-            });
-
-            const removeGlow = () => {
-                setTimeout(() => item.classList.remove('is-glowing'), 180);
-            };
-
-            item.addEventListener('pointerup', removeGlow);
-            item.addEventListener('pointerleave', () => item.classList.remove('is-glowing'));
-            item.addEventListener('pointercancel', () => item.classList.remove('is-glowing'));
-
-            item.addEventListener('click', function() {
-                document.querySelectorAll('#mainSidebar nav .sidebar-glow-item').forEach(navLink => {
-                    navLink.classList.remove('is-active-glow');
-                });
-                if (item.closest('nav')) {
-                    item.classList.add('is-active-glow');
-                }
-                closeMobileSidebar();
-            });
-        });
-
-        function normalizeStudentRecord(raw) {
-            if (!raw || typeof raw !== 'object') return null;
-
-            const id = String(raw.id ?? raw.studentId ?? raw.matric ?? raw.noPelajar ?? '').trim();
-            const name = String(raw.name ?? raw.fullName ?? raw.studentName ?? raw.nama ?? '').trim().toUpperCase();
-            if (!id && !name) return null;
-
-            const progRaw = String(raw.programme ?? raw.program ?? raw.prog ?? raw.courseCode ?? 'SI262')
-                .toUpperCase()
-                .trim();
-            const programme = progRaw || 'SI262';
-
-            const partMatch = String(raw.part ?? raw.semester ?? raw.level ?? 4).match(/\d+/);
-            const part = partMatch ? parseInt(partMatch[0], 10) : 4;
-
-            const fallbackGroups = GROUPS_BY_PROGRAMME[programme] || [`${programme}A`];
-            const groupRaw = String(raw.group ?? raw.classGroup ?? raw.kumpulan ?? raw.kelas ?? fallbackGroups[0])
-                .toUpperCase()
-                .trim();
-            const group = groupRaw || fallbackGroups[0];
-
-            const status = String(raw.status ?? 'Active').trim() || 'Active';
-
-            return {
-                id: id || name,
-                name: name || id,
-                programme,
-                group,
-                part,
-                status
-            };
-        }
-
-        function loadPelajarDirectory200() {
-            const shared = safeJsonParse(SHARED_STUDENTS_KEY);
-            if (Array.isArray(shared) && shared.length > 0) {
-                return shared
-                    .map(item => normalizeStudentRecord(item))
-                    .filter(Boolean)
-                    .slice(0, 200);
-            }
-
-            const programs = Object.keys(GROUPS_BY_PROGRAMME);
-            const parts = [1, 2, 3, 4, 5, 6];
-            const statuses = ['Active', 'Active', 'Active', 'Active', 'Conditional'];
-            const generated = [];
-
-            for (let i = 1; i <= 200; i++) {
-                const prog = programs[(i - 1) % programs.length];
-                const grpList = GROUPS_BY_PROGRAMME[prog];
-                const grp = grpList[(i - 1) % grpList.length];
-                const pt = parts[(i * 3) % parts.length];
-                const st = statuses[(i - 1) % statuses.length];
-                const studentId = String(2026100000 + i);
-
-                generated.push({
-                    id: studentId,
-                    name: `UITM STUDENT ${i}`,
-                    programme: prog,
-                    group: grp,
-                    part: pt,
-                    email: `${studentId}@student.uitm.edu.my`,
-                    status: st
-                });
-            }
-
-            try {
-                localStorage.setItem(SHARED_STUDENTS_KEY, JSON.stringify(generated));
-            } catch (err) {
-                // Ignore if storage is full
-            }
-
-            return generated;
-        }
-
-        const distinctPalette = [
-            '#4b1d52', '#ffc627', '#0284c7', '#0d9488', '#e11d48', '#7c3aed', '#d97706', '#2563eb',
-            '#16a34a', '#db2777', '#4f46e5', '#0891b2', '#65a30d', '#ea580c', '#9333ea', '#059669',
-            '#c026d3', '#ca8a04', '#1d4ed8', '#be123c', '#0f766e', '#6d28d9', '#b45309', '#15803d',
-            '#a21caf', '#0369a1', '#4338ca', '#b91c1c', '#047857', '#7e22ce', '#a16207', '#1e40af',
-            '#9d174d', '#115e59', '#5b21b6', '#92400e', '#166534', '#86198f', '#075985', '#3730a3',
-            '#991b1b', '#065f46', '#6b21a8', '#854d0e', '#14532d', '#701a75', '#0c4a6e', '#312e81',
-            '#7f1d1d', '#064e3b', '#581c87', '#713f12', '#365314', '#9a3412', '#1e3a8a', '#831843',
-            '#134e4a', '#4c1d95', '#78350f', '#14532d', '#6b21a8', '#0e7490', '#3b0764', '#451a03'
-        ];
-
-        function Treemap(data, {
-          path,
-          id = Array.isArray(data) ? d => d.id : null,
-          parentId = Array.isArray(data) ? d => d.parentId : null,
-          children,
-          value,
-          sort = (a, b) => d3.descending(a.value, b.value),
-          label,
-          group,
-          title,
-          link,
-          linkTarget = "_blank",
-          tile = d3.treemapBinary,
-          width = 640,
-          height = 400,
-          margin = 0,
-          marginTop = margin,
-          marginRight = margin,
-          marginBottom = margin,
-          marginLeft = margin,
-          padding = 1,
-          paddingInner = padding,
-          paddingOuter = padding,
-          paddingTop = paddingOuter,
-          paddingRight = paddingOuter,
-          paddingBottom = paddingOuter,
-          paddingLeft = paddingOuter,
-          round = true,
-          colors = distinctPalette,
-          zDomain,
-          fill = "#ccc",
-          fillOpacity = group == null ? null : 0.88,
-          stroke = "#ffffff",
-          strokeWidth = 1.5,
-          strokeOpacity,
-          strokeLinejoin,
-          onNodeClick,
-        } = {}) {
-
-          const stratify = data => (d3.stratify().path(path)(data)).each(node => {
-            if (node.children?.length && node.data != null) {
-              const child = new d3.Node(node.data);
-              node.data = null;
-              child.depth = node.depth + 1;
-              child.height = 0;
-              child.parent = node;
-              child.id = node.id + "/";
-              node.children.unshift(child);
-            }
-          });
-          const root = path != null ? stratify(data)
-              : id != null || parentId != null ? d3.stratify().id(id).parentId(parentId)(data)
-              : d3.hierarchy(data, children);
-
-          value == null ? root.count() : root.sum(d => Math.max(0, d ? value(d) : null));
-
-          const leaves = root.leaves();
-          const G = group == null ? null : leaves.map(d => group(d.data, d));
-          if (zDomain === undefined) zDomain = G;
-          zDomain = new d3.InternSet(zDomain);
-
-          const domainArr = Array.from(zDomain);
-          const expandedColors = domainArr.map((_, idx) => {
-            if (idx < colors.length) return colors[idx];
-            const hue = (idx * 137.508) % 360;
-            return `hsl(${hue.toFixed(1)}, 72%, 48%)`;
-          });
-          const color = group == null ? null : d3.scaleOrdinal(domainArr, expandedColors);
-
-          const L = label == null ? null : leaves.map(d => label(d.data, d));
-          const T = title === undefined ? L : title == null ? null : leaves.map(d => title(d.data, d));
-
-          if (sort != null) root.sort(sort);
-
-          d3.treemap()
-              .tile(tile)
-              .size([width - marginLeft - marginRight, height - marginTop - marginBottom])
-              .paddingInner(paddingInner)
-              .paddingTop(paddingTop)
-              .paddingRight(paddingRight)
-              .paddingBottom(paddingBottom)
-              .paddingLeft(paddingLeft)
-              .round(round)
-            (root);
-
-          const svg = d3.create("svg")
-              .attr("viewBox", [-marginLeft, -marginTop, width, height])
-              .attr("width", width)
-              .attr("height", height)
-              .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
-              .attr("font-family", "sans-serif")
-              .attr("font-size", 10);
-
-          const node = svg.selectAll("a")
-            .data(leaves)
-            .join("a")
-              .attr("xlink:href", link == null ? null : (d, i) => link(d.data, d))
-              .attr("target", link == null ? null : linkTarget)
-              .attr("transform", d => `translate(${d.x0},${d.y0})`)
-              .style("cursor", onNodeClick ? "pointer" : null);
-
-          if (onNodeClick) {
-            node.on("click", function(event, d) {
-              const i = leaves.indexOf(d);
-              const fillColor = color ? color(G[i]) : fill;
-              onNodeClick(event, d, i, fillColor);
-            });
-          }
-
-          node.append("rect")
-              .attr("fill", color ? (d, i) => color(G[i]) : fill)
-              .attr("fill-opacity", fillOpacity)
-              .attr("stroke", stroke)
-              .attr("stroke-width", strokeWidth)
-              .attr("stroke-opacity", strokeOpacity)
-              .attr("stroke-linejoin", strokeLinejoin)
-              .attr("width", d => d.x1 - d.x0)
-              .attr("height", d => d.y1 - d.y0);
-
-          if (T) {
-            node.append("title").text((d, i) => T[i]);
-          }
-
-          if (L) {
-            const uid = `O-${Math.random().toString(16).slice(2)}`;
-
-            node.append("clipPath")
-               .attr("id", (d, i) => `${uid}-clip-${i}`)
-             .append("rect")
-               .attr("width", d => d.x1 - d.x0)
-               .attr("height", d => d.y1 - d.y0);
-
-            node.append("text")
-                .attr("fill", "#ffffff")
-                .attr("font-weight", "bold")
-                .attr("clip-path", (d, i) => `url(${new URL(`#${uid}-clip-${i}`, location)})`)
-              .selectAll("tspan")
-              .data((d, i) => `${L[i]}`.split(/\n/g))
-              .join("tspan")
-                .attr("x", 5)
-                .attr("y", (d, i, D) => `${(i === D.length - 1) * 0.3 + 1.2 + i * 1.05}em`)
-                .attr("fill-opacity", (d, i, D) => i === D.length - 1 ? 0.9 : 1)
-                .text(d => d);   
-          }
-
-          return Object.assign(svg.node(), {scales: {color}, domainArr, colorFn: color});
-        }
-
-        let allStudents = [];
-        let lastSyncSignature = '';
-
-        function buildSyncSignature() {
-            const activeId = localStorage.getItem('uitm_active_user') || '2026112309';
-            return [
-                activeId,
-                localStorage.getItem('uitm_user_' + activeId) || '',
-                localStorage.getItem('uitm_photo_' + activeId) || '',
-                localStorage.getItem('uitm_profile_photo') || '',
-                localStorage.getItem('uitm_dashboard_state') || '',
-                localStorage.getItem(SHARED_STUDENTS_KEY) || ''
-            ].join('||');
-        }
-
-        function syncAnalyticsWithCurrentState(force = false) {
-            const sig = buildSyncSignature();
-            if (!force && sig === lastSyncSignature) return;
-            lastSyncSignature = sig;
-
-            syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
-
-            const activeId = localStorage.getItem('uitm_active_user') || '2026112309';
-            const savedUser = safeJsonParse('uitm_user_' + activeId) || {};
-            const dashState = safeJsonParse('uitm_dashboard_state') || safeJsonParse('uitm_dashboard_' + activeId) || {};
-
-            const activeUser = {
-                id: String(savedUser.studentId || savedUser.id || dashState.studentId || activeId).trim(),
-                name: String(savedUser.name || dashState.name || (activeId === '2026112309' ? 'MUHAMMAD SHAZWAN BIN AZMI' : 'NEW STUDENT SI262')).toUpperCase().trim(),
-                photo: String(
-                    savedUser.photo ||
-                    localStorage.getItem('uitm_photo_' + activeId) ||
-                    (dashState && String(dashState.studentId) === activeId && dashState.photo) ||
-                    localStorage.getItem('uitm_profile_photo') ||
-                    'wan profile.jpg'
-                ).trim()
-            };
-
-            document.getElementById('headerWelcome').innerText = activeUser.id + ' • ' + activeUser.name;
-
-            const headerPhoto = document.getElementById('headerProfilePhoto');
-            if (headerPhoto && activeUser.photo) {
-                headerPhoto.src = activeUser.photo;
-            }
-
-            allStudents = loadPelajarDirectory200();
-
-            document.getElementById('totalStudentBadge').innerText = allStudents.length + ' Students';
-            document.getElementById('dataSourceDesc').innerText =
-                `Directly tracks ${allStudents.length} Student List records • Active login: ${activeUser.id} • ${activeUser.name}`;
-
-            rebuildTreemapChart();
-            renderMapChart();
-        }
-
-        window.addEventListener('DOMContentLoaded', function() {
-            syncAnalyticsWithCurrentState(true);
-
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('#d3TreemapContainer')) {
-                    document.getElementById('treemapClickTooltip').classList.add('hidden');
-                }
-                if (!e.target.closest('.map-region')) {
-                    document.getElementById('mapClickTooltip').classList.add('hidden');
-                }
-            });
-        });
-
-        window.addEventListener('pageshow', function() {
-            syncAnalyticsWithCurrentState(false);
-        });
-
-        window.addEventListener('storage', function() {
-            syncAnalyticsWithCurrentState(false);
-        });
-
-        function rebuildTreemapChart() {
-            document.getElementById('treemapClickTooltip').classList.add('hidden');
-            const groupByMode = document.getElementById('treemapGroupBy').value;
-            const totalStudents = allStudents.length || 1;
-
-            const treeData = {
-                name: 'UiTM Students',
-                children: []
-            };
-
-            const programs = [...new Set(allStudents.map(s => (s.programme || 'SI262').toUpperCase()))].sort();
-
-            programs.forEach(prog => {
-                const progStudents = allStudents.filter(s => (s.programme || 'SI262').toUpperCase() === prog);
-                const groups = [...new Set(progStudents.map(s => (s.group || `${prog}A`).toUpperCase()))].sort();
-
-                const progNode = {
-                    name: prog,
-                    children: []
-                };
-
-                groups.forEach(grp => {
-                    const grpStudents = progStudents.filter(s => (s.group || `${prog}A`).toUpperCase() === grp);
-                    const parts = [...new Set(grpStudents.map(s => Number(s.part) || 4))].sort((a, b) => a - b);
-
-                    parts.forEach(pt => {
-                        const count = grpStudents.filter(s => (Number(s.part) || 4) === pt).length;
-                        if (count > 0) {
-                            const uniqueKey = `${prog} • ${grp} • Part ${pt}`;
-                            progNode.children.push({
-                                name: uniqueKey,
-                                programme: prog,
-                                group: grp,
-                                part: `Part ${pt}`,
-                                uniqueKey: uniqueKey,
-                                value: count
-                            });
-                        }
-                    });
-                });
-
-                if (progNode.children.length > 0) {
-                    treeData.children.push(progNode);
-                }
-            });
-
-            const container = document.getElementById('d3TreemapContainer');
-            const legendEl = document.getElementById('treemapColorLegend');
-            container.innerHTML = '';
-            legendEl.innerHTML = '';
-
-            const chart = Treemap(treeData, {
-                children: d => d.children,
-                value: d => d.value,
-                group: d => {
-                    if (groupByMode === 'programme') return d.programme;
-                    if (groupByMode === 'group') return d.group;
-                    if (groupByMode === 'part') return d.part;
-                    return d.uniqueKey;
-                },
-                label: d => {
-                    const baseName = stripAfterDot(d.name);
-                    return `${baseName}\n${d.value} (${((d.value / totalStudents) * 100).toFixed(1)}%)`;
-                },
-                title: (d, n) => {
-                    const baseName = stripAfterDot(d.name);
-                    return `${baseName}\nTotal: ${n.value.toLocaleString("en")} (${((n.value / totalStudents) * 100).toFixed(1)}%)`;
-                },
-                width: 960,
-                height: 540,
-                paddingInner: 2,
-                paddingOuter: 3,
-                onNodeClick: function(event, d, i, fillColor) {
-                    event.stopPropagation();
-                    const count = d.value;
-                    const pct = ((count / totalStudents) * 100).toFixed(1);
-
-                    const tooltip = document.getElementById('treemapClickTooltip');
-                    document.getElementById('tooltipHeading').innerText = stripAfterDot(d.data.name);
-                    document.getElementById('tooltipSwatch').style.backgroundColor = fillColor;
-                    document.getElementById('tooltipText').innerText = `Total: ${count.toLocaleString("en")} (${pct}%)`;
-
-                    const tooltipWidth = 220;
-                    const tooltipHeight = 64;
-                    const leftPos = Math.min(window.innerWidth - tooltipWidth - 12, Math.max(12, event.clientX + 12));
-                    const topPos = Math.min(window.innerHeight - tooltipHeight - 12, Math.max(12, event.clientY - 24));
-
-                    tooltip.style.left = leftPos + 'px';
-                    tooltip.style.top = topPos + 'px';
-                    tooltip.classList.remove('hidden');
-                }
-            });
-
-            if (chart.domainArr && chart.colorFn) {
-                chart.domainArr.forEach(itemKey => {
-                    const chip = document.createElement('a');
-                    chip.href = 'pelajar.html';
-                    chip.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-200 transition';
-                    chip.innerHTML = `<span class="w-3 h-3 rounded-xs inline-block shrink-0" style="background:${chart.colorFn(itemKey)}"></span><span>${itemKey}</span>`;
-                    legendEl.appendChild(chip);
-                });
-            }
-
-            container.appendChild(chart);
-        }
-
-        async function renderMapChart() {
-            const container = document.getElementById('d3MapContainer');
-            const legendEl = document.getElementById('mapProgramLegend');
-            container.innerHTML = '';
-            legendEl.innerHTML = '';
-
-            const totalStudents = allStudents.length || 1;
-            const programs = [...new Set(allStudents.map(s => (s.programme || 'SI262').toUpperCase()))].sort();
-
-            const progColorScale = d3.scaleOrdinal(
-                programs,
-                programs.map((_, idx) => {
-                    if (idx < distinctPalette.length) return distinctPalette[idx];
-                    const hue = (idx * 137.508) % 360;
-                    return `hsl(${hue.toFixed(1)}, 72%, 48%)`;
-                })
+        groups.forEach(group => {
+            const groupStudents = programmeStudents.filter(s =>
+                (s.group || `${programme}A`).toUpperCase() === group
             );
 
-            const programStats = programs.map(prog => {
-                const count = allStudents.filter(s => (s.programme || 'SI262').toUpperCase() === prog).length;
-                const percent = ((count / totalStudents) * 100).toFixed(1);
-                const color = progColorScale(prog);
-                return {
-                    programme: prog,
-                    progTitle: PROGRAMME_TITLES[prog] || prog,
-                    count: count,
-                    percent: percent,
-                    color: color,
-                    glow: hexToGlowRgba(color, 0.8),
-                    description: `${prog}: ${count} (${percent}%)`
-                };
-            });
+            const parts = [
+                ...new Set(
+                    groupStudents.map(s => Number(s.part) || 4)
+                )
+            ].sort((a, b) => a - b);
 
-            function highlightLegendChip(progCode) {
-                document.querySelectorAll('#mapProgramLegend .map-legend-chip').forEach(el => {
-                    el.classList.toggle('is-legend-highlighted', el.getAttribute('data-prog') === progCode);
-                });
-            }
+            parts.forEach(part => {
+                const count = groupStudents.filter(s =>
+                    (Number(s.part) || 4) === part
+                ).length;
 
-            function updateInspectorAndTooltip(event, stat, showTooltip = false) {
-                const glowShadow = `0 0 16px ${stat.glow}`;
-                const swatch = document.getElementById('selectedRegionSwatch');
-                const summary = document.getElementById('selectedRegionSummary');
-                const desc = document.getElementById('selectedRegionProgramDesc');
+                if (count > 0) {
+                    const uniqueKey =
+                        `${programme} • ${group} • Part ${part}`;
 
-                if (swatch) {
-                    swatch.style.backgroundColor = stat.color;
-                    swatch.style.boxShadow = glowShadow;
-                }
-                if (summary) {
-                    summary.textContent = `${stat.programme} — Total: ${stat.count.toLocaleString("en")} (${stat.percent}%)`;
-                }
-                if (desc) {
-                    desc.textContent = stat.progTitle;
-                }
-
-                highlightLegendChip(stat.programme);
-
-                if (showTooltip && event) {
-                    const tooltip = document.getElementById('mapClickTooltip');
-                    const tooltipSwatch = document.getElementById('mapTooltipSwatch');
-                    const tooltipHeading = document.getElementById('mapTooltipHeading');
-                    const tooltipDesc = document.getElementById('mapTooltipDesc');
-
-                    if (tooltipSwatch) {
-                        tooltipSwatch.style.backgroundColor = stat.color;
-                        tooltipSwatch.style.boxShadow = `0 0 10px ${stat.glow}`;
-                    }
-                    if (tooltipHeading) {
-                        tooltipHeading.innerText = stripAfterDot(stat.programme);
-                    }
-                    if (tooltipDesc) {
-                        tooltipDesc.innerText = `Total: ${stat.count.toLocaleString("en")} (${stat.percent}%) • ${stat.progTitle}`;
-                    }
-
-                    const tooltipWidth = 240;
-                    const tooltipHeight = 76;
-                    const leftPos = Math.min(window.innerWidth - tooltipWidth - 12, Math.max(12, event.clientX + 12));
-                    const topPos = Math.min(window.innerHeight - tooltipHeight - 12, Math.max(12, event.clientY - 24));
-
-                    tooltip.style.left = leftPos + 'px';
-                    tooltip.style.top = topPos + 'px';
-                    tooltip.classList.remove('hidden');
-                }
-            }
-
-            programStats.forEach(item => {
-                const chip = document.createElement('a');
-                chip.href = 'pelajar.html';
-                chip.setAttribute('data-prog', item.programme);
-                chip.style.setProperty('--region-glow', item.glow);
-                chip.className = 'map-legend-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-200';
-                chip.innerHTML = `<span class="w-3 h-3 rounded-xs inline-block shrink-0" style="background:${item.color}; box-shadow: 0 0 8px ${item.glow};"></span><span>${item.description}</span>`;
-                chip.addEventListener('mouseenter', () => {
-                    updateInspectorAndTooltip(null, item, false);
-                });
-                legendEl.appendChild(chip);
-            });
-
-            if (programStats[0]) {
-                updateInspectorAndTooltip(null, programStats[0], false);
-            }
-
-            const projection = d3.geoAlbersUsa().scale(1280).translate([487.5, 305]);
-            const path = d3.geoPath(projection);
-
-            let statesFeatures = null;
-            let statesMesh = null;
-
-            if (window.topojson) {
-                try {
-                    const res = await fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json');
-                    if (res.ok) {
-                        const us = await res.json();
-                        statesFeatures = topojson.feature(us, us.objects.states).features;
-                        statesMesh = topojson.mesh(us, us.objects.states, (a, b) => a !== b);
-                    }
-                } catch (err) {
-                    statesFeatures = null;
-                }
-            }
-
-            const svg = d3.create('svg')
-                .attr('viewBox', '0 0 975 610')
-                .attr('class', 'w-full max-w-4xl h-auto rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-visible');
-
-            const regionsGroup = svg.append('g').attr('class', 'map-regions-layer');
-
-            function bindRegionPiece(selection, getStatFn) {
-                selection
-                    .attr('class', 'map-region')
-                    .attr('fill', (d, idx) => getStatFn(d, idx).color)
-                    .attr('fill-opacity', 0.88)
-                    .style('--region-glow', (d, idx) => getStatFn(d, idx).glow)
-                    .style('cursor', 'pointer')
-                    .on('mouseenter', function(event, d) {
-                        const idx = selection.nodes().indexOf(this);
-                        const stat = getStatFn(d, idx);
-                        if (this.parentNode) {
-                            this.parentNode.appendChild(this);
-                        }
-                        this.classList.add('is-region-hovered');
-                        updateInspectorAndTooltip(event, stat, true);
-                    })
-                    .on('mousemove', function(event, d) {
-                        const idx = selection.nodes().indexOf(this);
-                        const stat = getStatFn(d, idx);
-                        updateInspectorAndTooltip(event, stat, true);
-                    })
-                    .on('mouseleave', function() {
-                        this.classList.remove('is-region-hovered');
-                        document.getElementById('mapClickTooltip').classList.add('hidden');
-                    })
-                    .on('click', function(event, d) {
-                        event.stopPropagation();
-                        const idx = selection.nodes().indexOf(this);
-                        const stat = getStatFn(d, idx);
-                        if (this.parentNode) {
-                            this.parentNode.appendChild(this);
-                        }
-                        regionsGroup.selectAll('.map-region').classed('is-region-selected', false);
-                        this.classList.add('is-region-selected');
-                        updateInspectorAndTooltip(event, stat, true);
+                    progNode.children.push({
+                        name: uniqueKey,
+                        programme,
+                        group,
+                        part: `Part ${part}`,
+                        uniqueKey,
+                        value: count
                     });
-            }
-
-            if (statesFeatures && statesFeatures.length > 0) {
-                const statePaths = regionsGroup
-                    .selectAll('path')
-                    .data(statesFeatures)
-                    .join('path')
-                    .attr('d', path);
-
-                bindRegionPiece(
-                    statePaths,
-                    (d, idx) => programStats[idx % programStats.length]
-                );
-
-                statePaths
-                    .append('title')
-                    .text((d, idx) => {
-                        const stat = programStats[idx % programStats.length];
-                        return stat.description;
-                    });
-
-                if (statesMesh) {
-                    svg.append('path')
-                        .attr('fill', 'none')
-                        .attr('stroke', '#ffffff')
-                        .attr('stroke-linejoin', 'round')
-                        .attr('stroke-linecap', 'round')
-                        .attr('pointer-events', 'none')
-                        .attr('d', path(statesMesh));
                 }
-            } else {
-                const cols = programStats.length || 1;
-                const boxWidth = 815 / cols;
-                programStats.forEach((stat, idx) => {
-                    const xPos = 80 + idx * boxWidth;
-                    const g = regionsGroup.append('g');
+            });
+        });
 
-                    g.append('rect')
-                        .attr('x', xPos)
-                        .attr('y', 70)
-                        .attr('width', boxWidth)
-                        .attr('height', 470)
-                        .attr('stroke', '#ffffff')
-                        .attr('stroke-width', 2);
-
-                    g.append('text')
-                        .attr('x', xPos + boxWidth / 2)
-                        .attr('y', 305)
-                        .attr('text-anchor', 'middle')
-                        .attr('fill', '#ffffff')
-                        .attr('font-weight', 'bold')
-                        .attr('font-size', 16)
-                        .attr('pointer-events', 'none')
-                        .text(stat.description);
-
-                    bindRegionPiece(
-                        g,
-                        () => stat
-                    );
-                });
-            }
-
-            container.appendChild(svg.node());
+        if (progNode.children.length > 0) {
+            treeData.children.push(progNode);
         }
-    </script>
+    });
+
+    const container = document.getElementById('d3TreemapContainer');
+    const legendEl = document.getElementById('treemapColorLegend');
+
+    container.innerHTML = '';
+    legendEl.innerHTML = '';
+
+    const chart = Treemap(treeData, {
+        children: d => d.children,
+        value: d => d.value,
+
+        group: d => {
+            if (groupByMode === 'programme') return d.programme;
+            if (groupByMode === 'group') return d.group;
+            if (groupByMode === 'part') return d.part;
+            return d.uniqueKey;
+        },
+
+        label: d => {
+            const baseName = stripAfterDot(d.name);
+            const percent = ((d.value / totalStudents) * 100).toFixed(1);
+            return `${baseName}\n${d.value} (${percent}%)`;
+        },
+
+        title: (d, node) => {
+            const baseName = stripAfterDot(d.name);
+            const percent =
+                ((node.value / totalStudents) * 100).toFixed(1);
+
+            return `${baseName}\nTotal: ${node.value.toLocaleString('en')} (${percent}%)`;
+        },
+
+        width: 960,
+        height: 540,
+        paddingInner: 2,
+        paddingOuter: 3,
+
+        onNodeClick: function(event, node, index, fillColor) {
+            event.stopPropagation();
+
+            const count = node.value;
+            const percent =
+                ((count / totalStudents) * 100).toFixed(1);
+
+            const tooltip =
+                document.getElementById('treemapClickTooltip');
+
+            document.getElementById('tooltipHeading').innerText =
+                stripAfterDot(node.data.name);
+
+            document.getElementById('tooltipSwatch').style.backgroundColor =
+                fillColor;
+
+            document.getElementById('tooltipText').innerText =
+                `Total: ${count.toLocaleString('en')} (${percent}%)`;
+
+            const tooltipWidth = 220;
+            const tooltipHeight = 64;
+
+            const left = Math.min(
+                window.innerWidth - tooltipWidth - 12,
+                Math.max(12, event.clientX + 12)
+            );
+
+            const top = Math.min(
+                window.innerHeight - tooltipHeight - 12,
+                Math.max(12, event.clientY - 24)
+            );
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.remove('hidden');
+        }
+    });
+
+    if (chart.domainArr && chart.colorFn) {
+        chart.domainArr.forEach(key => {
+            const chip = document.createElement('a');
+
+            chip.href = 'pelajar.html';
+
+            chip.className =
+                'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-200 transition';
+
+            chip.innerHTML =
+                `<span class="w-3 h-3 rounded-xs inline-block shrink-0" style="background:${chart.colorFn(key)}"></span><span>${key}</span>`;
+
+            legendEl.appendChild(chip);
+        });
+    }
+
+    container.appendChild(chart);
+}
+
+/* ================= COLORED REGION MAP ================= */
+
+async function renderMapChart() {
+    const container = document.getElementById('d3MapContainer');
+    const legendEl = document.getElementById('mapProgramLegend');
+
+    container.innerHTML = '';
+    legendEl.innerHTML = '';
+
+    const totalStudents = allStudents.length || 1;
+
+    const programs = [
+        ...new Set(
+            allStudents.map(s =>
+                (s.programme || 'SI262').toUpperCase()
+            )
+        )
+    ].sort();
+
+    if (programs.length === 0) return;
+
+    const progColorScale = d3.scaleOrdinal(
+        programs,
+        programs.map((_, index) => {
+            if (index < distinctPalette.length) {
+                return distinctPalette[index];
+            }
+
+            const hue = (index * 137.508) % 360;
+            return `hsl(${hue.toFixed(1)},72%,48%)`;
+        })
+    );
+
+    const programStats = programs.map(programme => {
+        const count = allStudents.filter(s =>
+            (s.programme || 'SI262').toUpperCase() === programme
+        ).length;
+
+        const percent =
+            ((count / totalStudents) * 100).toFixed(1);
+
+        const color = progColorScale(programme);
+
+        return {
+            programme,
+            progTitle: PROGRAMME_TITLES[programme] || programme,
+            count,
+            percent,
+            color,
+            glow: hexToGlowRgba(color, 0.8),
+            description: `${programme}: ${count} (${percent}%)`
+        };
+    });
+
+    /* MAP LEGEND */
+
+    function highlightLegendChip(programme) {
+        document.querySelectorAll('#mapProgramLegend .map-legend-chip')
+            .forEach(element => {
+                element.classList.toggle(
+                    'is-legend-highlighted',
+                    element.getAttribute('data-prog') === programme
+                );
+            });
+    }
+
+    /* MAP INSPECTOR AND TOOLTIP */
+
+    function updateInspectorAndTooltip(event, stat, showTooltip = false) {
+        const swatch = document.getElementById('selectedRegionSwatch');
+        const summary = document.getElementById('selectedRegionSummary');
+        const description =
+            document.getElementById('selectedRegionProgramDesc');
+
+        if (swatch) {
+            swatch.style.backgroundColor = stat.color;
+            swatch.style.boxShadow = `0 0 16px ${stat.glow}`;
+        }
+
+        if (summary) {
+            summary.textContent =
+                `${stat.programme} — Total: ${stat.count.toLocaleString('en')} (${stat.percent}%)`;
+        }
+
+        if (description) {
+            description.textContent = stat.progTitle;
+        }
+
+        highlightLegendChip(stat.programme);
+
+        if (showTooltip && event) {
+            const tooltip = document.getElementById('mapClickTooltip');
+            const tooltipSwatch =
+                document.getElementById('mapTooltipSwatch');
+            const tooltipHeading =
+                document.getElementById('mapTooltipHeading');
+            const tooltipDesc =
+                document.getElementById('mapTooltipDesc');
+
+            if (tooltipSwatch) {
+                tooltipSwatch.style.backgroundColor = stat.color;
+                tooltipSwatch.style.boxShadow =
+                    `0 0 10px ${stat.glow}`;
+            }
+
+            if (tooltipHeading) {
+                tooltipHeading.innerText = stripAfterDot(stat.programme);
+            }
+
+            if (tooltipDesc) {
+                tooltipDesc.innerText =
+                    `Total: ${stat.count.toLocaleString('en')} (${stat.percent}%) • ${stat.progTitle}`;
+            }
+
+            const tooltipWidth = 240;
+            const tooltipHeight = 76;
+
+            const left = Math.min(
+                window.innerWidth - tooltipWidth - 12,
+                Math.max(12, event.clientX + 12)
+            );
+
+            const top = Math.min(
+                window.innerHeight - tooltipHeight - 12,
+                Math.max(12, event.clientY - 24)
+            );
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.remove('hidden');
+        }
+    }
+
+    /* PROGRAMME COLOR LEGEND */
+
+    programStats.forEach(item => {
+        const chip = document.createElement('a');
+
+        chip.href = 'pelajar.html';
+        chip.setAttribute('data-prog', item.programme);
+        chip.style.setProperty('--region-glow', item.glow);
+
+        chip.className =
+            'map-legend-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-200';
+
+        chip.innerHTML =
+            `<span class="w-3 h-3 rounded-xs inline-block shrink-0" style="background:${item.color};box-shadow:0 0 8px ${item.glow};"></span><span>${item.description}</span>`;
+
+        chip.addEventListener('mouseenter', () => {
+            updateInspectorAndTooltip(null, item, false);
+        });
+
+        legendEl.appendChild(chip);
+    });
+
+    if (programStats[0]) {
+        updateInspectorAndTooltip(null, programStats[0], false);
+    }
+
+    /* LOAD US ATLAS MAP */
+
+    const projection = d3.geoAlbersUsa()
+        .scale(1280)
+        .translate([487.5, 305]);
+
+    const path = d3.geoPath(projection);
+
+    let statesFeatures = null;
+    let statesMesh = null;
+
+    if (window.topojson) {
+        try {
+            const response = await fetch(
+                'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json'
+            );
+
+            if (response.ok) {
+                const us = await response.json();
+
+                statesFeatures =
+                    topojson.feature(us, us.objects.states).features;
+
+                statesMesh =
+                    topojson.mesh(
+                        us,
+                        us.objects.states,
+                        (a, b) => a !== b
+                    );
+            }
+        } catch (error) {
+            statesFeatures = null;
+        }
+    }
+
+    const svg = d3.create('svg')
+        .attr('viewBox', '0 0 975 610')
+        .attr(
+            'class',
+            'w-full max-w-4xl h-auto rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-visible'
+        );
+
+    const regionsGroup = svg.append('g')
+        .attr('class', 'map-regions-layer');
+
+    /* REGION INTERACTIONS */
+
+    function bindRegionPiece(selection, getStatFn) {
+        selection
+            .attr('class', 'map-region')
+            .attr('fill', (d, index) => getStatFn(d, index).color)
+            .attr('fill-opacity', 0.88)
+            .style('--region-glow',
+                (d, index) => getStatFn(d, index).glow
+            )
+            .style('cursor', 'pointer')
+
+            .on('mouseenter', function(event, d) {
+                const index = selection.nodes().indexOf(this);
+                const stat = getStatFn(d, index);
+
+                if (this.parentNode) {
+                    this.parentNode.appendChild(this);
+                }
+
+                this.classList.add('is-region-hovered');
+                updateInspectorAndTooltip(event, stat, true);
+            })
+
+            .on('mousemove', function(event, d) {
+                const index = selection.nodes().indexOf(this);
+                const stat = getStatFn(d, index);
+
+                updateInspectorAndTooltip(event, stat, true);
+            })
+
+            .on('mouseleave', function() {
+                this.classList.remove('is-region-hovered');
+
+                document.getElementById('mapClickTooltip')
+                    .classList.add('hidden');
+            })
+
+            .on('click', function(event, d) {
+                event.stopPropagation();
+
+                const index = selection.nodes().indexOf(this);
+                const stat = getStatFn(d, index);
+
+                if (this.parentNode) {
+                    this.parentNode.appendChild(this);
+                }
+
+                regionsGroup.selectAll('.map-region')
+                    .classed('is-region-selected', false);
+
+                this.classList.add('is-region-selected');
+                updateInspectorAndTooltip(event, stat, true);
+            });
+    }
+
+    /* DRAW MAP STATES */
+
+    if (statesFeatures && statesFeatures.length > 0) {
+        const statePaths = regionsGroup
+            .selectAll('path')
+            .data(statesFeatures)
+            .join('path')
+            .attr('d', path);
+
+        bindRegionPiece(
+            statePaths,
+            (d, index) => programStats[index % programStats.length]
+        );
+
+        statePaths.append('title')
+            .text((d, index) => {
+                const stat = programStats[index % programStats.length];
+                return stat.description;
+            });
+
+        if (statesMesh) {
+            svg.append('path')
+                .attr('fill', 'none')
+                .attr('stroke', '#fff')
+                .attr('stroke-linejoin', 'round')
+                .attr('stroke-linecap', 'round')
+                .attr('pointer-events', 'none')
+                .attr('d', path(statesMesh));
+        }
+
+    } else {
+        /* FALLBACK IF MAP CDN IS UNAVAILABLE */
+
+        const columns = programStats.length || 1;
+        const boxWidth = 815 / columns;
+
+        programStats.forEach((stat, index) => {
+            const x = 80 + index * boxWidth;
+            const group = regionsGroup.append('g');
+
+            group.append('rect')
+                .attr('x', x)
+                .attr('y', 70)
+                .attr('width', boxWidth)
+                .attr('height', 470)
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2);
+
+            group.append('text')
+                .attr('x', x + boxWidth / 2)
+                .attr('y', 305)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#fff')
+                .attr('font-weight', 'bold')
+                .attr('font-size', 16)
+                .attr('pointer-events', 'none')
+                .text(stat.description);
+
+            bindRegionPiece(group, () => stat);
+        });
+    }
+
+    container.appendChild(svg.node());
+}
+</script>
 </body>
 </html>
