@@ -327,17 +327,30 @@
         let regPhotoBase64 = '';
         const DEFAULT_STUDENT_ID = '2026112309';
         const DEFAULT_EXISTING_PASS = '123456';
-        const ONE_TIME_RESET_KEY = 'uitm_reset_saved_accounts_v1';
 
         window.onload = function() {
-            if (!localStorage.getItem(ONE_TIME_RESET_KEY)) {
-                clearSavedAccountsExceptDefault();
-                localStorage.setItem(ONE_TIME_RESET_KEY, 'done');
-            } else {
-                seedDefaultExistingAccount();
-            }
+            seedDefaultExistingAccount();
             loadSavedAccountsDropdown();
         };
+
+        function addAccountToSavedList(studentId) {
+            const cleanId = String(studentId || '').trim();
+            if (!cleanId) return [];
+            let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
+            accounts = accounts.map(id => String(id).trim()).filter(Boolean);
+            if (!accounts.includes(cleanId)) {
+                accounts.push(cleanId);
+                localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
+            }
+            return accounts;
+        }
+
+        function saveUserPasswordToAccount(studentId, password) {
+            const cleanId = String(studentId || '').trim();
+            if (!cleanId || typeof password !== 'string') return;
+            localStorage.setItem('uitm_pass_' + cleanId, password);
+            addAccountToSavedList(cleanId);
+        }
 
         function clearRegisterFormFields() {
             regPhotoBase64 = '';
@@ -382,11 +395,7 @@
         }
 
         function seedDefaultExistingAccount() {
-            let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
-            if (!accounts.includes(DEFAULT_STUDENT_ID)) {
-                accounts.push(DEFAULT_STUDENT_ID);
-                localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
-            }
+            addAccountToSavedList(DEFAULT_STUDENT_ID);
             if (!localStorage.getItem('uitm_user_' + DEFAULT_STUDENT_ID)) {
                 localStorage.setItem('uitm_user_' + DEFAULT_STUDENT_ID, JSON.stringify({
                     id: DEFAULT_STUDENT_ID,
@@ -446,7 +455,28 @@
         }
 
         function loadSavedAccountsDropdown() {
-            const accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
+            let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
+            accounts = accounts.map(id => String(id).trim()).filter(Boolean);
+
+            // Sertakan mana-mana akaun yang mempunyai rekod user atau password tersimpan
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('uitm_user_')) {
+                    const id = key.replace('uitm_user_', '').trim();
+                    if (id && !accounts.includes(id)) {
+                        accounts.push(id);
+                    }
+                } else if (key.startsWith('uitm_pass_')) {
+                    const id = key.replace('uitm_pass_', '').trim();
+                    if (id && !accounts.includes(id)) {
+                        accounts.push(id);
+                    }
+                }
+            });
+
+            if (accounts.length > 0) {
+                localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
+            }
+
             const dropdown = document.getElementById('savedAccountsDropdown');
             const section = document.getElementById('savedAccountSection');
 
@@ -456,13 +486,20 @@
 
                 accounts.forEach(id => {
                     const userObj = JSON.parse(localStorage.getItem('uitm_user_' + id)) || {};
+                    const progLabel = userObj.programme || userObj.program || '';
                     const opt = document.createElement('option');
                     opt.value = id;
-                    opt.textContent = userObj.name ? `${id} • ${userObj.name}` : `Student ID: ${id}`;
+                    if (userObj.name && progLabel) {
+                        opt.textContent = `${id} • ${userObj.name} (${progLabel})`;
+                    } else if (userObj.name) {
+                        opt.textContent = `${id} • ${userObj.name}`;
+                    } else {
+                        opt.textContent = `Student ID: ${id}`;
+                    }
                     dropdown.appendChild(opt);
                 });
 
-                const lastActive = localStorage.getItem('uitm_student_id');
+                const lastActive = (localStorage.getItem('uitm_student_id') || localStorage.getItem('uitm_active_user') || '').trim();
                 if (lastActive && accounts.includes(lastActive)) {
                     dropdown.value = lastActive;
                     selectSavedAccount(lastActive);
@@ -476,7 +513,7 @@
             const cleanId = String(id || '').trim();
             if (!cleanId) return;
             const savedPass = localStorage.getItem('uitm_pass_' + cleanId);
-            if (savedPass) {
+            if (savedPass !== null) {
                 document.getElementById('password').value = savedPass;
             }
         }
@@ -528,7 +565,7 @@
             const existingUser = JSON.parse(localStorage.getItem('uitm_user_' + studentId));
             const storedPass = getAccountPassword(studentId);
 
-            if (!existingUser && studentId !== DEFAULT_STUDENT_ID) {
+            if (!existingUser && studentId !== DEFAULT_STUDENT_ID && storedPass === null) {
                 setFeedback('loginFeedback', 'Account not found. Please register a new account first.');
                 return;
             }
@@ -539,16 +576,12 @@
             }
 
             localStorage.setItem('uitm_active_user', studentId);
+            localStorage.setItem('uitm_student_id', studentId);
 
             if (autoSaveEnabled) {
-                localStorage.setItem('uitm_student_id', studentId);
-                localStorage.setItem('uitm_pass_' + studentId, password);
-
-                let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
-                if (!accounts.includes(studentId)) {
-                    accounts.push(studentId);
-                    localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
-                }
+                saveUserPasswordToAccount(studentId, password);
+            } else {
+                addAccountToSavedList(studentId);
             }
 
             window.location.href = 'dashboard.html';
@@ -618,15 +651,9 @@
 
             localStorage.setItem('uitm_user_' + studentId, JSON.stringify(userData));
             localStorage.setItem('uitm_photo_' + studentId, regPhotoBase64);
-            localStorage.setItem('uitm_pass_' + studentId, pass);
+            saveUserPasswordToAccount(studentId, pass);
             localStorage.setItem('uitm_student_id', studentId);
             localStorage.setItem('uitm_active_user', studentId);
-
-            let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
-            if (!accounts.includes(studentId)) {
-                accounts.push(studentId);
-                localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
-            }
 
             window.location.href = 'dashboard.html';
         }
@@ -666,14 +693,8 @@
                 return;
             }
 
-            localStorage.setItem('uitm_pass_' + studentId, newPass);
+            saveUserPasswordToAccount(studentId, newPass);
             localStorage.setItem('uitm_student_id', studentId);
-
-            let accounts = JSON.parse(localStorage.getItem('uitm_saved_accounts')) || [];
-            if (!accounts.includes(studentId)) {
-                accounts.push(studentId);
-                localStorage.setItem('uitm_saved_accounts', JSON.stringify(accounts));
-            }
 
             document.getElementById('studentId').value = studentId;
             document.getElementById('password').value = newPass;
