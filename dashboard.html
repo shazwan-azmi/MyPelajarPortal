@@ -240,18 +240,10 @@
                     <span class="w-7 h-7 rounded-full bg-white/15 text-uitmgold flex items-center justify-center text-sm font-extrabold shrink-0">&#10022;</span>
                     <div class="min-w-0">
                         <p class="font-extrabold text-xs tracking-wide leading-tight truncate">MyPelajar AI</p>
-                        <p id="geminiConnectionStatus" class="text-[10px] text-purple-200/80 truncate">Auto-Set &bull; Semua Peranti</p>
+                        <p id="geminiConnectionStatus" class="text-[10px] text-purple-200/80 truncate">Auto-Connected &bull; Ready</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5 shrink-0">
-                    <button
-                        type="button"
-                        onclick="toggleGeminiApiKeyBar()"
-                        title="Tetapan Gemini API Key"
-                        class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-bold text-uitmgold cursor-pointer"
-                    >
-                        API
-                    </button>
                     <button
                         type="button"
                         onclick="resetGeminiChat()"
@@ -267,30 +259,6 @@
                         class="text-purple-200 hover:text-white font-bold text-base leading-none px-1 cursor-pointer"
                     >
                         &times;
-                    </button>
-                </div>
-            </div>
-
-            <!-- Bar Tetapan Gemini API Key -->
-            <div id="geminiApiKeyBar" class="hidden px-3 py-2.5 bg-purple-50 dark:bg-purple-950/60 border-b border-purple-200/70 dark:border-purple-800/60 space-y-1.5 shrink-0">
-                <div class="flex items-center justify-between gap-2">
-                    <label for="geminiApiKeyInput" class="text-[10px] font-extrabold text-uitmpurple dark:text-uitmgold uppercase">Gemini API Key</label>
-                    <span id="geminiKeyStateLabel" class="text-[10px] font-bold text-slate-500 dark:text-slate-300">Belum diset</span>
-                </div>
-                <div class="flex gap-1.5">
-                    <input
-                        type="password"
-                        id="geminiApiKeyInput"
-                        autocomplete="off"
-                        placeholder="Masukkan API key..."
-                        class="flex-1 min-w-0 px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-800 dark:text-slate-100 focus:outline-none focus:border-uitmpurple dark:focus:border-uitmgold"
-                    >
-                    <button
-                        type="button"
-                        onclick="saveGeminiApiKey()"
-                        class="px-2.5 py-1.5 rounded-xl bg-uitmpurple dark:bg-purple-800 text-uitmgold font-extrabold text-[10px] cursor-pointer shrink-0"
-                    >
-                        Simpan
                     </button>
                 </div>
             </div>
@@ -475,9 +443,7 @@
 
     <!-- SCRIPT UNTUK PAPAR DATA DINAMIK MENGIKUT USER YANG LOGIN -->
     <script>
-        const GEMINI_API_STORAGE_KEY = 'mypelajar_gemini_api_key';
-        const DEFAULT_GEMINI_API_KEY = 'AQ.Ab8RN6JMA0dNQhhWaZnSEVseHldFCeGboG2X9T_rBfMxwKxJwA';
-        const GEMINI_MODEL_NAME = 'gemini-3.8-flash';
+        const AI_PROXY_URL = 'https://mypelajar-ai-proxy.shazwanazmi19.workers.dev';
 
         const robotFaqItems = [
             "Pergi ke e-Academic (Daftar), tandakan kursus yang diingini, pilih kumpulan kelas, dan klik 'Sahkan & Jana Slip Pendaftaran' untuk mengira kredit dan menjana slip.",
@@ -555,67 +521,6 @@
             }
         }
 
-        function getSavedGeminiApiKey() {
-            const fallback = (DEFAULT_GEMINI_API_KEY || '').trim();
-            const hasFallback = fallback && fallback !== 'MASUKKAN_GEMINI_API_KEY_KAU_DI_SINI';
-            try {
-                const stored = (localStorage.getItem(GEMINI_API_STORAGE_KEY) || '').trim();
-                if (stored) return stored;
-                if (hasFallback) {
-                    localStorage.setItem(GEMINI_API_STORAGE_KEY, fallback);
-                    return fallback;
-                }
-            } catch (e) {
-                if (hasFallback) return fallback;
-            }
-            return '';
-        }
-
-        function refreshGeminiKeyUI() {
-            const key = getSavedGeminiApiKey();
-            const label = document.getElementById('geminiKeyStateLabel');
-            const status = document.getElementById('geminiConnectionStatus');
-            const input = document.getElementById('geminiApiKeyInput');
-            if (input && key && !input.value) {
-                input.value = key;
-            }
-            if (label) {
-                label.textContent = key ? 'Auto-Set Aktif' : 'Belum diset';
-                label.className = key
-                    ? 'text-[10px] font-bold text-emerald-600 dark:text-emerald-400'
-                    : 'text-[10px] font-bold text-slate-500 dark:text-slate-300';
-            }
-            if (status) {
-                status.textContent = key ? 'AI Ready • Auto-Set Aktif' : 'Tetapkan DEFAULT_GEMINI_API_KEY';
-            }
-        }
-
-        function toggleGeminiApiKeyBar(forceState) {
-            const bar = document.getElementById('geminiApiKeyBar');
-            if (!bar) return;
-            const shouldOpen = typeof forceState === 'boolean' ? forceState : bar.classList.contains('hidden');
-            bar.classList.toggle('hidden', !shouldOpen);
-            refreshGeminiKeyUI();
-        }
-
-        function saveGeminiApiKey() {
-            const input = document.getElementById('geminiApiKeyInput');
-            if (!input) return;
-            const cleaned = input.value.trim();
-            if (cleaned) {
-                localStorage.setItem(GEMINI_API_STORAGE_KEY, cleaned);
-            } else {
-                localStorage.removeItem(GEMINI_API_STORAGE_KEY);
-            }
-            refreshGeminiKeyUI();
-            appendChatMessage(
-                'ai',
-                cleaned
-                    ? 'API Key dah dikemaskini pada peranti ini.'
-                    : 'API Key pada localStorage dah dikosongkan.'
-            );
-        }
-
         function switchAssistantTab(tabName) {
             const chatPanel = document.getElementById('assistantTabChat');
             const faqPanel = document.getElementById('assistantTabFaq');
@@ -657,7 +562,6 @@
             if (!win) return;
             const shouldOpen = typeof forceState === 'boolean' ? forceState : win.classList.contains('hidden');
             win.classList.toggle('hidden', !shouldOpen);
-            refreshGeminiKeyUI();
             if (shouldOpen) {
                 const container = document.getElementById('geminiChatMessages');
                 if (container && container.children.length === 0) {
@@ -732,14 +636,9 @@
         }
 
         async function fetchGeminiGeneralReply(userText) {
-            const apiKey = getSavedGeminiApiKey();
-            if (!apiKey) {
-                return "API Key belum diset pada DEFAULT_GEMINI_API_KEY atau peranti ini. Masukkan API key melalui butang 'API' atau tetapkan DEFAULT_GEMINI_API_KEY dalam kod.";
+            if (!AI_PROXY_URL || AI_PROXY_URL.includes('GANTI_DENGAN_CLOUDFLARE_WORKER_URL_KAU')) {
+                throw new Error('URL proxy AI belum ditetapkan pada AI_PROXY_URL.');
             }
-
-            const modelsToTry = [GEMINI_MODEL_NAME, 'gemini-2.5-flash', 'gemini-2.0-flash'].filter(
-                (val, idx, arr) => val && arr.indexOf(val) === idx
-            );
 
             const contents = [
                 ...geminiHistory,
@@ -749,62 +648,39 @@
                 }
             ];
 
-            const payload = JSON.stringify({
-                systemInstruction: {
-                    parts: [{ text: 'Kamu ialah pembantu AI serba boleh dalam widget MyPelajar. Jawab secara ringkas, jelas, dan terus kepada isi utama kecuali diminta penjelasan terperinci. Balas dalam bahasa yang sesuai dengan soalan pengguna.' }]
-                },
-                contents
+            const response = await fetch(AI_PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    systemInstruction: {
+                        parts: [{ text: 'Kamu ialah pembantu AI serba boleh dalam widget MyPelajar. Jawab secara ringkas, jelas, dan terus kepada isi utama kecuali diminta penjelasan terperinci. Balas dalam bahasa yang sesuai dengan soalan pengguna.' }]
+                    },
+                    contents
+                })
             });
 
-            let lastError = null;
+            const data = await response.json().catch(() => ({}));
 
-            for (const modelName of modelsToTry) {
-                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
-
-                for (let attempt = 1; attempt <= 2; attempt++) {
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: payload
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        const replyText = data?.candidates?.[0]?.content?.parts
-                            ?.map(part => part.text || '')
-                            .join('')
-                            .trim();
-
-                        if (!replyText) {
-                            throw new Error('Tiada teks jawapan diterima daripada Gemini.');
-                        }
-
-                        geminiHistory.push({ role: 'user', parts: [{ text: userText }] });
-                        geminiHistory.push({ role: 'model', parts: [{ text: replyText }] });
-                        if (geminiHistory.length > 12) {
-                            geminiHistory = geminiHistory.slice(-12);
-                        }
-
-                        return replyText;
-                    }
-
-                    const errData = await response.json().catch(() => ({}));
-                    const msg = errData?.error?.message || `HTTP ${response.status}`;
-                    lastError = new Error(msg);
-
-                    const isHighDemand = response.status === 503 || /high demand|overloaded|unavailable/i.test(msg);
-                    if (isHighDemand && attempt < 2) {
-                        await new Promise(resolve => setTimeout(resolve, 900));
-                        continue;
-                    }
-                    if (isHighDemand) {
-                        break;
-                    }
-                    throw lastError;
-                }
+            if (!response.ok) {
+                throw new Error(data?.error || `HTTP ${response.status}`);
             }
 
-            throw lastError || new Error('Pelayan Gemini sedang sibuk. Sila cuba lagi.');
+            const replyText = data?.candidates?.[0]?.content?.parts
+                ?.map(part => part.text || '')
+                .join('')
+                .trim();
+
+            if (!replyText) {
+                throw new Error('Tiada teks jawapan diterima daripada AI.');
+            }
+
+            geminiHistory.push({ role: 'user', parts: [{ text: userText }] });
+            geminiHistory.push({ role: 'model', parts: [{ text: replyText }] });
+            if (geminiHistory.length > 12) {
+                geminiHistory = geminiHistory.slice(-12);
+            }
+
+            return replyText;
         }
 
         async function processUserMessage(text) {
@@ -832,7 +708,7 @@
                 if (thinkingNode && thinkingNode.parentNode) {
                     thinkingNode.remove();
                 }
-                appendChatMessage('ai', `Ralat sambungan Gemini: ${err.message}`);
+                appendChatMessage('ai', `Ralat sambungan AI: ${err.message}`);
             } finally {
                 isAiRequestInFlight = false;
                 if (sendBtn) sendBtn.disabled = false;
@@ -884,11 +760,9 @@
         }
 
         syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
-        refreshGeminiKeyUI();
 
         window.onload = function() {
             syncThemeIconUI(localStorage.getItem('uitm_theme') === 'dark');
-            refreshGeminiKeyUI();
 
             const activeId = String(localStorage.getItem('uitm_active_user') || localStorage.getItem('uitm_student_id') || '2026112309').trim();
             let storedUser = null;
