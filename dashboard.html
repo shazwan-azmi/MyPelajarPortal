@@ -240,14 +240,14 @@
                     <span class="w-7 h-7 rounded-full bg-white/15 text-uitmgold flex items-center justify-center text-sm font-extrabold shrink-0">&#10022;</span>
                     <div class="min-w-0">
                         <p class="font-extrabold text-xs tracking-wide leading-tight truncate">MyPelajar AI</p>
-                        <p id="geminiConnectionStatus" class="text-[10px] text-purple-200/80 truncate">Private Key &bull; Peranti Semasa</p>
+                        <p id="geminiConnectionStatus" class="text-[10px] text-purple-200/80 truncate">Auto-Set &bull; Semua Peranti</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5 shrink-0">
                     <button
                         type="button"
                         onclick="toggleGeminiApiKeyBar()"
-                        title="Tetapan Gemini API Key (Private)"
+                        title="Tetapan Gemini API Key"
                         class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-bold text-uitmgold cursor-pointer"
                     >
                         API
@@ -271,10 +271,10 @@
                 </div>
             </div>
 
-            <!-- Bar Tetapan Gemini API Key (Disimpan secara private pada localStorage peranti ini sahaja) -->
+            <!-- Bar Tetapan Gemini API Key -->
             <div id="geminiApiKeyBar" class="hidden px-3 py-2.5 bg-purple-50 dark:bg-purple-950/60 border-b border-purple-200/70 dark:border-purple-800/60 space-y-1.5 shrink-0">
                 <div class="flex items-center justify-between gap-2">
-                    <label for="geminiApiKeyInput" class="text-[10px] font-extrabold text-uitmpurple dark:text-uitmgold uppercase">Private API Key (Peranti Ini Sahaja)</label>
+                    <label for="geminiApiKeyInput" class="text-[10px] font-extrabold text-uitmpurple dark:text-uitmgold uppercase">Gemini API Key</label>
                     <span id="geminiKeyStateLabel" class="text-[10px] font-bold text-slate-500 dark:text-slate-300">Belum diset</span>
                 </div>
                 <div class="flex gap-1.5">
@@ -282,7 +282,7 @@
                         type="password"
                         id="geminiApiKeyInput"
                         autocomplete="off"
-                        placeholder="Masukkan API key secara private..."
+                        placeholder="Masukkan API key..."
                         class="flex-1 min-w-0 px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-800 dark:text-slate-100 focus:outline-none focus:border-uitmpurple dark:focus:border-uitmgold"
                     >
                     <button
@@ -476,6 +476,7 @@
     <!-- SCRIPT UNTUK PAPAR DATA DINAMIK MENGIKUT USER YANG LOGIN -->
     <script>
         const GEMINI_API_STORAGE_KEY = 'mypelajar_gemini_api_key';
+        const DEFAULT_GEMINI_API_KEY = 'MASUKKAN_GEMINI_API_KEY_KAU_DI_SINI';
         const GEMINI_MODEL_NAME = 'gemini-3.8-flash';
 
         const robotFaqItems = [
@@ -555,11 +556,19 @@
         }
 
         function getSavedGeminiApiKey() {
+            const fallback = (DEFAULT_GEMINI_API_KEY || '').trim();
+            const hasFallback = fallback && fallback !== 'MASUKKAN_GEMINI_API_KEY_KAU_DI_SINI';
             try {
-                return (localStorage.getItem(GEMINI_API_STORAGE_KEY) || '').trim();
+                const stored = (localStorage.getItem(GEMINI_API_STORAGE_KEY) || '').trim();
+                if (stored) return stored;
+                if (hasFallback) {
+                    localStorage.setItem(GEMINI_API_STORAGE_KEY, fallback);
+                    return fallback;
+                }
             } catch (e) {
-                return '';
+                if (hasFallback) return fallback;
             }
+            return '';
         }
 
         function refreshGeminiKeyUI() {
@@ -571,13 +580,13 @@
                 input.value = key;
             }
             if (label) {
-                label.textContent = key ? 'Tersimpan (Private)' : 'Belum diset';
+                label.textContent = key ? 'Auto-Set Aktif' : 'Belum diset';
                 label.className = key
                     ? 'text-[10px] font-bold text-emerald-600 dark:text-emerald-400'
                     : 'text-[10px] font-bold text-slate-500 dark:text-slate-300';
             }
             if (status) {
-                status.textContent = key ? 'Private Key Aktif • Peranti Ini' : 'Set Private API Key via butang API';
+                status.textContent = key ? 'AI Ready • Auto-Set Aktif' : 'Tetapkan DEFAULT_GEMINI_API_KEY';
             }
         }
 
@@ -602,8 +611,8 @@
             appendChatMessage(
                 'ai',
                 cleaned
-                    ? 'Private API Key dah disimpan pada peranti ini sahaja dan tidak dipaparkan dalam kod.'
-                    : 'Private API Key dah dikosongkan pada peranti ini.'
+                    ? 'API Key dah dikemaskini pada peranti ini.'
+                    : 'API Key pada localStorage dah dikosongkan.'
             );
         }
 
@@ -725,7 +734,7 @@
         async function fetchGeminiGeneralReply(userText) {
             const apiKey = getSavedGeminiApiKey();
             if (!apiKey) {
-                return "API Key belum diset pada peranti ini. Klik butang 'API' di atas untuk masukkan API key secara private.";
+                return "API Key belum diset pada DEFAULT_GEMINI_API_KEY atau peranti ini. Masukkan API key melalui butang 'API' atau tetapkan DEFAULT_GEMINI_API_KEY dalam kod.";
             }
 
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_NAME}:generateContent?key=${encodeURIComponent(apiKey)}`;
