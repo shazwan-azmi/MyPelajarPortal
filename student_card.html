@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Student Card | MyPelajar Portal UiTM</title>
     <link rel="icon" type="image/png" href="uitm.png">
     <link rel="apple-touch-icon" href="uitm.png">
@@ -23,13 +23,16 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
         .font-mono-tech { font-family: 'JetBrains Mono', monospace; }
 
         /* Clean dark glass sidebar when Dark Mode is active */
         html.dark #mainSidebar,
         body.theme-dark #mainSidebar {
-            background-color: rgba(15, 23, 42, 0.85);
+            background-color: rgba(15, 23, 42, 0.88);
             background-image: none;
             backdrop-filter: blur(20px) saturate(150%);
             -webkit-backdrop-filter: blur(20px) saturate(150%);
@@ -46,6 +49,7 @@
 
         /* Glow effect on sidebar sections/items when clicked or selected */
         .sidebar-glow-item {
+            touch-action: manipulation;
             transition: transform 0.18s ease,
                         background-color 0.2s ease,
                         box-shadow 0.22s ease,
@@ -77,14 +81,17 @@
                 inset 0 0 10px rgba(254, 202, 202, 0.2);
         }
 
-        /* 3D Perspective & Flip Card */
+        /* 3D Perspective & Flip Card (Cross-platform Desktop, Tablet & Mobile) */
         .card-scene {
             perspective: 1600px;
+            -webkit-perspective: 1600px;
+            touch-action: manipulation;
         }
         .tilt-shell {
             width: 100%;
             height: 100%;
             transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
             transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .card-3d-inner {
@@ -92,11 +99,14 @@
             width: 100%;
             height: 100%;
             transform-style: preserve-3d;
-            transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.68s cubic-bezier(0.22, 1, 0.36, 1);
             cursor: pointer;
+            touch-action: manipulation;
         }
         .card-3d-inner.is-flipped {
             transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
         }
         .card-face {
             position: absolute;
@@ -105,7 +115,7 @@
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: 22px;
+            border-radius: 20px;
             overflow: hidden;
         }
         @media (min-width: 640px) {
@@ -113,8 +123,29 @@
                 border-radius: 26px;
             }
         }
+        .card-face-front {
+            transform: rotateY(0deg) translateZ(1px);
+            -webkit-transform: rotateY(0deg) translateZ(1px);
+            z-index: 2;
+            visibility: visible;
+            pointer-events: auto;
+        }
         .card-face-back {
-            transform: rotateY(180deg);
+            transform: rotateY(180deg) translateZ(1px);
+            -webkit-transform: rotateY(180deg) translateZ(1px);
+            z-index: 1;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .card-3d-inner.is-flipped .card-face-front {
+            z-index: 1;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .card-3d-inner.is-flipped .card-face-back {
+            z-index: 2;
+            visibility: visible;
+            pointer-events: auto;
         }
 
         /* Premium Gradient & Metallic Foil Sheens */
@@ -124,7 +155,7 @@
                 radial-gradient(circle at 12% 88%, rgba(255, 198, 39, 0.16) 0%, transparent 45%),
                 linear-gradient(135deg, #4b1d52 0%, #270e36 52%, #11061c 100%);
             box-shadow:
-                0 28px 60px -15px rgba(24, 9, 38, 0.55),
+                0 24px 50px -15px rgba(24, 9, 38, 0.55),
                 0 0 0 1.5px rgba(255, 198, 39, 0.5),
                 inset 0 1px 1px rgba(255, 255, 255, 0.22);
         }
@@ -134,7 +165,7 @@
                 radial-gradient(circle at 88% 85%, rgba(255, 198, 39, 0.12) 0%, transparent 45%),
                 linear-gradient(145deg, #2b103b 0%, #190826 55%, #0c0314 100%);
             box-shadow:
-                0 28px 60px -15px rgba(24, 9, 38, 0.55),
+                0 24px 50px -15px rgba(24, 9, 38, 0.55),
                 0 0 0 1.5px rgba(255, 198, 39, 0.35),
                 inset 0 1px 1px rgba(255, 255, 255, 0.16);
         }
@@ -181,14 +212,14 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex overflow-x-hidden transition-colors duration-200">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-dvh flex overflow-x-hidden transition-colors duration-200">
 
-    <!-- MOBILE BACKDROP -->
+    <!-- MOBILE & TABLET BACKDROP -->
     <div id="mobileSidebarBackdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-20 hidden lg:hidden"></div>
 
     <!-- SIDEBAR -->
     <aside id="mainSidebar" class="w-72 bg-gradient-to-b from-uitmpurple via-purple-950 to-slate-900 text-white fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:static flex flex-col shrink-0 border-r border-purple-950/60 z-30 transition-transform duration-200">
-        <div class="p-6 border-b border-white/10 flex items-center justify-between gap-3">
+        <div class="p-5 sm:p-6 border-b border-white/10 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
                 <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg bg-white flex items-center justify-center shrink-0">
                     <img src="uitm.png" alt="Logo" class="w-full h-full object-cover">
@@ -198,7 +229,7 @@
                     <p class="text-[10px] text-purple-300/80 font-medium uppercase tracking-widest truncate">Student Card</p>
                 </div>
             </div>
-            <button type="button" onclick="toggleMobileSidebar(false)" aria-label="Close menu" class="lg:hidden text-purple-200 hover:text-white p-1.5 rounded-lg cursor-pointer shrink-0">
+            <button type="button" onclick="toggleMobileSidebar(false)" aria-label="Close menu" class="lg:hidden w-9 h-9 flex items-center justify-center text-purple-200 hover:text-white rounded-xl hover:bg-white/10 cursor-pointer shrink-0">
                 ✕
             </button>
         </div>
@@ -215,16 +246,16 @@
         </nav>
 
         <div class="p-4 border-t border-white/10">
-            <a href="index.html" class="sidebar-glow-item logout-glow-item flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold border border-red-500/20">🚪 Log Out</a>
+            <a href="index.html" class="sidebar-glow-item logout-glow-item flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold border border-red-500/20">🚪 Log Out</a>
         </div>
     </aside>
 
     <!-- MAIN CONTAINER -->
     <div class="flex-1 flex flex-col min-w-0">
         <!-- HEADER -->
-        <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex justify-between items-center z-10 sticky top-0 shadow-sm transition-colors duration-200">
+        <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center z-10 sticky top-0 shadow-sm transition-colors duration-200">
             <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                <button type="button" onclick="toggleMobileSidebar(true)" aria-label="Open navigation menu" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-uitmpurple dark:text-uitmgold cursor-pointer shrink-0">
+                <button type="button" onclick="toggleMobileSidebar(true)" aria-label="Open navigation menu" class="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-uitmpurple dark:text-uitmgold cursor-pointer shrink-0 active:scale-95 transition-transform">
                     ☰
                 </button>
                 <div class="flex items-center gap-2 min-w-0">
@@ -235,7 +266,7 @@
             <div class="flex items-center space-x-2.5 sm:space-x-4 shrink-0">
                 <div class="text-right hidden md:block">
                     <p class="text-[10px] text-slate-400 font-bold uppercase">WELCOME</p>
-                    <p class="text-xs font-extrabold text-slate-800 dark:text-slate-100" id="headerWelcome">2026112309 • MUHAMMAD SHAZWAN</p>
+                    <p class="text-xs font-extrabold text-slate-800 dark:text-slate-100 max-w-[260px] lg:max-w-xs truncate" id="headerWelcome">2026112309 • MUHAMMAD SHAZWAN</p>
                 </div>
 
                 <!-- Small Theme Toggle Icon (Light / Dark Mode) -->
@@ -245,7 +276,7 @@
                     onclick="toggleMyPelajarTheme()"
                     aria-label="Toggle Light or Dark Mode theme"
                     title="Toggle Theme (Light / Dark)"
-                    class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0"
+                    class="w-10 h-10 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-uitmpurple dark:text-uitmgold shadow-sm transition-all duration-200 cursor-pointer shrink-0 active:scale-95"
                 >
                     <svg id="iconMoon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
@@ -256,25 +287,23 @@
                     </svg>
                 </button>
 
-                <div class="w-9 h-9 rounded-full overflow-hidden shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
+                <div class="w-10 h-10 rounded-full overflow-hidden shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
                     <img id="headerProfilePhoto" src="wan profile.jpg" alt="Profile" class="w-full h-full object-cover">
                 </div>
             </div>
         </header>
 
         <!-- MAIN CONTENT -->
-        <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-6xl mx-auto w-full flex flex-col items-center justify-center space-y-5 sm:space-y-6">
+        <main class="flex-1 px-4 py-6 sm:p-6 md:p-8 max-w-6xl mx-auto w-full flex flex-col items-center justify-center space-y-5 sm:space-y-6">
             
             <!-- Title & Quick Controls -->
-            <div class="w-full max-w-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <h1 class="text-lg font-extrabold text-slate-800 dark:text-white">Student Digital Matric Card</h1>
-                        <span class="bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Verified</span>
-                    </div>
+            <div class="w-full max-w-[600px] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center justify-between sm:justify-start gap-2.5 flex-wrap">
+                    <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 dark:text-white">Student Digital Matric Card</h1>
+                    <span class="bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">Verified</span>
                 </div>
 
-                <button type="button" onclick="toggleStudentCardFlip()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-uitmpurple hover:bg-purple-900 text-uitmgold text-xs font-extrabold shadow-md transition-all cursor-pointer shrink-0">
+                <button type="button" onclick="toggleStudentCardFlip()" class="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-uitmpurple hover:bg-purple-900 active:scale-[0.99] text-uitmgold text-xs font-extrabold shadow-md transition-all cursor-pointer shrink-0">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
@@ -283,12 +312,12 @@
             </div>
 
             <!-- INTERACTIVE 3D CARD CONTAINER -->
-            <div id="tiltWrapper" class="w-full max-w-[600px] min-h-[235px] sm:min-h-0 sm:aspect-[1.64/1] card-scene select-none">
+            <div id="tiltWrapper" class="w-full max-w-[600px] min-h-[268px] xs:min-h-[280px] sm:min-h-0 sm:aspect-[1.64/1] card-scene select-none">
                 <div id="tiltShell" class="tilt-shell">
-                    <div id="studentCardInner" onclick="toggleStudentCardFlip()" class="card-3d-inner" role="button" tabindex="0" aria-label="UiTM Student Digital Matric Card - Click to flip">
+                    <div id="studentCardInner" onclick="toggleStudentCardFlip()" class="card-3d-inner" role="button" tabindex="0" aria-label="UiTM Student Digital Matric Card - Tap or click to flip">
 
                         <!-- ==================== CARD FRONT ==================== -->
-                        <div class="card-face front-surface p-4 sm:p-8 flex flex-col justify-between text-white">
+                        <div class="card-face card-face-front front-surface p-4 sm:p-7 md:p-8 flex flex-col justify-between text-white">
                             <!-- Batik Pattern & Holographic Shimmer Layers -->
                             <div class="batik-pattern-front absolute inset-0"></div>
                             <div class="holo-glare absolute inset-0"></div>
@@ -326,7 +355,7 @@
                             </div>
 
                             <!-- MIDDLE ROW: Student Photo Frame + Student Details -->
-                            <div class="relative z-10 flex items-center gap-3 sm:gap-6 my-auto py-1.5 sm:py-2">
+                            <div class="relative z-10 flex items-center gap-3 sm:gap-6 my-auto py-2">
                                 <div class="photo-frame-box relative w-16 h-20 sm:w-24 sm:h-28 rounded-xl sm:rounded-2xl overflow-hidden flex flex-col items-center justify-center shrink-0">
                                     <img id="cardStudentPhoto" src="wan profile.jpg" alt="Student Photo" class="w-full h-full object-cover object-top" onerror="this.classList.add('hidden'); document.getElementById('cardMonogramFallback').classList.remove('hidden');">
                                     <div id="cardMonogramFallback" class="hidden flex-col items-center justify-center text-center px-1">
@@ -335,7 +364,7 @@
                                 </div>
 
                                 <div class="min-w-0 flex-1 space-y-1 sm:space-y-1.5">
-                                    <h3 id="cardStudentName" class="text-xs sm:text-[21px] font-extrabold tracking-tight text-white uppercase leading-snug truncate">
+                                    <h3 id="cardStudentName" class="text-xs sm:text-lg md:text-[21px] font-extrabold tracking-tight text-white uppercase leading-snug break-words">
                                         MUHAMMAD SHAZWAN BIN AZMI
                                     </h3>
                                     <p id="cardStudentId" class="font-mono-tech text-xs sm:text-base font-bold text-uitmgold tracking-wider">
@@ -357,20 +386,20 @@
                                         <path d="M12 3v18"/>
                                         <path d="M9 5.5L12 3l3 2.5"/>
                                     </svg>
-                                    <span>Click to flip card</span>
+                                    <span>Tap to flip</span>
                                 </span>
                             </div>
                         </div>
 
                         <!-- ==================== CARD BACK ==================== -->
-                        <div class="card-face card-face-back back-surface p-4 sm:p-8 flex flex-col justify-between text-white">
+                        <div class="card-face card-face-back back-surface p-4 sm:p-7 md:p-8 flex flex-col justify-between text-white">
                             <!-- Batik Pattern & Holographic Shimmer Layers -->
                             <div class="batik-pattern-back absolute inset-0"></div>
                             <div class="holo-glare absolute inset-0"></div>
 
                             <!-- TOP ROW: Digital Verification Pass + Valid Badge -->
-                            <div class="relative z-10 pb-2.5 sm:pb-3.5 border-b border-amber-300/20 flex items-center justify-between gap-2 sm:gap-3">
-                                <span class="font-mono-tech text-[10px] sm:text-sm font-bold tracking-[0.1em] sm:tracking-[0.14em] text-purple-200 uppercase truncate">
+                            <div class="relative z-10 pb-2 sm:pb-3.5 border-b border-amber-300/20 flex items-center justify-between gap-2 sm:gap-3">
+                                <span class="font-mono-tech text-[9px] sm:text-sm font-bold tracking-[0.06em] sm:tracking-[0.14em] text-purple-200 uppercase truncate">
                                     DIGITAL VERIFICATION PASS
                                 </span>
                                 <span id="cardValidBadge" class="font-mono-tech text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-400/25 tracking-wider shrink-0">
@@ -379,27 +408,27 @@
                             </div>
 
                             <!-- MIDDLE ROW: IC Number, Programme Code, Campus & Official Property Note + QR Code -->
-                            <div class="relative z-10 flex items-center justify-between gap-3 sm:gap-5 my-auto py-1.5 sm:py-2">
-                                <div class="space-y-2 sm:space-y-2.5 text-xs sm:text-sm min-w-0 flex-1">
+                            <div class="relative z-10 flex items-center justify-between gap-3 sm:gap-5 my-auto py-2">
+                                <div class="space-y-1.5 sm:space-y-2.5 text-[11px] sm:text-sm min-w-0 flex-1">
                                     <div>
-                                        <p class="text-[10px] sm:text-xs uppercase tracking-wider text-purple-200/75 font-semibold">IC Number</p>
-                                        <p id="cardBackIcNumber" class="font-mono-tech font-bold text-white text-xs sm:text-base mt-0.5 truncate">050803020829</p>
+                                        <p class="text-[9px] sm:text-xs uppercase tracking-wider text-purple-200/75 font-semibold">IC Number</p>
+                                        <p id="cardBackIcNumber" class="font-mono-tech font-bold text-white text-xs sm:text-base mt-0.5 break-all">050803020829</p>
                                     </div>
                                     <div>
-                                        <p class="text-[10px] sm:text-xs uppercase tracking-wider text-purple-200/75 font-semibold">Programme Code</p>
-                                        <p id="cardBackProgrammeCode" class="font-mono-tech font-extrabold text-uitmgold text-xs sm:text-base mt-0.5 truncate">SI262</p>
+                                        <p class="text-[9px] sm:text-xs uppercase tracking-wider text-purple-200/75 font-semibold">Programme Code</p>
+                                        <p id="cardBackProgrammeCode" class="font-mono-tech font-extrabold text-uitmgold text-xs sm:text-base mt-0.5 break-words">SI262</p>
                                     </div>
                                     <div>
-                                        <p class="text-[10px] sm:text-xs uppercase tracking-wider text-purple-200/75 font-semibold">Campus</p>
-                                        <p id="cardBackCampus" class="font-bold text-white text-xs sm:text-base mt-0.5 truncate">Kampus Uitm Puncak Perdana</p>
+                                        <p class="text-[9px] sm:text-xs uppercase tracking-wider text-purple-200/75 font-semibold">Campus</p>
+                                        <p id="cardBackCampus" class="font-bold text-white text-[11px] sm:text-base mt-0.5 leading-snug break-words">Kampus Uitm Puncak Perdana</p>
                                     </div>
-                                    <p class="text-[10px] sm:text-xs text-slate-300/90 pt-0.5 truncate">
+                                    <p class="text-[9px] sm:text-xs text-slate-300/90 pt-0.5 leading-tight">
                                         This card is the official property of UiTM.
                                     </p>
                                 </div>
 
                                 <!-- Crisp SVG QR Code Box -->
-                                <div class="w-16 h-16 sm:w-28 sm:h-28 rounded-xl sm:rounded-2xl bg-white p-1.5 sm:p-2.5 shadow-xl flex items-center justify-center shrink-0 ring-2 ring-amber-300/40">
+                                <div class="w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-xl sm:rounded-2xl bg-white p-1.5 sm:p-2.5 shadow-xl flex items-center justify-center shrink-0 ring-2 ring-amber-300/40">
                                     <svg viewBox="0 0 29 29" class="w-full h-full fill-slate-950" shape-rendering="crispEdges">
                                         <!-- Top-Left Finder -->
                                         <path d="M2 2h7v7H2zM3 3v5h5V3zM4 4h3v3H4z"/>
@@ -435,8 +464,8 @@
                             </div>
 
                             <!-- BOTTOM ROW: Auth Code + Flip to Front Hint -->
-                            <div class="relative z-10 pt-2.5 sm:pt-3 border-t border-amber-300/20 flex items-center justify-between gap-2 text-[10px] sm:text-xs">
-                                <span id="cardAuthCode" class="font-mono-tech font-semibold text-slate-300 tracking-wider truncate">
+                            <div class="relative z-10 pt-2 sm:pt-3 border-t border-amber-300/20 flex items-center justify-between gap-2 text-[9px] sm:text-xs">
+                                <span id="cardAuthCode" class="font-mono-tech font-semibold text-slate-300 tracking-wide sm:tracking-wider truncate">
                                     AUTH: UITM-MYPELAJAR-2026
                                 </span>
 
@@ -445,7 +474,7 @@
                                         <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
                                         <path d="M3 3v5h5"/>
                                     </svg>
-                                    <span>Click front</span>
+                                    <span>Tap front</span>
                                 </span>
                             </div>
                         </div>
@@ -455,8 +484,8 @@
             </div>
 
             <!-- Small Note Below Card -->
-            <div class="text-center text-xs text-slate-500 dark:text-slate-400 px-2">
-                Tip: Click directly anywhere on the card to flip between <span class="font-bold text-uitmpurple dark:text-uitmgold">Front View</span> and <span class="font-bold text-uitmpurple dark:text-uitmgold">Digital Verification Pass</span>.
+            <div class="text-center text-xs text-slate-500 dark:text-slate-400 max-w-md px-2 leading-relaxed">
+                Tip: Tap or click anywhere on the card to flip between <span class="font-bold text-uitmpurple dark:text-uitmgold">Front View</span> and <span class="font-bold text-uitmpurple dark:text-uitmgold">Digital Verification Pass</span>.
             </div>
 
         </main>
@@ -482,11 +511,13 @@
             if (!sidebar || !backdrop) return;
             sidebar.classList.toggle('-translate-x-full', !open);
             backdrop.classList.toggle('hidden', !open);
+            document.body.classList.toggle('overflow-hidden', open && window.innerWidth < 1024);
         }
 
         window.addEventListener('resize', function() {
             if (window.innerWidth >= 1024) {
                 toggleMobileSidebar(false);
+                document.body.classList.remove('overflow-hidden');
             }
         });
 
@@ -672,6 +703,7 @@
             const cardInner = document.getElementById('studentCardInner');
             const tiltShell = document.getElementById('tiltShell');
             const tiltWrapper = document.getElementById('tiltWrapper');
+            const isFinePointer = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
 
             cardInner.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -685,19 +717,19 @@
                 tiltShell.style.transform = 'rotateX(0deg) rotateY(0deg)';
             };
 
-            tiltWrapper.addEventListener('mousemove', function(e) {
-                if (e.pointerType && e.pointerType !== 'mouse') return;
-                const rect = tiltWrapper.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top) / rect.height - 0.5;
-                const tiltX = (-y * 7).toFixed(2);
-                const tiltY = (x * 9).toFixed(2);
-                tiltShell.style.transition = 'transform 0.1s ease-out';
-                tiltShell.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-            });
+            if (isFinePointer) {
+                tiltWrapper.addEventListener('mousemove', function(e) {
+                    const rect = tiltWrapper.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    const tiltX = (-y * 7).toFixed(2);
+                    const tiltY = (x * 9).toFixed(2);
+                    tiltShell.style.transition = 'transform 0.1s ease-out';
+                    tiltShell.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+                });
 
-            tiltWrapper.addEventListener('mouseleave', resetTilt);
-            tiltWrapper.addEventListener('touchend', resetTilt, { passive: true });
+                tiltWrapper.addEventListener('mouseleave', resetTilt);
+            }
         };
     </script>
 </body>
